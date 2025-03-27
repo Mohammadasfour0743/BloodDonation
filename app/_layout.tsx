@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import {useBackHandler} from '../hooks/useBackHandler'
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -26,10 +27,13 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
+  
+
 
   return (
+    
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack initialRouteName='index'>
+      <Stack initialRouteName='index' >
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />

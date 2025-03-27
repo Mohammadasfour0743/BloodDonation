@@ -4,15 +4,10 @@ import { router } from 'expo-router';
 export default function LoginScreen() {
   return (
     <View style={styles.container}>
-        <Pressable onPress={()=>{
-            router.push("/(tabs)")
+        <Pressable style={styles.button} onPress={()=>{
+            router.replace("/(tabs)")
         }}>
-            <Text>Doctor</Text>
-        </Pressable>
-        <Pressable onPress={()=>{
-            router.push("/(tabs)")
-        }}>
-            <Text>Home</Text>
+            <Text>Login</Text>
         </Pressable>
     </View>
   );
@@ -20,10 +15,18 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor:"white",
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  button:{
+    borderColor:"gray",
+    borderWidth:2,
+    borderRadius:10,
+    backgroundColor:"white",
+    padding:8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
