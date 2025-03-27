@@ -7,6 +7,11 @@ export default function LoginScreen() {
         <Pressable onPress={()=>{
             router.push("/(tabs)")
         }}>
+            <Text>Doctor</Text>
+        </Pressable>
+        <Pressable onPress={()=>{
+            router.push("/(tabs)")
+        }}>
             <Text>Home</Text>
         </Pressable>
     </View>
