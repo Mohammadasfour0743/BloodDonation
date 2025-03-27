@@ -1,9 +1,14 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { router } from 'expo-router';
 
 export default function LoginScreen() {
   return (
     <View style={styles.container}>
-      <Text>Home</Text>
+        <Pressable onPress={()=>{
+            router.push("/(tabs)")
+        }}>
+            <Text>Home</Text>
+        </Pressable>
     </View>
   );
 }
@@ -16,3 +21,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
