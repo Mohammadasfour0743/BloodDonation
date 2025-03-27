@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { router } from 'expo-router';
+import { ThemedView } from '@/components/ThemedView';
 
 export default function LoginScreen() {
   return (
@@ -16,6 +17,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:"#780000",
     justifyContent: 'center',
     alignItems: 'center',
   },

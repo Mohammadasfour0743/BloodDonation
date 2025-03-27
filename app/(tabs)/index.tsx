@@ -7,8 +7,8 @@ import { ThemedView } from '@/components/ThemedView';
 
 export default function HomeScreen() {
   return (
-    <ScrollView>
-      <View style={styles.titleContainer}>
+    <ScrollView style={styles.titleContainer}>
+      <View style={styles.text}>
         <ThemedText type="title">Incoming Requests:</ThemedText>
       </View>
       
@@ -19,9 +19,12 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   titleContainer: {
+    backgroundColor:"#780000",
+    
+  },
+  text:{
     marginTop:100,
     marginLeft:20,
     gap: 8,
-  },
-  
+  }
 });
