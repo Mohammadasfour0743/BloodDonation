@@ -6,7 +6,7 @@ import { getAnalytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyDFv1XX_YmrD-hyOS1Sh0I0zdLkYyxB8D0",
   authDomain: "back-end-blood-donation.firebaseapp.com",
   projectId: "back-end-blood-donation",
