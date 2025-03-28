@@ -5,10 +5,7 @@ export const model = {
     //bloodtype: null,
   },
 
-  requests: [
-    
-  ],
-
+  requests: [],
 
   /*request: {
     id: string;
@@ -18,11 +15,13 @@ export const model = {
 }
 */
 
-  addRequest (req) {
+  addRequest(req) {
     this.requests = [...this.requests, req]
   },
 
-  getRequest (id) {
-   return this.requests.find((currentRequest) => {return id == currentRequest.id} )
-  }
-} 
+  getRequest(id) {
+    return this.requests.find((currentRequest) => {
+      return id == currentRequest.id
+    })
+  },
+}
