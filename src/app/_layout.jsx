@@ -1,4 +1,4 @@
-import "src/bootstrapping"
+import "./bootstrapping"
 
 import { Stack } from "expo-router"
 

@@ -1,8 +1,8 @@
 export const model = {
   user: {
-    //name: null,
-    //username: null,
-    //bloodtype: null,
+    name: "edited name",
+    username: "edited username",
+    bloodtype: "edited bloodtype",
   },
 
   requests: [],

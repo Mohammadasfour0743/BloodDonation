@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
-import { getAnalytics } from "firebase/analytics"
-import { initializeApp } from "firebase/app"
+//import { getAnalytics } from "firebase/analytics"
+//import { initializeApp } from "firebase/app"
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -14,9 +14,10 @@ export const firebaseConfig = {
   storageBucket: "back-end-blood-donation.firebasestorage.app",
   messagingSenderId: "426652873350",
   appId: "1:426652873350:web:9ca844d10e0dafa5101707",
-  measurementId: "G-RSPN6SFGZ6",
-}
+  measurementId: "G-RSPN6SFGZ6"
+};
+
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig)
-const analytics = getAnalytics(app)
+//const app = initializeApp(firebaseConfig)
+//const analytics = getAnalytics(app)
