@@ -6,11 +6,11 @@ export default function TabLayout() {
         <Tabs screenOptions = {
             {headerShown: false}
         } > 
-        <Tabs.screen name = "index" options = {{
-            title: "requests",
-            tabBarIcon: () => {return <Text>O</Text>} 
+        <Tabs.Screen name = "index" options = {{
+            title: 'requests',
+            tabBarIcon: () => {return <Text></Text>} 
         }}
-        ></Tabs.screen>
+        ></Tabs.Screen>
         </Tabs>
     )
 }

@@ -4,6 +4,6 @@ import {Login} from "src/presenters/loginPresenter"
 
 export default observer(function IndexPage() {
   return (
-    <Login></Login>
+    <Login/>
   )
 })
