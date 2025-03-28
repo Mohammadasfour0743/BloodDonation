@@ -25,8 +25,8 @@ export function connectToPersistence(model) {
     setDoc(
       docRef,
       {
-        username: model.username,
-        amoundBloodL: model.amoundBloodL,
+        //username: model.username,
+        //amoundBloodL: model.amoundBloodL,
       },
       { merge: true },
     ).catch((error) => {
@@ -44,8 +44,8 @@ getDoc(docRef)
 
     if (data) {
       // for defaults
-      model.username = data.username
-      model.dishes = data.amountBloodL ?? 2
+      //model.username = data.username
+      //model.dishes = data.amountBloodL ?? 2
     } /* else {
         // if no data
         model.numberOfGuests = 2
