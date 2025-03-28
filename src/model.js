@@ -5,18 +5,17 @@ export const model = {
     //bloodtype: null,
   },
 
-  requests: [],
+  //requests: [{}],
 
-  /*request: {
-    id: string;
-    hospitalId: string;
-    urgency: number;
-    bloodType: string;
-}
-*/
+  requests: [{
+    id: 3,
+    hospitalId: "St Joseph's",
+    urgency: "High",
+    bloodType: "B",
+},],
 
   addRequest(req) {
-    this.requests = [...this.requests, req]
+    this.requests = [req, ...this.requests]
   },
 
   getRequest(id) {
