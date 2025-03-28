@@ -6,7 +6,7 @@ export default function RootLayout() {
   return (
     <Stack
       screenOptions={{
-        title: "Dinner Planner",
+        title: "Blood Donor App",
       }}
     />
   );
