@@ -7,7 +7,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "requests",
+          title: "Requests",
           tabBarIcon: () => {
             return <Text></Text>
           },
