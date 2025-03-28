@@ -12,7 +12,7 @@ export default function TabLayout() {
             return <Text></Text>
           },
         }}
-      ></Tabs.Screen>
+      />
     </Tabs>
   )
 }
