@@ -1,6 +1,28 @@
 export const model = {
-  id: 2,
+  user: {
+    //name: null,
+    //username: null,
+    //bloodtype: null,
+  },
+
+  requests: [
+    
+  ],
+
+
+  /*request: {
+    id: string;
+    hospitalId: string;
+    urgency: number;
+    bloodType: string;
 }
-function add(number) {
-  id += number
-}
+*/
+
+  addRequest (req) {
+    this.requests = [...this.requests, req]
+  },
+
+  getRequest (id) {
+   return this.requests.find((currentRequest) => {return id == currentRequest.id} )
+  }
+} 
