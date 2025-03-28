@@ -7,12 +7,14 @@ export const model = {
 
   //requests: [{}],
 
-  requests: [{
-    id: 3,
-    hospitalId: "St Joseph's",
-    urgency: "High",
-    bloodType: "B",
-},],
+  requests: [
+    {
+      id: 3,
+      hospitalId: "St Joseph's",
+      urgency: "High",
+      bloodType: "B",
+    },
+  ],
 
   addRequest(req) {
     this.requests = [req, ...this.requests]
