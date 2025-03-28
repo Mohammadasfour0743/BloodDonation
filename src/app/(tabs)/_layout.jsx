@@ -1,16 +1,18 @@
 import { Text } from "react-native"
-import {Tabs} from "expo-router"
-export default function TabLayout() {
+import { Tabs } from "expo-router"
 
-    return (
-        <Tabs screenOptions = {
-            {headerShown: false}
-        } > 
-        <Tabs.Screen name = "index" options = {{
-            title: 'requests',
-            tabBarIcon: () => {return <Text></Text>} 
+export default function TabLayout() {
+  return (
+    <Tabs screenOptions={{ headerShown: false }}>
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "requests",
+          tabBarIcon: () => {
+            return <Text></Text>
+          },
         }}
-        ></Tabs.Screen>
-        </Tabs>
-    )
+      ></Tabs.Screen>
+    </Tabs>
+  )
 }

@@ -6,5 +6,3 @@ configure({ enforceActions: "never" })
 export const reactiveModel = observable(model)
 
 global.myModel = reactiveModel
-
-
