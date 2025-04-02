@@ -143,3 +143,21 @@ onSnapshot(collection(db, COLLECTION2), (snapshot) => {
 //     console.error("Error saving requests:", error);
 //   }
 // }
+
+
+//web fxn
+// export async function saveRequests(request) {
+//   try {
+//     const docRef = doc(collection(db, COLLECTION2), request.id);
+//     await setDoc(docRef, {
+//       hospitalId: request.hospitalId,
+//       urgency: request.urgency,
+//       bloodType: request.bloodType,
+//       amount: request.amount,
+//       description: request.description,
+//     });
+//     console.log("Request successfully saved with ID:", request.id);
+//   } catch (error) {
+//     console.error("Error saving request:", error);
+//   }
+// }
