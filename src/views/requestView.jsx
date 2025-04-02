@@ -10,8 +10,9 @@ import {
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { BlurView } from "expo-blur"
+import { Observer, observer } from "mobx-react-lite"
 
-export function RequestView(props) {
+export const RequestView = observer(function RequestRender(props) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.titleContainer}>
@@ -102,26 +103,32 @@ export function RequestView(props) {
         renderItem={(element) => {
           const req = element.item
           return (
-            <View>
-              <Pressable
-                style={styles.requestContainer}
-                onPress={() => {
-                  props.setCurrent(req)
-                  props.setVisible(true)
-                }}
-              >
-                {req.urgency && (
-                  <View style={styles.urgent}>
-                    <Text style={{ fontFamily: "Roboto-Medium" }}>URGENT</Text>
-                  </View>
-                )}
-                <Text style={styles.requestText}>{req.hospitalName}</Text>
-                <Text style={styles.separator}>{"\u2B24"}</Text>
-                <Text style={styles.requestText}>
-                  Blood Type: {req.bloodType}
-                </Text>
-              </Pressable>
-            </View>
+            <Observer>
+              {() => (
+                <View>
+                  <Pressable
+                    style={styles.requestContainer}
+                    onPress={() => {
+                      props.setCurrent(req)
+                      props.setVisible(true)
+                    }}
+                  >
+                    {req.urgency && (
+                      <View style={styles.urgent}>
+                        <Text style={{ fontFamily: "Roboto-Medium" }}>
+                          URGENT
+                        </Text>
+                      </View>
+                    )}
+                    <Text style={styles.requestText}>{req.hospitalName}</Text>
+                    <Text style={styles.separator}>{"\u2B24"}</Text>
+                    <Text style={styles.requestText}>
+                      Blood Type: {req.bloodType}
+                    </Text>
+                  </Pressable>
+                </View>
+              )}
+            </Observer>
           )
         }}
         data={props.requestsArray}
@@ -131,7 +138,7 @@ export function RequestView(props) {
       />
     </SafeAreaView>
   )
-}
+})
 
 const styles = StyleSheet.create({
   container: {

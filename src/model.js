@@ -11,7 +11,6 @@ export const model = {
     {
       id: 3,
       hospitalName: "St Joseph's",
-
       urgency: true,
       bloodType: "B",
       location: "bangladesh",
@@ -24,7 +23,6 @@ export const model = {
     {
       id: 4,
       hospitalName: "St Joseph's",
-
       urgency: false,
       bloodType: "B",
       location: "hungary",
