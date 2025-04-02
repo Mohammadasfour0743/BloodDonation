@@ -55,6 +55,14 @@ export function RequestView(props) {
                 Amount: {props.current?.amount ?? ""}
               </Text>
             </View>
+            <Text style={{ fontSize: 17, fontFamily: "Roboto-Bold", position: "absolute", top: 180, left: 35, }}  >
+                Description:
+            </Text>
+            <ScrollView style = {styles.detailsContainer}>
+                <Text style = {styles.detailsText}>
+            {props.current?.description ?? ""}
+                </Text>
+            </ScrollView>
             <View style={styles.contactDetails}>
               <Text style={{ fontSize: 17, fontFamily: "Roboto-Bold" }}>
                 Contact Hospital
@@ -65,8 +73,8 @@ export function RequestView(props) {
               <Text style={styles.detailsText}>
                 {props.current?.phoneNumber ?? ""}
               </Text>
+             
             </View>
-
             <Pressable
               style={styles.button}
               onPress={() => {
@@ -75,6 +83,7 @@ export function RequestView(props) {
             >
               <Text style={{ fontFamily: "Roboto-Bold" }}>Respond</Text>
             </Pressable>
+            
           </View>
         </Modal>
       </View>
@@ -140,6 +149,7 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: "center",
     position: "relative",
+    flexDirection:"column"
   },
 
   close: {
@@ -215,6 +225,7 @@ const styles = StyleSheet.create({
   },
 
   hospitalDetails: {
+    flex:1,
     color: "black",
     alignItems: "flex-start",
     justifyContent: "center",
@@ -230,13 +241,26 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Medium",
   },
 
-  contactDetails: {
+   
+    contactDetails: {
+        flex:1,
     color: "black",
     alignItems: "flex-start",
     justifyContent: "center",
     gap: 6,
     position: "absolute",
     bottom: 20,
+    left: 35,
+  },
+  detailsContainer: {
+    alignSelf:"center",
+    flex:1,
+    borderWidth: 0,
+    borderRadius: 8,
+    position: "absolute",
+    top: 200,
+    maxHeight: 100,
+    maxWidth: 340,
     left: 35,
   },
 })
