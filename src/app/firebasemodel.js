@@ -4,14 +4,16 @@ import {firebaseConfig} from "./firebaseconfig.js"
 
 const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
-const COLLECTION = "donors"
+const COLLECTION1 = "donors"
+const COLLECTION2 = "requests"
 
 // making them available at the console to test
 global.doc = doc
 global.setDoc = setDoc
 global.app = db
 
-const docToStore = doc(db, COLLECTION, "data")
+const docToStore = doc(db, COLLECTION1, "data")
+const reqStore = doc(db, COLLECTION2, "donors")
 
 
   export function connectToPersistence(model, watchFunction) {
@@ -37,9 +39,9 @@ const docToStore = doc(db, COLLECTION, "data")
 
     getDoc(docToStore)
     .then((snapshot) => {
-      console.log("Firestore snapshot retrieved:", snapshot);
+      //console.log("Firestore snapshot retrieved:", snapshot);
       const data = snapshot.data()
-      console.log("Data from Firestore:", data);
+      //console.log("Data from Firestore:", data);
 
       // if data exists, updates the model’s properties/fields with the stored values
       // if any field is missing, it updates to the default values (given in the model)
@@ -52,6 +54,38 @@ const docToStore = doc(db, COLLECTION, "data")
       else {
         model.user.name = "default"
         model.user.username = "default"
+      }
+    })     .catch((error) => console.error("Error reading document:", error));
+
+
+    getDoc(reqStore)
+    .then((snapshot) => {
+      //console.log("Firestore snapshot retrieved:", snapshot);
+      const data = snapshot.data()
+      //console.log("Data from Firestore:", data);
+
+      // if data exists, updates the model’s properties/fields with the stored values
+      // if any field is missing, it updates to the default values (given in the model)
+      if (data) {
+        model.requests.id = data.id ?? "default"
+        model.requests.hospitalId = data.hospitalId ?? "default"
+        model.requests.urgency = data.urgency ?? "default"
+        model.requests.bloodType = data.bloodType ?? "default"
+        model.requests.location = data.location ?? "default"
+        model.requests.amount = data.amount ?? "default"
+        model.requests.email = data.email ?? "default"
+        model.requests.phoneNumber = data.phoneNumber ?? "default"
+      }
+      // if no document during the read, sets the model’s properties to the default values.
+      else {
+        model.requests.id = "default"
+        model.requests.hospitalId = "default"
+        model.requests.urgency = "default"
+        model.requests.bloodType = "default"
+        model.requests.location = "default"
+        model.requests.amount = "default"
+        model.requests.email = "default"
+        model.requests.phoneNumber = "default"
       }
     })     .catch((error) => console.error("Error reading document:", error));
 
