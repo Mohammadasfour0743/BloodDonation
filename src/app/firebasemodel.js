@@ -1,6 +1,8 @@
 import { initializeApp } from "firebase/app"
 import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore"
 import {firebaseConfig} from "./firebaseconfig.js"
+import { collection, getDocs, onSnapshot } from "firebase/firestore";
+
 
 const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
@@ -13,8 +15,6 @@ global.setDoc = setDoc
 global.app = db
 
 const docToStore = doc(db, COLLECTION1, "data")
-const reqStore = doc(db, COLLECTION2, "new")
-
 
   export function connectToPersistence(model, watchFunction) {
   function modelState() {
@@ -57,18 +57,25 @@ const reqStore = doc(db, COLLECTION2, "new")
       }
     })     .catch((error) => console.error("Error reading document:", error));
 
-    getDoc(reqStore)
+
+  // METHOD FOR REQUESTS
+  getDocs(collection(db, COLLECTION2))
   .then((snapshot) => {
-    const data = snapshot.data();
+    const fetchedRequests = [];
 
-    if (data && data.requests) {
-      const existingRequests = model.getRequests(); // Get current requests
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data) {
+        fetchedRequests.push({ id: doc.id, ...data });
+      }
+    });
 
-      data.requests.forEach((newRequest) => {
-        const existingRequest = existingRequests.find((req) => req.id === newRequest.id);
+    if (fetchedRequests.length > 0) {
+      fetchedRequests.forEach((newRequest) => {
+        const existingRequest = model.getRequests().find(
+                                (req) => req.id === newRequest.id);
 
         if (existingRequest) {
-          // Compare only changed fields
           const updatedFields = {};
           Object.keys(newRequest).forEach((key) => {
             if (existingRequest[key] !== newRequest[key]) {
@@ -76,29 +83,63 @@ const reqStore = doc(db, COLLECTION2, "new")
             }
           });
 
-          // Call updateRequests ONLY if there are changes
           if (Object.keys(updatedFields).length > 0) {
             model.updateRequests(newRequest.id, updatedFields);
           }
         } else {
-          // If the request doesn’t exist, add it
           model.addRequest(newRequest);
         }
       });
     }
   })
-  .catch((error) => console.error("Error reading document:", error));
+  .catch((error) => console.error("error reading the docs:", error));
+
+onSnapshot(collection(db, COLLECTION2), (snapshot) => {
+  const fetchedRequests = [];
+
+  snapshot.forEach((doc) => {
+    const data = doc.data();
+    if (data) {
+      fetchedRequests.push({ id: doc.id, ...data });
+    }
+  });
+
+  fetchedRequests.forEach((newRequest) => {
+    const existingRequest = model.getRequests().find(
+                            (req) => req.id === newRequest.id);
+
+    if (existingRequest) {
+      const updatedFields = {};
+      Object.keys(newRequest).forEach((key) => {
+        if (existingRequest[key] !== newRequest[key]) {
+          updatedFields[key] = newRequest[key];
+        }
+      });
+
+      if (Object.keys(updatedFields).length>0) {
+        model.updateRequests(newRequest.id, updatedFields);
+      }
+    } else {
+      model.addRequest(newRequest);
+    }
+  });
+  //console.log("no need for reload", fetchedRequests);
+});
+
+
 }
 
-export async function setRequests(model) {
-  try {
-    await setDoc(
-      reqStore,
-      { requests: model.requests },
-      { merge: true }
-    );
-    console.log("Requests successfully saved to Firestore");
-  } catch (error) {
-    console.error("Error saving requests:", error);
-  }
-}
+
+//test function for the getDocs methods for requests
+// export async function setRequests(model) {
+//   try {
+//     await setDoc(
+//       reqStore,
+//       { requests: model.requests },
+//       { merge: true }
+//     );
+//     console.log("Requests successfully saved to Firestore");
+//   } catch (error) {
+//     console.error("Error saving requests:", error);
+//   }
+// }

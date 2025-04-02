@@ -21,7 +21,6 @@ import { toJS } from "mobx";
 //  )
 
 global.model = model
-global.setRequests = setRequests
 connectToPersistence(model, reaction);
 
 // wrapping the component in observer so that its reactive (re-renders) when the model properties the component references to change
