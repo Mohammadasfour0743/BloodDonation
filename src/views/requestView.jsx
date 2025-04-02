@@ -41,10 +41,14 @@ export function RequestView(props) {
                 <Text style={styles.urgentText}>URGENT</Text>
               </View>
             )}
+
             <Text style={styles.requestTitle}>
               {props.current?.hospitalName ?? ""}
             </Text>
             <View style={styles.hospitalDetails}>
+              <Text style={{ fontSize: 17, fontFamily: "Roboto-Bold" }}>
+                Hospital Details:
+              </Text>
               <Text style={styles.detailsText}>
                 Location: {props.current?.location ?? ""}
               </Text>
@@ -60,7 +64,7 @@ export function RequestView(props) {
                 fontSize: 17,
                 fontFamily: "Roboto-Bold",
                 position: "absolute",
-                top: 180,
+                top: 190,
                 left: 35,
               }}
             >
@@ -148,7 +152,7 @@ const styles = StyleSheet.create({
   },
 
   modal: {
-    maxHeight: Dimensions.get("window").height / 2,
+    maxHeight: Dimensions.get("window").height * 0.6,
     backgroundColor: "#D3C2C2",
     flex: 1,
     borderRadius: 15,
@@ -159,11 +163,12 @@ const styles = StyleSheet.create({
   },
 
   close: {
-    maxHeight: Dimensions.get("window").height / 2,
-    flex: 1,
+    maxHeight: Dimensions.get("window").height * 0.5,
+    flex: 0.7,
   },
 
   button: {
+    width: "90%",
     borderWidth: 0,
     borderRadius: 10,
     backgroundColor: "#FFEE93",
@@ -171,8 +176,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
-    bottom: 10,
-    right: 0,
+    bottom: 20,
+    margin: "auto",
   },
 
   requestContainer: {
@@ -237,8 +242,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 6,
     position: "absolute",
-    top: 75,
-    left: 60,
+    top: 65,
+    left: 35,
   },
 
   detailsText: {
@@ -254,7 +259,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 6,
     position: "absolute",
-    bottom: 20,
+    bottom: 110,
     left: 35,
   },
   detailsContainer: {
@@ -263,7 +268,7 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderRadius: 8,
     position: "absolute",
-    top: 200,
+    top: 220,
     maxHeight: 100,
     maxWidth: 340,
     left: 35,
