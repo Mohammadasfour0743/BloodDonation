@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { BlurView } from "expo-blur"
 
 export function RequestView(props) {
   return (
@@ -26,14 +27,14 @@ export function RequestView(props) {
             props.setVisible(!props.visible)
           }}
         >
-          <View style={styles.close}>
+          <BlurView intensity={8} style={styles.close}>
             <Pressable
               style={{ flex: 1 }}
               onPress={() => {
                 props.setVisible(false)
               }}
             ></Pressable>
-          </View>
+          </BlurView>
           <View style={styles.modal}>
             {props.current?.urgency && (
               <View style={styles.urgentRequest}>
@@ -154,7 +155,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
-    bottom: 0,
+    bottom: 10,
     right: 0,
   },
 
@@ -235,7 +236,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 6,
     position: "absolute",
-    bottom: 10,
+    bottom: 20,
     left: 35,
   },
 })
