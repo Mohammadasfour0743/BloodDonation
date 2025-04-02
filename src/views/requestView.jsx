@@ -42,7 +42,7 @@ export function RequestView(props) {
               </View>
             )}
             <Text style={styles.requestTitle}>
-              {props.current?.hospitalId ?? ""}
+              {props.current?.hospitalName ?? ""}
             </Text>
             <View style={styles.hospitalDetails}>
               <Text style={styles.detailsText}>
@@ -55,13 +55,21 @@ export function RequestView(props) {
                 Amount: {props.current?.amount ?? ""}
               </Text>
             </View>
-            <Text style={{ fontSize: 17, fontFamily: "Roboto-Bold", position: "absolute", top: 180, left: 35, }}  >
-                Description:
+            <Text
+              style={{
+                fontSize: 17,
+                fontFamily: "Roboto-Bold",
+                position: "absolute",
+                top: 180,
+                left: 35,
+              }}
+            >
+              Notes:
             </Text>
-            <ScrollView style = {styles.detailsContainer}>
-                <Text style = {styles.detailsText}>
-            {props.current?.description ?? ""}
-                </Text>
+            <ScrollView style={styles.detailsContainer}>
+              <Text style={styles.detailsText}>
+                {props.current?.description ?? ""}
+              </Text>
             </ScrollView>
             <View style={styles.contactDetails}>
               <Text style={{ fontSize: 17, fontFamily: "Roboto-Bold" }}>
@@ -73,7 +81,6 @@ export function RequestView(props) {
               <Text style={styles.detailsText}>
                 {props.current?.phoneNumber ?? ""}
               </Text>
-             
             </View>
             <Pressable
               style={styles.button}
@@ -83,7 +90,6 @@ export function RequestView(props) {
             >
               <Text style={{ fontFamily: "Roboto-Bold" }}>Respond</Text>
             </Pressable>
-            
           </View>
         </Modal>
       </View>
@@ -105,7 +111,7 @@ export function RequestView(props) {
                     <Text style={{ fontFamily: "Roboto-Medium" }}>URGENT</Text>
                   </View>
                 )}
-                <Text style={styles.requestText}>{req.hospitalId}</Text>
+                <Text style={styles.requestText}>{req.hospitalName}</Text>
                 <Text style={styles.separator}>{"\u2B24"}</Text>
                 <Text style={styles.requestText}>
                   Blood Type: {req.bloodType}
@@ -149,7 +155,7 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: "center",
     position: "relative",
-    flexDirection:"column"
+    flexDirection: "column",
   },
 
   close: {
@@ -225,7 +231,7 @@ const styles = StyleSheet.create({
   },
 
   hospitalDetails: {
-    flex:1,
+    flex: 1,
     color: "black",
     alignItems: "flex-start",
     justifyContent: "center",
@@ -241,9 +247,8 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Medium",
   },
 
-   
-    contactDetails: {
-        flex:1,
+  contactDetails: {
+    flex: 1,
     color: "black",
     alignItems: "flex-start",
     justifyContent: "center",
@@ -253,8 +258,8 @@ const styles = StyleSheet.create({
     left: 35,
   },
   detailsContainer: {
-    alignSelf:"center",
-    flex:1,
+    alignSelf: "center",
+    flex: 1,
     borderWidth: 0,
     borderRadius: 8,
     position: "absolute",
