@@ -25,4 +25,16 @@ export const model = {
       return id == currentRequest.id
     })
   },
+  setRequest(arr) {
+    this.requests = arr
+  },
+  getRequest() {
+    return this.requests
+  },
+  setUser(user) {
+    this.user = user
+  },
+  getUser() {
+    return this.user
+  },
 }
