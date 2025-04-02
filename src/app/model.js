@@ -13,8 +13,23 @@ export const model = makeAutoObservable({
     {
       id: 3,
       hospitalId: "St Joseph's",
-      urgency: "High",
+      urgency: true,
       bloodType: "B",
+      location: "bangladesh",
+      amount: "2 units",
+      email: "randomemail@something.com",
+      phoneNumber: "1000202879",
+    },
+
+    {
+      id: 4,
+      hospitalId: "St Joseph's",
+      urgency: false,
+      bloodType: "B",
+      location: "hungary",
+      amount: "2 units",
+      email: "randomemail@something.com",
+      phoneNumber: "1000202879",
     },
   ],
 
@@ -30,7 +45,7 @@ export const model = makeAutoObservable({
   setRequest(arr) {
     this.requests = arr
   },
-  getRequest() {
+  getRequests() {
     return this.requests
   },
   updateUser(id, userFields) {
