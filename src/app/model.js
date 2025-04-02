@@ -1,8 +1,10 @@
-export const model = {
+import { makeAutoObservable } from "mobx";
+
+export const model = makeAutoObservable({
   user: {
-    name: "change once",
-    username: "edited2",
-    bloodtype: "edited3",
+    name: "",
+    username: "",
+    bloodtype: "",
   },
 
   //requests: [{}],
@@ -53,4 +55,4 @@ export const model = {
   getUser() {
     return this.user
   },
-}
+});

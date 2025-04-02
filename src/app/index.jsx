@@ -5,20 +5,23 @@ import { connectToPersistence, persistModel } from "./firebasemodel"
 import { model } from "./model"
 
 
-// a reaction to watch for changes in the properties specified below
-// done using the callbacks below
-reaction(
-     function modelState() {
-         return model.name
-     },
-     function reactModel() {
-         console.log("name has changed")
-     },
- )
+// a reaction to trigger if the model changes
+// whenever model.user.name updates, MobX detects the change and passes the new name as newName to reactModel
+// reaction(
+//     // observes the name
+//      function modelState() {
+//          return model.user.name
+//      },
+//      // side effect if the name changes
+//      function reactModel(newName) {
+//          console.log("name has changed to ", newName)
+//      },
+//  )
 
 global.model = model
 connectToPersistence(model, reaction);
 
+// wrapping the component in observer so that its reactive (re-renders) when the model properties the component references to change
 export default observer(function IndexPage() {
   return <Login />
 })
