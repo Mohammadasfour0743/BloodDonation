@@ -41,10 +41,14 @@ export function RequestView(props) {
                 <Text style={styles.urgentText}>URGENT</Text>
               </View>
             )}
+
             <Text style={styles.requestTitle}>
-              {props.current?.hospitalId ?? ""}
+              {props.current?.hospitalName ?? ""}
             </Text>
             <View style={styles.hospitalDetails}>
+              <Text style={{ fontSize: 17, fontFamily: "Roboto-Bold" }}>
+                Hospital Details:
+              </Text>
               <Text style={styles.detailsText}>
                 Location: {props.current?.location ?? ""}
               </Text>
@@ -55,6 +59,22 @@ export function RequestView(props) {
                 Amount: {props.current?.amount ?? ""}
               </Text>
             </View>
+            <Text
+              style={{
+                fontSize: 17,
+                fontFamily: "Roboto-Bold",
+                position: "absolute",
+                top: 190,
+                left: 35,
+              }}
+            >
+              Notes:
+            </Text>
+            <ScrollView style={styles.detailsContainer}>
+              <Text style={styles.detailsText}>
+                {props.current?.description ?? ""}
+              </Text>
+            </ScrollView>
             <View style={styles.contactDetails}>
               <Text style={{ fontSize: 17, fontFamily: "Roboto-Bold" }}>
                 Contact Hospital
@@ -66,7 +86,6 @@ export function RequestView(props) {
                 {props.current?.phoneNumber ?? ""}
               </Text>
             </View>
-
             <Pressable
               style={styles.button}
               onPress={() => {
@@ -96,7 +115,7 @@ export function RequestView(props) {
                     <Text style={{ fontFamily: "Roboto-Medium" }}>URGENT</Text>
                   </View>
                 )}
-                <Text style={styles.requestText}>{req.hospitalId}</Text>
+                <Text style={styles.requestText}>{req.hospitalName}</Text>
                 <Text style={styles.separator}>{"\u2B24"}</Text>
                 <Text style={styles.requestText}>
                   Blood Type: {req.bloodType}
@@ -133,21 +152,23 @@ const styles = StyleSheet.create({
   },
 
   modal: {
-    maxHeight: Dimensions.get("window").height / 2,
+    maxHeight: Dimensions.get("window").height * 0.6,
     backgroundColor: "#D3C2C2",
     flex: 1,
     borderRadius: 15,
     padding: 10,
     alignItems: "center",
     position: "relative",
+    flexDirection: "column",
   },
 
   close: {
-    maxHeight: Dimensions.get("window").height / 2,
-    flex: 1,
+    maxHeight: Dimensions.get("window").height * 0.5,
+    flex: 0.7,
   },
 
   button: {
+    width: "90%",
     borderWidth: 0,
     borderRadius: 10,
     backgroundColor: "#FFEE93",
@@ -155,8 +176,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
-    bottom: 10,
-    right: 0,
+    bottom: 20,
+    margin: "auto",
   },
 
   requestContainer: {
@@ -215,13 +236,14 @@ const styles = StyleSheet.create({
   },
 
   hospitalDetails: {
+    flex: 1,
     color: "black",
     alignItems: "flex-start",
     justifyContent: "center",
     gap: 6,
     position: "absolute",
-    top: 75,
-    left: 60,
+    top: 65,
+    left: 35,
   },
 
   detailsText: {
@@ -231,12 +253,24 @@ const styles = StyleSheet.create({
   },
 
   contactDetails: {
+    flex: 1,
     color: "black",
     alignItems: "flex-start",
     justifyContent: "center",
     gap: 6,
     position: "absolute",
-    bottom: 20,
+    bottom: 110,
+    left: 35,
+  },
+  detailsContainer: {
+    alignSelf: "center",
+    flex: 1,
+    borderWidth: 0,
+    borderRadius: 8,
+    position: "absolute",
+    top: 220,
+    maxHeight: 100,
+    maxWidth: 340,
     left: 35,
   },
 })
