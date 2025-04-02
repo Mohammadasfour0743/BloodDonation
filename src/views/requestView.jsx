@@ -12,10 +12,10 @@ import { SafeAreaView } from "react-native-safe-area-context"
 
 export function RequestView(props) {
   return (
-    <SafeAreaView style = {styles.container}>
-        <View style = {styles.titleContainer}>
-        <Text style = {styles.title}>Current Requests</Text>
-        </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Current Requests</Text>
+      </View>
       <View>
         <Modal
           animationType="slide"
@@ -26,81 +26,79 @@ export function RequestView(props) {
             props.setVisible(!props.visible)
           }}
         >
-        <View style={styles.close}>
-            <Pressable style={{ flex: 1 }} onPress={() => {props.setVisible(false)}}>
-                
-            </Pressable>
-        </View>
+          <View style={styles.close}>
+            <Pressable
+              style={{ flex: 1 }}
+              onPress={() => {
+                props.setVisible(false)
+              }}
+            ></Pressable>
+          </View>
           <View style={styles.modal}>
-          {(props.current?.urgency) && <View style = {styles.urgentRequest}>
-                    <Text style = {styles.urgentText}>
-                        URGENT
-                    </Text>
-                </View>}
-            <Text style = {styles.requestTitle}>{props.current?.hospitalId ?? ""}</Text>
-            <View style = {styles.hospitalDetails}>
-            <Text style = {styles.detailsText}>
-              Location:{" "}
-              {props.current?.location ?? ""}
+            {props.current?.urgency && (
+              <View style={styles.urgentRequest}>
+                <Text style={styles.urgentText}>URGENT</Text>
+              </View>
+            )}
+            <Text style={styles.requestTitle}>
+              {props.current?.hospitalId ?? ""}
             </Text>
-            <Text style = {styles.detailsText}>
-              Blood Type:{" "}
-              {props.current?.bloodType ?? ""}
-            </Text>
-            <Text style = {styles.detailsText}>
-              Amount:{" "}
-              {props.current?.amount ?? ""}
-            </Text>
+            <View style={styles.hospitalDetails}>
+              <Text style={styles.detailsText}>
+                Location: {props.current?.location ?? ""}
+              </Text>
+              <Text style={styles.detailsText}>
+                Blood Type: {props.current?.bloodType ?? ""}
+              </Text>
+              <Text style={styles.detailsText}>
+                Amount: {props.current?.amount ?? ""}
+              </Text>
             </View>
-            <View style = {styles.contactDetails}>
-                <Text style = {{fontSize: 17, fontFamily: "Roboto-Bold"}}>
-                    Contact Hospital
-                </Text>
-                <Text style = {styles.detailsText}>
-                    {props.current?.email ?? ""}
-                </Text>
-                <Text style = {styles.detailsText}>
-                    {props.current?.phoneNumber ?? ""}
-                </Text>
+            <View style={styles.contactDetails}>
+              <Text style={{ fontSize: 17, fontFamily: "Roboto-Bold" }}>
+                Contact Hospital
+              </Text>
+              <Text style={styles.detailsText}>
+                {props.current?.email ?? ""}
+              </Text>
+              <Text style={styles.detailsText}>
+                {props.current?.phoneNumber ?? ""}
+              </Text>
             </View>
-           
+
             <Pressable
               style={styles.button}
               onPress={() => {
                 props.setVisible(false)
               }}
             >
-              <Text style = {{fontFamily: "Roboto-Bold"}}>Respond</Text>
+              <Text style={{ fontFamily: "Roboto-Bold" }}>Respond</Text>
             </Pressable>
           </View>
         </Modal>
       </View>
 
       <FlatList
-        
         renderItem={(element) => {
           const req = element.item
           return (
-            <View >
+            <View>
               <Pressable
-                style = {styles.requestContainer}
+                style={styles.requestContainer}
                 onPress={() => {
                   props.setCurrent(req)
                   props.setVisible(true)
                 }}
               >
-                {(req.urgency) && <View style = {styles.urgent}>
-                    <Text style = {{fontFamily: "Roboto-Medium"}}>
-                        URGENT
-                    </Text>
-                </View>}
-                <Text style = {styles.requestText}>{req.hospitalId} 
-                    </Text>
-                <Text style = {styles.separator}>
-                    {"\u2B24"} 
-                </Text>
-                <Text style = {styles.requestText}>
-                     Blood Type: {req.bloodType}
+                {req.urgency && (
+                  <View style={styles.urgent}>
+                    <Text style={{ fontFamily: "Roboto-Medium" }}>URGENT</Text>
+                  </View>
+                )}
+                <Text style={styles.requestText}>{req.hospitalId}</Text>
+                <Text style={styles.separator}>{"\u2B24"}</Text>
+                <Text style={styles.requestText}>
+                  Blood Type: {req.bloodType}
                 </Text>
               </Pressable>
             </View>
@@ -123,7 +121,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#9A4040",
-    fontSize: 20, 
+    fontSize: 20,
     fontFamily: "Roboto-Bold",
   },
 
@@ -134,7 +132,7 @@ const styles = StyleSheet.create({
   },
 
   modal: {
-    maxHeight: Dimensions.get("window").height/2,
+    maxHeight: Dimensions.get("window").height / 2,
     backgroundColor: "#D3C2C2",
     flex: 1,
     borderRadius: 15,
@@ -144,7 +142,7 @@ const styles = StyleSheet.create({
   },
 
   close: {
-    maxHeight: Dimensions.get("window").height/2,
+    maxHeight: Dimensions.get("window").height / 2,
     flex: 1,
   },
 
@@ -175,21 +173,19 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 14,
     marginHorizontal: 12,
-    fontFamily:"Roboto-Medium"
-    
+    fontFamily: "Roboto-Medium",
   },
 
   separator: {
     color: "white",
     fontSize: 10,
-    
   },
 
   urgent: {
     backgroundColor: "#D3C2C2",
     padding: 4,
     borderRadius: 4,
-    position:"absolute",
+    position: "absolute",
     left: "10",
     top: "-5",
   },
@@ -198,7 +194,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#9A4040",
     padding: 4,
     borderRadius: 4,
-    position:"absolute",
+    position: "absolute",
     left: "15",
     top: "15",
   },
@@ -242,6 +238,4 @@ const styles = StyleSheet.create({
     bottom: 10,
     left: 35,
   },
-
-
 })
