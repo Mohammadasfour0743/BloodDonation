@@ -3,9 +3,7 @@ import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore"
 import {firebaseConfig} from "./firebaseconfig.js"
 
 const app = initializeApp(firebaseConfig)
-/* const analytics = getAnalytics(app); */
 const db = getFirestore(app)
-
 const COLLECTION = "donors"
 
 // making them available at the console to test
@@ -13,8 +11,7 @@ global.doc = doc
 global.setDoc = setDoc
 global.app = db
 
-
-  const docToStore = doc(db, COLLECTION, "data")
+const docToStore = doc(db, COLLECTION, "data")
 
 
   export function connectToPersistence(model, watchFunction) {
