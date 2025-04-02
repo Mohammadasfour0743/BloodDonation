@@ -17,7 +17,7 @@ export function RequestView(props) {
       <View>
         <Modal
           animationType="slide"
-          transparent={false}
+          transparent={true}
           visible={props.visible}
           onRequestClose={() => {
             props.setVisible(!props.visible)
