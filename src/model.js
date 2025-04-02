@@ -31,6 +31,22 @@ export const model = {
   getRequest() {
     return this.requests
   },
+  updateUser(id, userFields) {
+    return {
+      ...this.user,
+      userFields,
+    }
+  },
+  updateUser(id, requestFields) {
+    this.requests.map((currentRequest) => {
+      if (this.currentRequest.id == id)
+        return {
+          ...this.currentRequest,
+          requestFields,
+        }
+      return currentRequest
+    })
+  },
   setUser(user) {
     this.user = user
   },
