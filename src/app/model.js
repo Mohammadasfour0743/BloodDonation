@@ -54,16 +54,26 @@ export const model = makeAutoObservable({
       userFields,
     }
   },
-  updateUser(id, requestFields) {
-    this.requests.map((currentRequest) => {
-      if (this.currentRequest.id == id)
-        return {
-          ...this.currentRequest,
-          requestFields,
-        }
-      return currentRequest
-    })
+  // updateRequests(id, requestFields) {
+  //   this.requests.map((currentRequest) => {
+  //     if (this.currentRequest.id == id)
+  //       return {
+  //         ...this.currentRequest,
+  //         requestFields,
+  //       }
+  //     return currentRequest
+  //   })
+  // },
+
+  updateRequests(id, requestFields) {
+    this.requests = this.requests.map((currentRequest) => {
+      if (currentRequest.id == id) {
+        return { ...currentRequest, ...requestFields };
+      }
+      return currentRequest;
+    });
   },
+  
   setUser(user) {
     this.user = user
   },

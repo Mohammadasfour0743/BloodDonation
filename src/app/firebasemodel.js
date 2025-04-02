@@ -13,7 +13,7 @@ global.setDoc = setDoc
 global.app = db
 
 const docToStore = doc(db, COLLECTION1, "data")
-const reqStore = doc(db, COLLECTION2, "donors")
+const reqStore = doc(db, COLLECTION2, "new")
 
 
   export function connectToPersistence(model, watchFunction) {
@@ -57,36 +57,48 @@ const reqStore = doc(db, COLLECTION2, "donors")
       }
     })     .catch((error) => console.error("Error reading document:", error));
 
-
     getDoc(reqStore)
-    .then((snapshot) => {
-      //console.log("Firestore snapshot retrieved:", snapshot);
-      const data = snapshot.data()
-      //console.log("Data from Firestore:", data);
+  .then((snapshot) => {
+    const data = snapshot.data();
 
-      // if data exists, updates the model’s properties/fields with the stored values
-      // if any field is missing, it updates to the default values (given in the model)
-      if (data) {
-        model.requests.id = data.id ?? "default"
-        model.requests.hospitalId = data.hospitalId ?? "default"
-        model.requests.urgency = data.urgency ?? "default"
-        model.requests.bloodType = data.bloodType ?? "default"
-        model.requests.location = data.location ?? "default"
-        model.requests.amount = data.amount ?? "default"
-        model.requests.email = data.email ?? "default"
-        model.requests.phoneNumber = data.phoneNumber ?? "default"
-      }
-      // if no document during the read, sets the model’s properties to the default values.
-      else {
-        model.requests.id = "default"
-        model.requests.hospitalId = "default"
-        model.requests.urgency = "default"
-        model.requests.bloodType = "default"
-        model.requests.location = "default"
-        model.requests.amount = "default"
-        model.requests.email = "default"
-        model.requests.phoneNumber = "default"
-      }
-    })     .catch((error) => console.error("Error reading document:", error));
+    if (data && data.requests) {
+      const existingRequests = model.getRequests(); // Get current requests
 
+      data.requests.forEach((newRequest) => {
+        const existingRequest = existingRequests.find((req) => req.id === newRequest.id);
+
+        if (existingRequest) {
+          // Compare only changed fields
+          const updatedFields = {};
+          Object.keys(newRequest).forEach((key) => {
+            if (existingRequest[key] !== newRequest[key]) {
+              updatedFields[key] = newRequest[key];
+            }
+          });
+
+          // Call updateRequests ONLY if there are changes
+          if (Object.keys(updatedFields).length > 0) {
+            model.updateRequests(newRequest.id, updatedFields);
+          }
+        } else {
+          // If the request doesn’t exist, add it
+          model.addRequest(newRequest);
+        }
+      });
+    }
+  })
+  .catch((error) => console.error("Error reading document:", error));
+}
+
+export async function setRequests(model) {
+  try {
+    await setDoc(
+      reqStore,
+      { requests: model.requests },
+      { merge: true }
+    );
+    console.log("Requests successfully saved to Firestore");
+  } catch (error) {
+    console.error("Error saving requests:", error);
+  }
 }
