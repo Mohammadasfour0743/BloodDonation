@@ -8,3 +8,4 @@ import { reactiveModel } from "./bootstrapping"
 export default observer(function IndexPage() {
   return <Login />
 })
+

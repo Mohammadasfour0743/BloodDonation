@@ -11,11 +11,14 @@ import {
   where
 } from "firebase/firestore"
 import { runInAction } from "mobx"
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
+  onAuthStateChanged, signOut} from "firebase/auth";
 
 import { firebaseConfig } from "./firebaseconfig.js"
 
 const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
+const auth = getAuth(); 
 const COLLECTION1 = "donors"
 const COLLECTION2 = "requests"
 
@@ -24,7 +27,48 @@ global.doc = doc
 global.setDoc = setDoc
 global.app = db
 
+export function signIn(username, password) {
+  return signInWithEmailAndPassword(auth, username, password)
+    .then((userCredential) => {
+      // Signed in
+      const user = userCredential.user;
+      console.log("User signed in:", user.email);
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error("Sign In Error:", errorCode, errorMessage);
+    });
+}
+
+// Function to sign up with email and password
+export function signUp(username, password) {
+  return createUserWithEmailAndPassword(auth, username, password)
+    .then((userCredential) => {
+      // Signed up
+      const user = userCredential.user;
+      console.log("User signed up:", user.email);
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error("Sign Up Error:", errorCode, errorMessage);
+    });
+}
+
+// Listen for authentication state changes (sign in, sign out)
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is signed in
+    console.log("User logged in:", user.email);
+  } else {
+    // No user is signed in
+    console.log("No user is logged in.");
+  }
+});
+
 const docToStore = doc(db, COLLECTION1, "data")
+
 
 export function connectToPersistence(model, watchFunction) {
   function modelState() {
