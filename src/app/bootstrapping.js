@@ -1,24 +1,12 @@
-// import { configure, observable, reaction } from "mobx"
-// import { model } from "src/model"
-// import { connectToPersistence } from "./firebasemodel"
+import { configure, observable, reaction } from "mobx"
+import { model } from "src/model"
 
-// configure({ enforceActions: "never" })
+import { connectToPersistence } from "./firebasemodel"
 
-// // create an observable version of the model so that changes to its properties trigger reactive updates
-// export const reactiveModel = observable(model)
+configure({ enforceActions: "never" })
 
-// // a reaction to watch for changes in the properties specified below
-// // done using the callbacks below
-// // reaction(
-// //     function modelState() {
-// //         return reactiveModel.name
-// //     },
-// //     function reactModel() {
-// //         console.log("name has changed")
-// //     },
-// // )
+export const reactiveModel = observable(model)
 
-// global.myModel = reactiveModel
+connectToPersistence(reactiveModel, reaction)
 
-// // connectToPersistence(reactiveModel)
-
+global.myModel = reactiveModel

@@ -13,91 +13,93 @@ import { BlurView } from "expo-blur"
 import { Observer, observer } from "mobx-react-lite"
 
 export const RequestView = observer(function RequestRender(props) {
+  const ModelContent = observer(() => {
+    return (
+      <View style={styles.modal}>
+        {props.current?.urgency && (
+          <View style={styles.urgentRequest}>
+            <Text style={styles.urgentText}>URGENT</Text>
+          </View>
+        )}
+
+        <Text style={styles.requestTitle}>
+          {props.current?.hospitalName ?? ""}
+        </Text>
+        <View style={styles.hospitalDetails}>
+          <Text style={{ fontSize: 17, fontFamily: "Roboto-Bold" }}>
+            Hospital Details:
+          </Text>
+          <Text style={styles.detailsText}>
+            Location: {props.current?.location ?? ""}
+          </Text>
+          <Text style={styles.detailsText}>
+            Blood Type: {props.current?.bloodType ?? ""}
+          </Text>
+          <Text style={styles.detailsText}>
+            Amount: {props.current?.amount ?? ""}
+          </Text>
+        </View>
+        <Text
+          style={{
+            fontSize: 17,
+            fontFamily: "Roboto-Bold",
+            position: "absolute",
+            top: 190,
+            left: 35,
+          }}
+        >
+          Notes:
+        </Text>
+        <ScrollView style={styles.detailsContainer}>
+          <Text style={styles.detailsText}>
+            {props.current?.description ?? ""}
+          </Text>
+        </ScrollView>
+        <View style={styles.contactDetails}>
+          <Text style={{ fontSize: 17, fontFamily: "Roboto-Bold" }}>
+            Contact Hospital
+          </Text>
+          <Text style={styles.detailsText}>{props.current?.email ?? ""}</Text>
+          <Text style={styles.detailsText}>
+            {props.current?.phoneNumber ?? ""}
+          </Text>
+        </View>
+        <Pressable
+          style={styles.button}
+          onPress={() => {
+            props.setVisible(false)
+          }}
+        >
+          <Text style={{ fontFamily: "Roboto-Bold" }}>Respond</Text>
+        </Pressable>
+      </View>
+    )
+  })
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Current Requests</Text>
       </View>
-      <View>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          style={{ flex: 1 }}
-          visible={props.visible}
-          onRequestClose={() => {
-            props.setVisible(!props.visible)
-          }}
-        >
-          <BlurView intensity={8} style={styles.close}>
-            <Pressable
-              style={{ flex: 1 }}
-              onPress={() => {
-                props.setVisible(false)
-              }}
-            ></Pressable>
-          </BlurView>
-          <View style={styles.modal}>
-            {props.current?.urgency && (
-              <View style={styles.urgentRequest}>
-                <Text style={styles.urgentText}>URGENT</Text>
-              </View>
-            )}
 
-            <Text style={styles.requestTitle}>
-              {props.current?.hospitalName ?? ""}
-            </Text>
-            <View style={styles.hospitalDetails}>
-              <Text style={{ fontSize: 17, fontFamily: "Roboto-Bold" }}>
-                Hospital Details:
-              </Text>
-              <Text style={styles.detailsText}>
-                Location: {props.current?.location ?? ""}
-              </Text>
-              <Text style={styles.detailsText}>
-                Blood Type: {props.current?.bloodType ?? ""}
-              </Text>
-              <Text style={styles.detailsText}>
-                Amount: {props.current?.amount ?? ""}
-              </Text>
-            </View>
-            <Text
-              style={{
-                fontSize: 17,
-                fontFamily: "Roboto-Bold",
-                position: "absolute",
-                top: 190,
-                left: 35,
-              }}
-            >
-              Notes:
-            </Text>
-            <ScrollView style={styles.detailsContainer}>
-              <Text style={styles.detailsText}>
-                {props.current?.description ?? ""}
-              </Text>
-            </ScrollView>
-            <View style={styles.contactDetails}>
-              <Text style={{ fontSize: 17, fontFamily: "Roboto-Bold" }}>
-                Contact Hospital
-              </Text>
-              <Text style={styles.detailsText}>
-                {props.current?.email ?? ""}
-              </Text>
-              <Text style={styles.detailsText}>
-                {props.current?.phoneNumber ?? ""}
-              </Text>
-            </View>
-            <Pressable
-              style={styles.button}
-              onPress={() => {
-                props.setVisible(false)
-              }}
-            >
-              <Text style={{ fontFamily: "Roboto-Bold" }}>Respond</Text>
-            </Pressable>
-          </View>
-        </Modal>
-      </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        style={{ flex: 1 }}
+        visible={props.visible}
+        onRequestClose={() => {
+          props.setVisible(!props.visible)
+        }}
+      >
+        <BlurView intensity={8} style={styles.close}>
+          <Pressable
+            style={{ flex: 1 }}
+            onPress={() => {
+              props.setVisible(false)
+            }}
+          ></Pressable>
+        </BlurView>
+        <Observer>{() => <ModelContent />}</Observer>
+      </Modal>
 
       <FlatList
         renderItem={(element) => {
