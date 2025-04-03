@@ -43,7 +43,7 @@ export function signIn(username, password) {
 
 // Function to sign up with email and password
 export function signUp(username, password) {
-  return createUserWithEmailAndPassword(auth, username, password)
+  return createUserWithEmailAndPassword(auth, username, password,password2)
     .then((userCredential) => {
       // Signed up
       const user = userCredential.user;
@@ -53,6 +53,18 @@ export function signUp(username, password) {
       const errorCode = error.code;
       const errorMessage = error.message;
       console.error("Sign Up Error:", errorCode, errorMessage);
+    });
+}
+
+export function logOut() {
+  signOut(auth)
+    .then(() => {
+      console.log("User signed out.");
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error("Sign Out Error:", errorCode, errorMessage);
     });
 }
 
