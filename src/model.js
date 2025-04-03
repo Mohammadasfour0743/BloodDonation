@@ -12,7 +12,7 @@ export const model = {
     this.requests = [req, ...this.requests]
   },
 
-  getRequest(id) {
+  getRequestById(id) {
     return this.requests.find((currentRequest) => {
       return id == currentRequest.id
     })
@@ -29,13 +29,16 @@ export const model = {
       userFields,
     }
   },
-
-  updateRequests(id, requestFields) {
-    Object.keys(requestFields).forEach((key) => {
-      this.getRequest(id)[key] = requestFields[key]
+  removeRequest(id) {
+    this.requests = this.requests.filter((item) => {
+      return item.id != id
     })
   },
-
+  updateRequests(id, requestFields) {
+    Object.keys(requestFields).forEach((key) => {
+      this.getRequestById(id)[key] = requestFields[key]
+    })
+  },
   setUser(user) {
     this.user = user
   },

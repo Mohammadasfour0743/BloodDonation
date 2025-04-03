@@ -111,25 +111,37 @@ export function connectToPersistence(model, watchFunction) {
         fetchedRequests.push({ id: doc.id, ...data })
       }
     })
+    snapshot.docChanges().forEach((change) => {
+      const data = change.doc.data()
+      if (change.type === "removed") {
+        fetchedRequests.push({ id: change.doc.id, ...data, removed: true })
+      } else {
+        fetchedRequests.push({ id: change.doc.id, ...data, removed: false })
+      }
+    })
 
     fetchedRequests.forEach((newRequest) => {
       const existingRequest = model
         .getRequests()
         .find((req) => req.id === newRequest.id)
 
-      if (existingRequest) {
-        const updatedFields = {}
-        Object.keys(newRequest).forEach((key) => {
-          if (existingRequest[key] !== newRequest[key]) {
-            updatedFields[key] = newRequest[key]
-          }
-        })
-
-        if (Object.keys(updatedFields).length > 0) {
-          model.updateRequests(newRequest.id, updatedFields)
-        }
+      if (newRequest.removed) {
+        model.removeRequest(newRequest.id)
       } else {
-        model.addRequest(newRequest)
+        if (existingRequest) {
+          const updatedFields = {}
+          Object.keys(newRequest).forEach((key) => {
+            if (existingRequest[key] !== newRequest[key]) {
+              updatedFields[key] = newRequest[key]
+            }
+          })
+
+          if (Object.keys(updatedFields).length > 0) {
+            model.updateRequests(newRequest.id, updatedFields)
+          }
+        } else {
+          model.addRequest(newRequest)
+        }
       }
     })
     //console.log("no need for reload", fetchedRequests);
