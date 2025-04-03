@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View, TextInput} from "react-native"
 import {Link} from "expo-router"
 
-export function LoginView(props) {
+export function SignupView(props) {
   return (
    
   <View style={styles.container}>
@@ -26,16 +26,26 @@ export function LoginView(props) {
       placeholder="Password"
       style = {styles.input}/>
     </View>
+    <View style = {styles.textView}>
+      <Text style = {styles.text}>Confirm Password</Text>
+    </View>
+    <View style = {styles.inputContainer}>
+      <TextInput 
+      onChangeText= {props.setPass2}
+      value = {props.pass2} 
+      placeholder="Confirm Password"
+      style = {styles.input}/>
+    </View>
 
     <View style = {styles.buttonView}>
     <Pressable onPress={props.login} style={styles.button}>
-        <Text>Log In</Text>
+        <Text>Sign Up</Text>
     </Pressable>
     </View>
     <View style={[styles.textView, styles.redirect]}>
-          <Text >Don't have an account?</Text>
-          <Link href="/signup">
-            <Text style={styles.link}>Sign Up</Text>
+          <Text >Already have an account?</Text>
+          <Link href="/">
+            <Text style={styles.link}>Sign In</Text>
           </Link>
         </View>
   </View>

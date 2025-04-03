@@ -17,7 +17,9 @@ export default function RootLayout() {
         title: "Blood Donor App",
       }}
     >
-      <Stack.Screen name="index" />
+      <Stack.Screen name="index" options={{ headerShown: false }}/>
+      <Stack.Screen name="signup" options={{ headerShown: false }} />
+
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>
   )
