@@ -70,9 +70,10 @@ export function connectToPersistence(model, watchFunction) {
     .then((snapshot) => {
       const fetchedRequests = []
 
+
       snapshot.forEach((doc) => {
         const data = doc.data()
-        if (data) {
+        if (data.current) { 
           fetchedRequests.push({ id: doc.id, ...data })
         }
       })
@@ -113,7 +114,7 @@ export function connectToPersistence(model, watchFunction) {
     })
     snapshot.docChanges().forEach((change) => {
       const data = change.doc.data()
-      if (change.type === "removed") {
+      if (change.type === "removed" || data.current === false) { 
         fetchedRequests.push({ id: change.doc.id, ...data, removed: true })
       } else {
         fetchedRequests.push({ id: change.doc.id, ...data, removed: false })
