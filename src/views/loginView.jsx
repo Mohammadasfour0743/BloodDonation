@@ -44,7 +44,7 @@ export function LoginView(props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white",
+    backgroundColor: "#f9e4e4",
     flex: 1,
     justifyContent: "center",
     
@@ -53,13 +53,16 @@ const styles = StyleSheet.create({
     flex:1,
     borderWidth: 2,
     borderRadius: 10,
-    backgroundColor: "white",
+    backgroundColor:"#d9d9d9",
+
     padding: 8,
     alignItems: "center",
     justifyContent: "center",
   
   },
   input: {
+    padding:10,
+    backgroundColor:"#d9d9d9",
     borderWidth: 1,
     width: "50%",
     borderRadius: 5,

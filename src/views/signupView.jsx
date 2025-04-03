@@ -53,53 +53,57 @@ export function SignupView(props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "white",
-    flex: 1,
-    justifyContent: "center",
-    
-  },
-  button: {
-    flex:1,
-    borderWidth: 2,
-    borderRadius: 10,
-    backgroundColor: "white",
-    padding: 8,
-    alignItems: "center",
-    justifyContent: "center",
+    container: {
+      backgroundColor: "#f9e4e4",
+      flex: 1,
+      justifyContent: "center",
+      
+    },
+    button: {
+      flex:1,
+      borderWidth: 2,
+      borderRadius: 10,
+      backgroundColor:"#d9d9d9",
   
-  },
-  input: {
-    borderWidth: 1,
-    width: "50%",
-    borderRadius: 5,
-    flex: 1,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    padding: 20, 
-  },
-  text: {
-
-  },
-  textView: {
-    flexDirection: "row",
-    alignContent: "flex-start",
-    marginHorizontal: 20
-  },
-  buttonView: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginHorizontal: 100,
-  },
-  link: {
-    color: "#6c5ce7",
-    textDecorationStyle: "solid",
-    textDecorationLine: "underline",
-  },
-  redirect: {
-    gap: 10,
-    marginStart: 100,
-    marginTop: 20,
-  },
-})
+      padding: 8,
+      alignItems: "center",
+      justifyContent: "center",
+    
+    },
+    input: {
+      padding:10,
+      backgroundColor:"#d9d9d9",
+      borderWidth: 1,
+      width: "50%",
+      borderRadius: 5,
+      flex: 1,
+    },
+    inputContainer: {
+      flexDirection: "row",
+      padding: 20, 
+    },
+    text: {
+  
+    },
+    textView: {
+      flexDirection: "row",
+      alignContent: "flex-start",
+      marginHorizontal: 20
+    },
+    buttonView: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginHorizontal: 100,
+    },
+    link: {
+      color: "#6c5ce7",
+      textDecorationStyle: "solid",
+      textDecorationLine: "underline",
+    },
+    redirect: {
+      gap: 10,
+      marginStart: 100,
+      marginTop: 20,
+    },
+  })
+  
