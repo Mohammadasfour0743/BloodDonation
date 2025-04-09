@@ -12,22 +12,28 @@ export function ProfileView(props) {
      </View>
      </View>
      <View style = {styles.button}>
-        <Pressable>
+        <Pressable onPress={props.edit}>
             <Text>Edit Profile</Text>
         </Pressable>
     </View>
 
-    <View style = {styles.f}>
+    <View style = {styles.fix}>
     <View>
-        <Text>Name</Text>
+        <Text>Name: {props.user.name??""}</Text>
      </View>
      <View>
-        <Text>Contact Info</Text>
+        <Text>Email: {props.user.email??""}</Text>
+     </View>
+     <View>
+        <Text>Phone Number: {props.user.phonenumber??""}</Text>
      </View>
     <View>
-        <Text>Blood Type</Text>
+        <Text>Blood Type: {props.user.bloodtype??""}</Text>
      </View>
-     <Pressable onPress={logout()}>
+    </View>
+
+    <View style = {styles.log}>
+        <Pressable onPress={props.logout}>
             <Text>Log Out</Text>
         </Pressable>
     </View>
@@ -60,7 +66,32 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 25,
     left: 275,
+    borderWidth: 2,
+    padding: 3,
+    borderRadius: 8,
   
   },
+
+  fix: {
+    position: "absolute",
+    flex: 1,
+    alignContent: "center",
+    top: 250,
+    left: 50,
+    gap: 25,
+  },
+
+  log: {
+    position: "absolute",
+    flex: 1,
+    alignContent: "center",
+    top: 600,
+    left: 175,
+    borderWidth: 2,
+    padding: 8,
+    borderRadius: 8,
+  },
+
+
 
 })
