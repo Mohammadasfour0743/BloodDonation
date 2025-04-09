@@ -149,6 +149,7 @@ export function connectToPersistence(model, watchFunction) {
   const requestsQuery = query(
     collection(db, COLLECTION2),
     where("current", "==", true),
+    
   )
 
   getDocs(requestsQuery)
