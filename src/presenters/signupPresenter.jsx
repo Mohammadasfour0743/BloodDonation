@@ -25,19 +25,18 @@
 //   )
 // })
 
-import { router } from "expo-router";
-import { observer } from "mobx-react-lite";
-import { SignupView } from "src/views/signupView";
-import { reactiveModel } from "src/app/bootstrapping";
-import { useState } from "react";
-import { initializeApp } from "firebase/app";
-import { getAuth} from "firebase/auth";
-import { firebaseConfig } from "src/app/firebaseconfig.js";
-import { signUp } from "src/app/firebasemodel"; 
+import { useState } from "react"
+import { router } from "expo-router"
+import { initializeApp } from "firebase/app"
+import { getAuth } from "firebase/auth"
+import { observer } from "mobx-react-lite"
+import { reactiveModel } from "src/app/bootstrapping"
+import { firebaseConfig } from "src/app/firebaseconfig.js"
+import { signUp } from "src/app/firebasemodel"
+import { SignupView } from "src/views/signupView"
 
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
 
 export const Signup = observer((props) => {
   const [selected, setSelected] = useState("");
@@ -50,8 +49,8 @@ export const Signup = observer((props) => {
       login={() => {
         console.log("Selected blood type:", selected);
         if (password !== password2) {
-          console.error("Passwords do not match");
-          return;
+          console.error("Passwords do not match")
+          return
         }
 
         // signUp(username, password)
