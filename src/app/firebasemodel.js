@@ -39,25 +39,24 @@ export function signIn(username, password) {
     });
 }
 
-export function signUp(email, password) {
-  return createUserWithEmailAndPassword(auth, email, password)
-    .then(async (userCredential) => {
-      const user = userCredential.user;
-      console.log("User signed up:", user);
-      try {
-        await setDoc(doc(db, "donors", user.uid), {
-          uid: user.uid,
-          username: email,
-        });
+export async function signUp(email, password) {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    console.log("User signed up:", user);
 
-        console.log("Donor profile created for user:", user.uid);
-      } catch (error) {
-        console.error("Error creating donor profile:", error);
-      }
-    })
-    .catch((error) => {
-      console.error("Sign Up Error:", error.message);
+    await setDoc(doc(db, "donors", user.uid), {
+      uid: user.uid,
+      username: email,
     });
+
+    console.log("Donor profile created for user:", user.uid);
+    return userCredential; 
+
+  } catch (error) {
+    console.error("Sign Up Error:", error.message);
+    throw error;
+  }
 }
 
 export function logOut() {

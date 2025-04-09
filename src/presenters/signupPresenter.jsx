@@ -55,6 +55,9 @@ export const Signup = observer((props) => {
         signUp(username, password)
           .then(() => {
           router.replace("/(tabs)");
+        })
+        .catch((error) => {
+          alert("Sign-up failed: " + error.message);
         });
       }}
       setUser={setUsername}
