@@ -13,6 +13,15 @@ export default function TabLayout() {
           },
         }}
       />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "User Profile",
+          tabBarIcon: () => {
+            return <Text></Text>
+          },
+        }}
+      />
     </Tabs>
   )
 }

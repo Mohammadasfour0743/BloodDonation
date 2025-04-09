@@ -1,17 +1,14 @@
 import { router } from "expo-router"
 import { observer } from "mobx-react-lite"
-import { SignupView } from "src/views/signupView"
+import { ProfileView } from "src/views/profileView"
 import { reactiveModel } from "src/app/bootstrapping"
 import { useState } from "react"
 
-export const Signup = observer((props) => {
-  const [selected, setSelected] = React.useState("");
+export const Profile = observer((props) => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [password2, setPassword2] = useState("")
-
   return (
-    <SignupView
+    <ProfileView
       login={() => {
         //console.log(username + "," + password)
         router.replace("/(tabs)")
@@ -20,9 +17,6 @@ export const Signup = observer((props) => {
       user = {username}
       pass = {password}
       setPass = {setPassword}
-      pass2 = {password2}
-      setPas2 = {setPassword2}
-      setSelected={setSelected} 
-    ></SignupView>
+    ></ProfileView>
   )
 })
