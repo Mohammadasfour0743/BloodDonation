@@ -33,7 +33,7 @@ export function ProfileView(props) {
     </View>
 
     <View style = {styles.log}>
-        <Pressable onPress={props.logout}>
+        <Pressable onPress={logOut()}>
             <Text>Log Out</Text>
         </Pressable>
     </View>

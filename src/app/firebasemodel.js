@@ -80,7 +80,7 @@ export async function signUp(email, password, bloodType) {
 }
 
 
-export function logOut() {
+export async function logOut() {
   signOut(auth)
     .then(() => {
       console.log("User signed out.")
