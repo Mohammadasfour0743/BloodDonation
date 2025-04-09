@@ -1,4 +1,15 @@
+import { router } from "expo-router"
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage"
 import { initializeApp } from "firebase/app"
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  getReactNativePersistence,
+  initializeAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth"
 //
 import {
   collection,
@@ -7,18 +18,20 @@ import {
   getDocs,
   getFirestore,
   onSnapshot,
-  setDoc,
   query,
-  where
+  setDoc,
+  where,
 } from "firebase/firestore"
 import { runInAction } from "mobx"
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
-  onAuthStateChanged, signOut} from "firebase/auth";
+
 import { firebaseConfig } from "./firebaseconfig.js"
 
 const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
-const auth = getAuth(); 
+export const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+})
+//const auth = getAuth();
 const COLLECTION1 = "donors"
 const COLLECTION2 = "requests"
 
@@ -30,55 +43,58 @@ global.app = db
 export function signIn(username, password) {
   return signInWithEmailAndPassword(auth, username, password)
     .then((userCredential) => {
-      console.log("User signed in:", userCredential.user.email);
-      return userCredential;
+      console.log("User signed in:", userCredential.user.email)
+      return userCredential
     })
     .catch((error) => {
       //console.error("Sign In Error:",error.message);
-      throw error;  
-    });
+      throw error
+    })
 }
 
 export async function signUp(email, password) {
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    console.log("User signed up:", user);
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    )
+    const user = userCredential.user
+    console.log("User signed up:", user)
 
     await setDoc(doc(db, "donors", user.uid), {
       uid: user.uid,
       username: email,
-    });
+    })
 
-    console.log("Donor profile created for user:", user.uid);
-    return userCredential; 
-
+    console.log("Donor profile created for user:", user.uid)
+    return userCredential
   } catch (error) {
-    console.error("Sign Up Error:", error.message);
-    throw error;
+    console.error("Sign Up Error:", error.message)
+    throw error
   }
 }
 
 export function logOut() {
   signOut(auth)
     .then(() => {
-      console.log("User signed out.");
+      console.log("User signed out.")
     })
     .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.error("Sign Out Error:", errorCode, errorMessage);
-    });
+      const errorCode = error.code
+      const errorMessage = error.message
+      console.error("Sign Out Error:", errorCode, errorMessage)
+    })
 }
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    console.log("User logged in:", user.email);// User is signed in
+    router.replace("/(tabs)")
+    console.log("User logged in:", user.email) // User is signed in
   } else {
-    console.log("No user is logged in."); // No user is signed in
+    console.log("No user is logged in.") // No user is signed in
   }
-});
-
+})
 
 const docToStore = doc(db, COLLECTION1, "data")
 
@@ -126,7 +142,7 @@ export function connectToPersistence(model, watchFunction) {
   // METHOD FOR REQUESTS - Only fetch documents where current is true
   const requestsQuery = query(
     collection(db, COLLECTION2),
-    where("current", "==", true)
+    where("current", "==", true),
   )
 
   getDocs(requestsQuery)
@@ -168,12 +184,10 @@ export function connectToPersistence(model, watchFunction) {
     snapshot.docChanges().forEach((change) => {
       const data = change.doc.data()
       const id = change.doc.id
-      
+
       if (change.type === "added" || change.type === "modified") {
         const newRequest = { id, ...data }
-        const existingRequest = model
-          .getRequests()
-          .find((req) => req.id === id)
+        const existingRequest = model.getRequests().find((req) => req.id === id)
 
         if (existingRequest) {
           const updatedFields = {}
@@ -201,7 +215,7 @@ export function connectToPersistence(model, watchFunction) {
     snapshot.docChanges().forEach((change) => {
       const data = change.doc.data()
       const id = change.doc.id
-      
+
       // If document is updated to have current=false, remove it from our model
       if (change.type === "modified" && data.current === false) {
         model.removeRequest(id)
