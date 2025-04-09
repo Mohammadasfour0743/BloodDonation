@@ -22,6 +22,7 @@ export function SignupView(props) {
     <View style = {styles.inputContainer}>
       <TextInput 
       onChangeText= {props.setPass}
+      secureTextEntry={true}
       value = {props.pass} 
       placeholder="Password"
       style = {styles.input}/>
@@ -32,6 +33,7 @@ export function SignupView(props) {
     <View style = {styles.inputContainer}>
       <TextInput 
       onChangeText= {props.setPass2}
+      secureTextEntry={true}
       value = {props.pass2} 
       placeholder="Confirm Password"
       style = {styles.input}/>

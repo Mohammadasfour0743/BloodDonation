@@ -22,6 +22,7 @@ export function LoginView(props) {
     <View style = {styles.inputContainer}>
       <TextInput 
       onChangeText= {props.setPass}
+      secureTextEntry={true}
       value = {props.pass} 
       placeholder="Password"
       style = {styles.input}/>

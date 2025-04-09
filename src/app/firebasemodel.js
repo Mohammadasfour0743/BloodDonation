@@ -30,29 +30,33 @@ global.app = db
 export function signIn(username, password) {
   return signInWithEmailAndPassword(auth, username, password)
     .then((userCredential) => {
-      // Signed in
-      const user = userCredential.user;
-      console.log("User signed in:", user.email);
+      console.log("User signed in:", userCredential.user.email);
+      return userCredential;
     })
     .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.error("Sign In Error:", errorCode, errorMessage);
+      //console.error("Sign In Error:",error.message);
+      throw error;  
     });
 }
 
-// Function to sign up with email and password
-export function signUp(username, password) {
-  return createUserWithEmailAndPassword(auth, username, password,password2)
-    .then((userCredential) => {
-      // Signed up
+export function signUp(email, password) {
+  return createUserWithEmailAndPassword(auth, email, password)
+    .then(async (userCredential) => {
       const user = userCredential.user;
-      console.log("User signed up:", user.email);
+      console.log("User signed up:", user);
+      try {
+        await setDoc(doc(db, "donors", user.uid), {
+          uid: user.uid,
+          username: email,
+        });
+
+        console.log("Donor profile created for user:", user.uid);
+      } catch (error) {
+        console.error("Error creating donor profile:", error);
+      }
     })
     .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.error("Sign Up Error:", errorCode, errorMessage);
+      console.error("Sign Up Error:", error.message);
     });
 }
 
@@ -68,19 +72,16 @@ export function logOut() {
     });
 }
 
-// Listen for authentication state changes (sign in, sign out)
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    // User is signed in
-    console.log("User logged in:", user.email);
+    console.log("User logged in:", user.email);// User is signed in
   } else {
-    // No user is signed in
-    console.log("No user is logged in.");
+    console.log("No user is logged in."); // No user is signed in
   }
 });
 
-const docToStore = doc(db, COLLECTION1, "data")
 
+const docToStore = doc(db, COLLECTION1, "data")
 
 export function connectToPersistence(model, watchFunction) {
   function modelState() {

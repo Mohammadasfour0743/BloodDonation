@@ -31,10 +31,11 @@ import { SignupView } from "src/views/signupView";
 import { reactiveModel } from "src/app/bootstrapping";
 import { useState } from "react";
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth} from "firebase/auth";
 import { firebaseConfig } from "src/app/firebaseconfig.js";
+import { signUp } from "src/app/firebasemodel"; 
 
-// Initialize Firebase (or import the already initialized instance)
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
@@ -46,21 +47,15 @@ export const Signup = observer((props) => {
   return (
     <SignupView
       login={() => {
-        // Optional: Validate that both password fields match
         if (password !== password2) {
           console.error("Passwords do not match");
           return;
         }
-        // Create a new user with Firebase Auth
-        createUserWithEmailAndPassword(auth, username, password)
-          .then((userCredential) => {
-            console.log("User signed up:", userCredential.user);
-            // Optionally update your reactive model with userCredential.user here
-            router.replace("/(tabs)");
-          })
-          .catch((error) => {
-            console.error("Error signing up:", error);
-          });
+
+        signUp(username, password)
+          .then(() => {
+          router.replace("/(tabs)");
+        });
       }}
       setUser={setUsername}
       user={username}

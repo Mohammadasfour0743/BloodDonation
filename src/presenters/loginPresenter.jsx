@@ -21,14 +21,26 @@
 //   )
 // })
 
+
+// signInWithEmailAndPassword(auth, username, password)
+        //   .then((userCredential) => {
+        //     console.log("User signed in:", userCredential.user);
+        //     router.replace("/(tabs)");
+        //   })
+        //   .catch((error) => {
+        //     console.error("Error signing in:", error);
+        //   });
+
 import { router } from "expo-router";
 import { observer } from "mobx-react-lite";
 import { LoginView } from "src/views/loginView";
 import { reactiveModel } from "src/app/bootstrapping";
 import { useState } from "react";
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth} from "firebase/auth";
 import { firebaseConfig } from "src/app/firebaseconfig.js";
+import { signIn } from "src/app/firebasemodel";  // Ensure this is correctly imported
+
 
 // Initialize Firebase (or import the already initialized instance)
 const app = initializeApp(firebaseConfig);
@@ -41,16 +53,14 @@ export const Login = observer((props) => {
   return (
     <LoginView
       login={() => {
-        // Use Firebase Auth to sign in with email and password
-        signInWithEmailAndPassword(auth, username, password)
-          .then((userCredential) => {
-            console.log("User signed in:", userCredential.user);
-            // Optionally update your reactive model with userCredential.user here
-            router.replace("/(tabs)");
-          })
-          .catch((error) => {
-            console.error("Error signing in:", error);
-          });
+        signIn(username, password)
+        .then(() => {
+          router.replace("/(tabs)");
+        })
+        .catch((error) => {
+          //console.error("Login failed:", error.code);
+          alert("Invalid username or password. Try again.");
+        });
       }}
       setUser={setUsername}
       user={username}
