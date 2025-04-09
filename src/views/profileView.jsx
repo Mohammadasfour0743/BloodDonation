@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View, TextInput} from "react-native"
 import {Link} from "expo-router"
+import { logOut } from "../app/firebasemodel"
 
 export function ProfileView(props) {
   return (
@@ -26,6 +27,9 @@ export function ProfileView(props) {
     <View>
         <Text>Blood Type</Text>
      </View>
+     <Pressable onPress={logout()}>
+            <Text>Log Out</Text>
+        </Pressable>
     </View>
 
   </View>
