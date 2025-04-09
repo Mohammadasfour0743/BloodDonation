@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app"
-//
+import React from 'react';
+
 import {
   collection,
   doc,
@@ -39,8 +40,31 @@ export function signIn(username, password) {
     });
 }
 
-export async function signUp(email, password) {
+// export async function signUp(email, password) {
+//   try {
+//     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+//     const user = userCredential.user;
+//     console.log("User signed up:", user);
+
+//     await setDoc(doc(db, "donors", user.uid), {
+//       uid: user.uid,
+//       username: email,
+//     });
+
+//     console.log("Donor profile created for user:", user.uid);
+//     return userCredential; 
+
+//   } catch (error) {
+//     console.error("Sign Up Error:", error.message);
+//     throw error;
+//   }
+// }
+
+export async function signUp(email, password, bloodType) {
   try {
+    console.log("Attempting to sign up with email:", email);
+    console.log("Blood type being saved:", bloodType);
+
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     console.log("User signed up:", user);
@@ -48,16 +72,18 @@ export async function signUp(email, password) {
     await setDoc(doc(db, "donors", user.uid), {
       uid: user.uid,
       username: email,
+      bloodType: bloodType, // Ensure the blood type is passed correctly
     });
 
     console.log("Donor profile created for user:", user.uid);
-    return userCredential; 
+    return userCredential;
 
   } catch (error) {
     console.error("Sign Up Error:", error.message);
     throw error;
   }
 }
+
 
 export function logOut() {
   signOut(auth)

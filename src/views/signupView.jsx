@@ -44,7 +44,7 @@ export function SignupView(props) {
     </View>
     <View style = {styles.selecter}>
       <SelectList
-        setSelected={(val) => props.setSelected}
+        setSelected={(val) => props.setSelected(val)}
         data={[
           {key: "A+", value: "A RhD positive (A+)"},
           {key: "A-", value:"A RhD negative (A-)"},
