@@ -35,8 +35,8 @@ import { firebaseConfig } from "src/app/firebaseconfig.js"
 import { signUp } from "src/app/firebasemodel"
 import { SignupView } from "src/views/signupView"
 
-const app = initializeApp(firebaseConfig)
-const auth = getAuth(app)
+//const app = initializeApp(firebaseConfig)
+//const auth = getAuth(app)
 
 export const Signup = observer((props) => {
   const [selected, setSelected] = useState("");
