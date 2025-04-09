@@ -16,7 +16,7 @@ export function ProfileView(props) {
         </Pressable>
     </View>
 
-    <View style = {style.f}>
+    <View style = {styles.f}>
     <View>
         <Text>Name</Text>
      </View>
