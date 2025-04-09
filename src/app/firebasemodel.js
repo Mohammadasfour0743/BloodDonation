@@ -63,11 +63,11 @@ export async function signUp(email, password, bloodType) {
     const user = userCredential.user;
     console.log("User signed up:", user);
 
-    // Save the user information, including blood type
+   
     await setDoc(doc(db, "donors", user.uid), {
       uid: user.uid,
       username: email,
-      bloodType: bloodType,  // Ensure blood type is passed here
+      bloodType: bloodType,  
     });
 
     console.log("Donor profile created for user:", user.uid);

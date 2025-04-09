@@ -53,15 +53,7 @@ export const Signup = observer((props) => {
           return
         }
 
-        // signUp(username, password)
-        //   .then(() => {
-        //   router.replace("/(tabs)");
-        // })
-        // .catch((error) => {
-        //   alert("Sign-up failed: " + error.message);
-        // });
-
-        signUp(username, password, selected) // Pass selected (blood type) here
+        signUp(username, password, selected) 
     .then(() => {
       router.replace("/(tabs)");
     })
