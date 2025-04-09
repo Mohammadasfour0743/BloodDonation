@@ -13,7 +13,6 @@ import {
 import { runInAction } from "mobx"
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
   onAuthStateChanged, signOut} from "firebase/auth";
-
 import { firebaseConfig } from "./firebaseconfig.js"
 
 const app = initializeApp(firebaseConfig)
