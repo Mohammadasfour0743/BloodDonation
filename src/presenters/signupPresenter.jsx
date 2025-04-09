@@ -5,7 +5,7 @@ import { reactiveModel } from "src/app/bootstrapping"
 import { useState } from "react"
 
 export const Signup = observer((props) => {
-  const [selected, setSelected] = React.useState("");
+  const [selected, setSelected] = useState("");
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [password2, setPassword2] = useState("")
