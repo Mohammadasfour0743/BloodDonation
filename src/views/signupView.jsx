@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, Text, View, TextInput} from "react-native"
+import { Pressable, StyleSheet, Text, View, TextInput, Dimensions} from "react-native"
 import {Link} from "expo-router"
+import { SelectList } from "react-native-dropdown-select-list"
 
 export function SignupView(props) {
   return (
@@ -37,6 +38,29 @@ export function SignupView(props) {
       value = {props.pass2} 
       placeholder="Confirm Password"
       style = {styles.input}/>
+    </View>
+    <View style = {styles.textView}>
+      <Text style = {styles.text}>Blood Type</Text>
+    </View>
+    <View style = {styles.selecter}>
+      <SelectList
+        setSelected={(val) => props.setSelected}
+        data={[
+          {key: "A+", value: "A RhD positive (A+)"},
+          {key: "A-", value:"A RhD negative (A-)"},
+          {key: "B+", value:"B RhD positive (B+)"},
+          {key: "B-", value:"B RhD negative (B-)"},
+          {key: "O+", value:"O RhD positive (O+)"},
+          {key: "O-", value:"O RhD negative (O-)"},
+          {key: "AB+", value:"AB RhD positive (AB+)"},
+          {key: "AB-", value:"AB RhD negative (AB-)"},
+          {key: "Unknown", value:"Don't Know"}, 
+        ]}
+        save="key" 
+      
+      />
+
+
     </View>
 
     <View style = {styles.buttonView}>
@@ -107,5 +131,12 @@ const styles = StyleSheet.create({
       marginStart: 100,
       marginTop: 20,
     },
+
+    selecter: {
+      flexDirection: "row",
+      padding: 20, 
+      minWidth: Dimensions.get('window').width * 150
+    },
+
   })
   

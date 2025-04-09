@@ -40,9 +40,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 export const Signup = observer((props) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [password2, setPassword2] = useState("");
+  const [selected, setSelected] = React.useState("");
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [password2, setPassword2] = useState("")
 
   return (
     <SignupView
@@ -60,12 +61,13 @@ export const Signup = observer((props) => {
           alert("Sign-up failed: " + error.message);
         });
       }}
-      setUser={setUsername}
-      user={username}
-      pass={password}
-      setPass={setPassword}
-      pass2={password2}
-      setPass2={setPassword2}
-    />
-  );
-});
+      setUser = {setUsername}
+      user = {username}
+      pass = {password}
+      setPass = {setPassword}
+      pass2 = {password2}
+      setPas2 = {setPassword2}
+      setSelected={setSelected} 
+    ></SignupView>
+  )
+})
