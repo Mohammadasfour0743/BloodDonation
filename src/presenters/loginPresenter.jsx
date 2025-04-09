@@ -51,7 +51,7 @@ export const Login = observer((props) => {
       login={() => {
         signIn(username, password)
           .then(() => {
-            router.replace("/(tabs)")
+            router.replace("/(tabs)/requests")
           })
           .catch((error) => {
             //console.error("Login failed:", error.code);

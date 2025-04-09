@@ -1,3 +1,5 @@
+//
+import React from "react"
 import { router } from "expo-router"
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage"
 import { initializeApp } from "firebase/app"
@@ -10,9 +12,6 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth"
-//
-import React from 'react';
-
 import {
   collection,
   doc,
@@ -56,29 +55,30 @@ export function signIn(username, password) {
 
 export async function signUp(email, password, bloodType) {
   try {
-    console.log("Attempting to sign up with email:", email);
-    console.log("Blood type being saved:", bloodType);
+    console.log("Attempting to sign up with email:", email)
+    console.log("Blood type being saved:", bloodType)
 
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    console.log("User signed up:", user);
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    )
+    const user = userCredential.user
+    console.log("User signed up:", user)
 
-   
     await setDoc(doc(db, "donors", user.uid), {
       uid: user.uid,
       username: email,
-      bloodType: bloodType,  
-    });
+      bloodType: bloodType,
+    })
 
-    console.log("Donor profile created for user:", user.uid);
-    return userCredential;
-
+    console.log("Donor profile created for user:", user.uid)
+    return userCredential
   } catch (error) {
-    console.error("Sign Up Error:", error.message);
-    throw error;
+    console.error("Sign Up Error:", error.message)
+    throw error
   }
 }
-
 
 export async function logOut() {
   signOut(auth)
@@ -94,10 +94,11 @@ export async function logOut() {
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    router.replace("/(tabs)")
     console.log("User logged in:", user.email) // User is signed in
+    router.replace("/(tabs)/requests")
   } else {
     console.log("No user is logged in.") // No user is signed in
+    router.replace("/login")
   }
 })
 
