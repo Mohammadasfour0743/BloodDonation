@@ -3,6 +3,8 @@ export const model = {
     name: null,
     username: null,
     bloodtype: null,
+    phonenumber: null,
+    email: null,
   },
 
   //requests: [{}],
