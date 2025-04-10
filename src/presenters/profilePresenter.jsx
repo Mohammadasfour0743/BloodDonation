@@ -3,6 +3,7 @@ import { router, useNavigation } from "expo-router"
 import { observer } from "mobx-react-lite"
 import { reactiveModel } from "src/app/bootstrapping"
 import { ProfileView } from "src/views/profileView"
+import { setEmitFlags } from "typescript"
 
 import { logOut } from "../app/firebasemodel"
 
@@ -45,7 +46,10 @@ export const Profile = observer((props) => {
         setEdit(val)
         if (!val) {
           if (validPhone(phone)) props.model.updateUser({ phonenumber: phone })
+          else setPhone(props.model.user.phonenumber)
           if (validEmail(email)) props.model.updateUser({ email: email })
+          else setEmail(props.model.user.username)
+
           props.model.updateUser({ name: username })
           props.model.updateUser({ bloodtype: selected })
         }
@@ -62,8 +66,10 @@ export const Profile = observer((props) => {
   )
 })
 function validEmail(email) {
-  return true
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  return emailRegex.test(email)
 }
-function validPhone(email) {
-  return true
+function validPhone(phoneNumber) {
+  const phoneRegex = /^(?:\(\d{3}\)\s?|\d{3}[-.\s])?\d{3}[-.\s]?\d{4}$/
+  return phoneRegex.test(phoneNumber)
 }
