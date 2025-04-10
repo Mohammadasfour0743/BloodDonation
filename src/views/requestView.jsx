@@ -18,7 +18,7 @@ export const RequestView = observer(function RequestRender(props) {
         <View style={styles.hospitalDetails}>
           <Text style={{ fontSize: 17, fontFamily: 'Roboto-Bold' }}>Hospital Details:</Text>
           <Text style={styles.detailsText}>Location: {props.current?.location ?? 'kista'}</Text>
-          <Text style={styles.detailsText}>Blood Type: {props.current?.bloodType ?? ''}</Text>
+          <Text style={styles.detailsText}>Blood Type: {props.current?.bloodtype ?? ''}</Text>
           <Text style={styles.detailsText}>Amount: {props.current?.amount ?? ''}</Text>
         </View>
         <Text
@@ -98,7 +98,7 @@ export const RequestView = observer(function RequestRender(props) {
                     )}
                     <Text style={styles.requestText}>{req.hospitalName ?? 'Hospital name'}</Text>
                     <Text style={styles.separator}>{'\u2B24'}</Text>
-                    <Text style={styles.requestText}>Blood Type: {req.bloodType}</Text>
+                    <Text style={styles.requestText}>Blood Type: {req.bloodtype}</Text>
                   </Pressable>
                 </View>
               )}

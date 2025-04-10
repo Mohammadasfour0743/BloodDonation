@@ -22,9 +22,10 @@ import {
   where,
 } from "firebase/firestore"
 import { runInAction } from "mobx"
-import { model } from "../model.js"
+import { reactiveModel } from "./bootstrapping";
 
 import { firebaseConfig } from "./firebaseconfig.js"
+
 
 //const app = initializeApp(firebaseConfig)
 const app = getApps().length === 0 
@@ -57,17 +58,17 @@ export function signIn(username, password) {
         donorData = donorSnapshot.data();
 
         runInAction(() => {
-          model.user = {
+          reactiveModel.user = {
             uid: user.uid,
             username: donorData.username || user.email,
             bloodtype: donorData.bloodtype || "default",
           };
         });
-        console.log("Model updated after sign-in:", model.user.bloodtype);
+        console.log("Model updated after sign-in:", reactiveModel.user.bloodtype);
       } else {
         console.warn("Donor document does not exist.");
         runInAction(() => {
-          model.user = {
+          reactiveModel.user = {
             uid: user.uid,
             username: user.email,
             bloodtype: "default",
@@ -89,8 +90,8 @@ export function signIn(username, password) {
 export async function signUp(email, password, bloodtype) {
   try {
 
-    model.user.bloodtype = bloodtype;
-    console.log("User bloodtype saved to model:", model.user.bloodtype);
+    reactiveModel.user.bloodtype = bloodtype;
+    console.log("User bloodtype saved to model:", reactiveModel.user.bloodtype);
 
     console.log("Attempting to sign up with email:", email)
     console.log("Blood type being saved:", bloodtype)
@@ -110,13 +111,13 @@ export async function signUp(email, password, bloodtype) {
       bloodtype: bloodtype,
     })
 
-     model.user = {
+     reactiveModel.user = {
       uid: user.uid,
       username: email,
       bloodtype: bloodtype,
     };
 
-    console.log("User bloodtype while user creation:", model.user.bloodtype)
+    console.log("User bloodtype while user creation:", reactiveModel.user.bloodtype)
     console.log("Donor profile created for user:", user.uid)
     return userCredential
   } catch (error) {
@@ -128,14 +129,14 @@ export async function signUp(email, password, bloodtype) {
 export async function logOut() {
   signOut(auth)
     .then(() => {
-      console.log("User bloodtype before signout:", model.user.bloodtype)
+      console.log("User bloodtype before signout:", reactiveModel.user.bloodtype)
       console.log("User signed out.")
-      model.user = {
+      reactiveModel.user = {
         uid: null,
         username: null,
         bloodtype: null,
       };
-      console.log("User bloodtype after signout:", model.user.bloodtype)
+      console.log("User bloodtype after signout:", reactiveModel.user.bloodtype)
       
     })
     .catch((error) => {
@@ -147,63 +148,90 @@ export async function logOut() {
 
 
 function fetchRequests() {
-  if (!model.user || !model.user.bloodtype) {
+  if (!reactiveModel.user || !reactiveModel.user.bloodtype) {
     console.error("Cannot fetch requests: user or bloodtype not set");
     return;
   }
 
-  console.log("Fetching requests for bloodtype:", model.user.bloodtype);
+  console.log("Fetching requests for bloodtype:", reactiveModel.user.bloodtype);
   
-  const allRequestsQuery = collection(db, COLLECTION2);
+  const requestsQuery = query(
+    collection(db, COLLECTION2),
+    where("current", "==", true),
+    where("bloodtype", "==", reactiveModel.user.bloodtype)
+  );
 
 
-  getDocs(allRequestsQuery)
-    .then((allSnapshot) => {
-      const allRequests = [];
+  getDocs(requestsQuery)
+    .then((snapshot) => {
+      const fetchedRequests = [];
       
-      allSnapshot.forEach((doc) => {
+      snapshot.forEach((doc) => {
         const data = doc.data();
-        allRequests.push({ id: doc.id, ...data });
-      });
-      console.log("ALL REQUESTS IN COLLECTION (NO FILTERS):", allSnapshot.size);
-      allRequests.forEach((req, index) => {
-        console.log(`Request #${index + 1}:`);
-        console.log("- ID:", req.id);
-        console.log("- Blood Type:", req.bloodtype);
-        console.log("- Current Status:", req.current);
+        console.log("Fetched request document:", doc.id, data);
+        fetchedRequests.push({ id: doc.id, ...data });
       });
       
-      const currentRequests = allRequests.filter(req => req.current === true);
-      console.log("CURRENT REQUESTS ONLY:", currentRequests.length);
+      console.log("Total fetched requests (no further filtering):", snapshot.size);
       
-       const matchingRequests = currentRequests.filter(req => req.bloodtype === model.user.bloodtype);
-      console.log("MATCHING BLOOD TYPE AND CURRENT:", matchingRequests.length);
-      matchingRequests.forEach((req, index) => {
-        console.log(`Matching Request #${index + 1}:`);
-        console.log("- ID:", req.id);
-        console.log("- Blood Type:", req.bloodtype);
-        console.log("- Current Status:", req.current);
-      });
+      const currentRequests = fetchedRequests.filter(req => req.current === true);
+      const matchingRequests = currentRequests.filter(req => req.bloodtype === reactiveModel.user.bloodtype);
+      
+      console.log("Documents with current === true:", currentRequests.length);
+      console.log("Documents matching bloodtype:", matchingRequests.length);
       
       runInAction(() => {
-        model.clearRequests();
+        reactiveModel.clearRequests();
         matchingRequests.forEach(request => {
-          model.addRequest(request);
+          reactiveModel.addRequest(request);
         });
       });
       
-      console.log("Requests updated in model:", model.getRequests().length);
-      
-      const modelRequests = model.getRequests();
-      console.log("MODEL REQUESTS:", modelRequests.length);
-      modelRequests.forEach((req, index) => {
-        console.log(`Model Request #${index + 1}:`);
-        console.log("- ID:", req.id);
-        console.log("- Blood Type:", req.bloodtype || "No blood type");
+      console.log("Updated model requests count:", reactiveModel.getRequests().length);
+      reactiveModel.getRequests().forEach((req, index) => {
+        console.log(`Model Request #${index + 1}: ID: ${req.id}, Blood Type: ${req.bloodtype}`);
       });
     })
     .catch((error) => console.error("Error fetching requests:", error));
+
+  onSnapshot(requestsQuery, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      const data = change.doc.data();
+      const id = change.doc.id;
+      if (change.type === "added" || change.type === "modified") {
+        const newRequest = { id, ...data };
+        const existingRequest = reactiveModel.getRequests().find((req) => req.id === id);
+        if (existingRequest) {
+          const updatedFields = {};
+          Object.keys(newRequest).forEach((key) => {
+            if (existingRequest[key] !== newRequest[key]) {
+              updatedFields[key] = newRequest[key];
+            }
+          });
+          if (Object.keys(updatedFields).length > 0) {
+            reactiveModel.updateRequests(id, updatedFields);
+          }
+        } else {
+          reactiveModel.addRequest(newRequest);
+        }
+      } else if (change.type === "removed") {
+        reactiveModel.removeRequest(id);
+      }
+    });
+  });
+
+  const allRequestsQuery = collection(db, COLLECTION2);
+  onSnapshot(allRequestsQuery, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      const data = change.doc.data();
+      const id = change.doc.id;
+      if (change.type === "modified" && data.current === false) {
+        reactiveModel.removeRequest(id);
+      }
+    });
+  });
 }
+
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
@@ -220,13 +248,13 @@ onAuthStateChanged(auth, async (user) => {
     }
 
   runInAction(() => {
-    model.user = {
+    reactiveModel.user = {
       uid: user.uid,
       username: donorData.username || user.email,
       bloodtype: donorData.bloodtype || "default",
     };
   });
-    console.log("User bloodtype after login:", model.user.bloodtype)
+    console.log("User bloodtype after login:", reactiveModel.user.bloodtype)
     
 
     fetchRequests();
@@ -241,56 +269,49 @@ onAuthStateChanged(auth, async (user) => {
 
 
 export function connectToPersistence(model, watchFunction) {
-
-   if (!model.user.uid) {
-    console.error("User UID is not set in the model. Cannot connect to persistence.");
+  if (!reactiveModel.user.uid) {
+    console.error("User UID is not set in the reactiveModel. Cannot connect to persistence.");
     return;
   }
 
-  const docToStore = doc(db, COLLECTION1, model.user.uid);
+  const docToStore = doc(db, COLLECTION1, reactiveModel.user.uid);
 
   function modelState() {
-    return [model.user.username, model.user.name, model.user.bloodtype]
+    return [reactiveModel.user.username, reactiveModel.user.name, reactiveModel.user.bloodtype];
   }
 
   function persistModel() {
     setDoc(
       docToStore,
       {
-        name: model.user.name,
-        username: model.user.username,
-        bloodtype: model.user.bloodtype,
+        name: reactiveModel.user.name,
+        username: reactiveModel.user.username,
+        bloodtype: reactiveModel.user.bloodtype,
       },
-      { merge: true },
-    )
+      { merge: true }
+    );
   }
 
-  watchFunction(modelState, persistModel)
+  watchFunction(modelState, persistModel);
 
   getDoc(docToStore)
     .then((snapshot) => {
-      console.log("Firestore snapshot retrieved:", snapshot);
-      const data = snapshot.data()
-      console.log("Data from Firestore:", data);
-
-      // if data exists, updates the model's properties/fields with the stored values
-      // if any field is missing, it updates to the default values (given in the model)
-      if (data) {runInAction(() => {
-        model.user.username = data.username ?? "default";
-        model.user.bloodtype = data.bloodtype ?? "default";
-      });
-      // if no document during the read, sets the model's properties to the default values.
+      const data = snapshot.data();
+      if (data) {
+        runInAction(() => {
+          reactiveModel.user.username = data.username ?? "default";
+          reactiveModel.user.bloodtype = data.bloodtype ?? "default";
+        });
       } else {
         runInAction(() => {
-          model.user.username = "default";
-          model.user.bloodtype = "default";
+          reactiveModel.user.username = "default";
+          reactiveModel.user.bloodtype = "default";
         });
       }
     })
-    .catch((error) => console.error("Error reading document:", error))
+    .catch((error) => console.error("Error reading donor document:", error));
 
-    console.log("User bloodtype before query:", model.user.bloodtype);
-
+  console.log("Donor persistence established. Current bloodtype:", reactiveModel.user.bloodtype);
 }
      
 
@@ -299,7 +320,7 @@ export function connectToPersistence(model, watchFunction) {
 //   try {
 //     await setDoc(
 //       reqStore,
-//       { requests: model.requests },
+//       { requests: reactiveModel.requests },
 //       { merge: true }
 //     );
 //     console.log("Requests successfully saved to Firestore");
