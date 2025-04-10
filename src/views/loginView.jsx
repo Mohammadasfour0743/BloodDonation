@@ -1,24 +1,28 @@
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native"
 import { Link } from "expo-router"
+import Entypo from "@expo/vector-icons/Entypo"
+import AntDesign from '@expo/vector-icons/AntDesign';
+
 
 export function LoginView(props) {
   return (
     <View style={styles.container}>
-      <View style={styles.textView}>
-        <Text style={styles.text}>Choose Username</Text>
-      </View>
       <View style={styles.inputContainer}>
+      <Entypo
+            name="mail"
+            size={30}
+            color="#9A4040"
+            
+          />
         <TextInput
           onChangeText={props.setUser}
           value={props.user}
-          placeholder="Username"
+          placeholder="Email"
           style={styles.input}
         />
       </View>
-      <View style={styles.textView}>
-        <Text style={styles.text}>Choose Password</Text>
-      </View>
       <View style={styles.inputContainer}>
+      <AntDesign name="lock1" size={30} color="#9A4040" />
         <TextInput
           onChangeText={props.setPass}
           secureTextEntry={true}
@@ -45,37 +49,42 @@ export function LoginView(props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#f9e4e4",
+    backgroundColor: "white",
     flex: 1,
     justifyContent: "center",
+    alignItems: "center",
+    gap: 20,
   },
   button: {
     flex: 1,
     borderWidth: 2,
-    borderRadius: 10,
-    backgroundColor: "#d9d9d9",
-
-    padding: 8,
+    borderRadius: 15,
+    backgroundColor: "transparent",
+    padding: 15,
     alignItems: "center",
     justifyContent: "center",
+    borderColor: "#9A4040",
   },
   input: {
-    padding: 10,
-    backgroundColor: "#d9d9d9",
-    borderWidth: 1,
+    backgroundColor: "transparent",
     width: "50%",
-    borderRadius: 5,
-    flex: 1,
   },
   inputContainer: {
     flexDirection: "row",
-    padding: 20,
+    padding: 15,
+    borderColor: "#9A4040",
+    borderBottomWidth: 2,
+    width: "80%",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    gap: 10,
   },
   text: {},
   textView: {
     flexDirection: "row",
-    alignContent: "flex-start",
-    marginHorizontal: 20,
+    alignItem: "flex-start",
+    alignSelf: "center",
+    justifyContent: "flex-start",
   },
   buttonView: {
     flexDirection: "row",
@@ -83,13 +92,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 100,
   },
   link: {
-    color: "#6c5ce7",
+    color: "#9A4040",
     textDecorationStyle: "solid",
     textDecorationLine: "underline",
   },
   redirect: {
     gap: 10,
-    marginStart: 100,
+    
     marginTop: 20,
   },
 })
