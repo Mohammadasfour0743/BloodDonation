@@ -1,52 +1,12 @@
 {
   "expo": {
-    "name": "bd",
-    "slug": "bd",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "platforms": [
-      "ios",
-      "android"
-    ],
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
+    "extra": {
+      "eas": {
+        "projectId": "79df06e3-4168-4215-934d-4fdd9fad1f4c"
+      }
     },
     "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.blockeed.bd"
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "plugins": [
-      "expo-router",
-      "expo-font",
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "kotlinVersion": "1.9.25"
-          }
-        }
-      ]
-    ],
-    "experiments": {
-      "typedRoutes": true
-    },
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "9d49a591-ceab-4ec7-9057-a8677bd8901f"
-      }
+      "package": "com.shubhangi_01.blooddonor"
     }
   }
 }

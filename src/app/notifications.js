@@ -1,6 +1,10 @@
 import { Platform } from "react-native"
+import * as Device from 'expo-device'
+import * as Notifications from "expo-notifications"
+import Constants from "expo-constants"
 
 export async function registerForPushNotificationsAsync() {
+  try{
   if (Platform.OS === "android") {
     Notifications.setNotificationChannelAsync("default", {
       name: "default",
@@ -9,7 +13,7 @@ export async function registerForPushNotificationsAsync() {
       lightColor: "#FF231F7C",
     })
   }
-
+    console.log("hellooooo")
   const { status: existingStatus } = await Notifications.getPermissionsAsync()
   let finalStatus = existingStatus
   if (existingStatus !== "granted") {
@@ -29,7 +33,6 @@ export async function registerForPushNotificationsAsync() {
   if (!projectId) {
     handleRegistrationError("Project ID not found")
   }
-  try {
     const pushTokenString = (
       await Notifications.getExpoPushTokenAsync({
         projectId,
