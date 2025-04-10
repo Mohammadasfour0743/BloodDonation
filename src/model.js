@@ -4,7 +4,6 @@ export const model = {
     username: null,
     bloodtype: null,
     phonenumber: null,
-    email: null,
   },
 
   //requests: [{}],
@@ -25,7 +24,7 @@ export const model = {
   getRequests() {
     return this.requests
   },
-  updateUser(id, userFields) {
+  updateUser( userFields) {
     return {
       ...this.user,
       userFields,
