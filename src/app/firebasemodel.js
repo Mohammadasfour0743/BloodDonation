@@ -38,7 +38,6 @@ export const auth = initializeAuth(app, {
 const COLLECTION1 = "donors"
 const COLLECTION2 = "testrequests"
 
-// making them available at the console to test
 global.doc = doc
 global.setDoc = setDoc
 global.app = db
@@ -50,15 +49,13 @@ export function signIn(username, password) {
       const user = userCredential.user;
       console.log("User signed in:", user.email);
 
-      // Define a reference to the donor document using the user's UID.
       const donorDocRef = doc(db, COLLECTION1, user.uid);
       
-      // Retrieve donor data from Firestore.
       const donorSnapshot = await getDoc(donorDocRef);
       let donorData = {};
       if (donorSnapshot.exists()) {
         donorData = donorSnapshot.data();
-        // Update the model with the user's information
+
         runInAction(() => {
           model.user = {
             uid: user.uid,
@@ -78,7 +75,6 @@ export function signIn(username, password) {
         });
       }
 
-      // Now that the user is signed in and model is updated, fetch requests
       fetchRequests(); 
 
       return userCredential;
@@ -92,7 +88,7 @@ export function signIn(username, password) {
 
 export async function signUp(email, password, bloodtype) {
   try {
-    // Immediately update the model with the blood type selected in sign-up.
+
     model.user.bloodtype = bloodtype;
     console.log("User bloodtype saved to model:", model.user.bloodtype);
 
@@ -114,8 +110,7 @@ export async function signUp(email, password, bloodtype) {
       bloodtype: bloodtype,
     })
 
-    // Update the model with the user's information.
-    model.user = {
+     model.user = {
       uid: user.uid,
       username: email,
       bloodtype: bloodtype,
@@ -151,7 +146,6 @@ export async function logOut() {
 }
 
 
-// Separate function to fetch requests
 function fetchRequests() {
   if (!model.user || !model.user.bloodtype) {
     console.error("Cannot fetch requests: user or bloodtype not set");
@@ -160,7 +154,6 @@ function fetchRequests() {
 
   console.log("Fetching requests for bloodtype:", model.user.bloodtype);
   
-  // First, get ALL requests without any filtering
   const allRequestsQuery = collection(db, COLLECTION2);
 
 
@@ -180,12 +173,10 @@ function fetchRequests() {
         console.log("- Current Status:", req.current);
       });
       
-      // Now filter just for current === true
       const currentRequests = allRequests.filter(req => req.current === true);
       console.log("CURRENT REQUESTS ONLY:", currentRequests.length);
       
-      // Now filter for both current === true AND matching blood type
-      const matchingRequests = currentRequests.filter(req => req.bloodtype === model.user.bloodtype);
+       const matchingRequests = currentRequests.filter(req => req.bloodtype === model.user.bloodtype);
       console.log("MATCHING BLOOD TYPE AND CURRENT:", matchingRequests.length);
       matchingRequests.forEach((req, index) => {
         console.log(`Matching Request #${index + 1}:`);
@@ -194,7 +185,6 @@ function fetchRequests() {
         console.log("- Current Status:", req.current);
       });
       
-      // Update the model with the matching requests
       runInAction(() => {
         model.clearRequests();
         matchingRequests.forEach(request => {
@@ -204,7 +194,6 @@ function fetchRequests() {
       
       console.log("Requests updated in model:", model.getRequests().length);
       
-      // Verify the model's requests
       const modelRequests = model.getRequests();
       console.log("MODEL REQUESTS:", modelRequests.length);
       modelRequests.forEach((req, index) => {
@@ -216,15 +205,12 @@ function fetchRequests() {
     .catch((error) => console.error("Error fetching requests:", error));
 }
 
-
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    console.log("User logged in:", user.email) // User is signed in
+    console.log("User logged in:", user.email)
 
-    // Define reference to the donor document using the user's UID.
     const donorDocRef = doc(db, COLLECTION1, user.uid);
     
-    // Fetch donor data from Firestore.
     const donorSnapshot = await getDoc(donorDocRef);
     let donorData = {};
     if (donorSnapshot.exists()) {
@@ -232,7 +218,7 @@ onAuthStateChanged(auth, async (user) => {
     } else {
       console.warn("Donor document does not exist.");
     }
-  // Update the model with donor data
+
   runInAction(() => {
     model.user = {
       uid: user.uid,
@@ -242,20 +228,20 @@ onAuthStateChanged(auth, async (user) => {
   });
     console.log("User bloodtype after login:", model.user.bloodtype)
     
-    // Fetch requests after updating the model
+
     fetchRequests();
       
     router.replace("/(tabs)/requests")
 
   } else {
-    console.log("No user is logged in.") // No user is signed in
+    console.log("No user is logged in.")
     router.replace("/login")
   }
 })
 
 
 export function connectToPersistence(model, watchFunction) {
-   // Check if the user UID is set
+
    if (!model.user.uid) {
     console.error("User UID is not set in the model. Cannot connect to persistence.");
     return;
@@ -267,7 +253,6 @@ export function connectToPersistence(model, watchFunction) {
     return [model.user.username, model.user.name, model.user.bloodtype]
   }
 
-  // persisting to the db
   function persistModel() {
     setDoc(
       docToStore,
