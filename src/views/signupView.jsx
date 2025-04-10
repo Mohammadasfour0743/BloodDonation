@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native"
+import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { Link } from "expo-router"
 import Entypo from "@expo/vector-icons/Entypo"
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -76,9 +76,9 @@ export function SignupView(props) {
   
 
       <View style={styles.buttonView}>
-        <Pressable onPress={props.login} style={styles.button}>
+        <TouchableOpacity onPress={props.login} style={styles.button}>
           <Text>Sign Up</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <View style={[styles.textView, styles.redirect]}>
         <Text>Already have an account?</Text>
