@@ -7,10 +7,11 @@ import FontAwesome from "@expo/vector-icons/FontAwesome"
 import MaterialIcons from "@expo/vector-icons/MaterialIcons"
 
 import { logOut } from "../app/firebasemodel"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 export function ProfileView(props) {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View>
         <View style={styles.logout}>
           <Pressable onPress={props.logout}>
@@ -112,14 +113,14 @@ export function ProfileView(props) {
                 { key: "O-", value: "O RhD negative (O-)" },
                 { key: "AB+", value: "AB RhD positive (AB+)" },
                 { key: "AB-", value: "AB RhD negative (AB-)" },
-                { key: "Unknown", value: "Don't Know" },
+                { key: "N/A", value: "Don't Know" },
               ]}
               save="key"
             />
           </View>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   )
 }
 

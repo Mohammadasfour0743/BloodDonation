@@ -68,7 +68,7 @@ export function SignupView(props) {
                 { key: "O-", value: "O RhD negative (O-)" },
                 { key: "AB+", value: "AB RhD positive (AB+)" },
                 { key: "AB-", value: "AB RhD negative (AB-)" },
-                { key: "Unknown", value: "Don't Know" },
+                { key: "N/A", value: "Don't Know" },
               ]}
               save="key"
             />
