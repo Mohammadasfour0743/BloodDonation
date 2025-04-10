@@ -34,26 +34,13 @@ export const auth = initializeAuth(app, {
 })
 //const auth = getAuth();
 const COLLECTION1 = "donors"
-const COLLECTION2 = "requests"
+const COLLECTION2 = "testrequests"
 
 // making them available at the console to test
 global.doc = doc
 global.setDoc = setDoc
 global.app = db
 
-// export function signIn(username, password) {
-//   return signInWithEmailAndPassword(auth, username, password)
-//     .then((userCredential) => {
-//       console.log("User signed in:", userCredential.user.email)
-//       console.log("User bloodtype after signIn:", model.user.bloodtype);
-
-//       return userCredential
-//     })
-//     .catch((error) => {
-//       //console.error("Sign In Error:",error.message);
-//       throw error
-//     })
-// }
 
 export function signIn(username, password) {
   return signInWithEmailAndPassword(auth, username, password)
@@ -171,7 +158,7 @@ onAuthStateChanged(auth, async (user) => {
     router.replace("/(tabs)/requests")
 
     // Now that the model is updated with a valid UID, you can call persistence.
-    connectToPersistence(model, watchFunction);
+    //connectToPersistence(model, watchFunction);
   } else {
     console.log("No user is logged in.") // No user is signed in
     router.replace("/login")
@@ -236,9 +223,8 @@ export function connectToPersistence(model, watchFunction) {
   // METHOD FOR REQUESTS - Only fetch documents where current is true
   const requestsQuery = query(
     collection(db, COLLECTION2),
-    where("current", "==", true),
+    //where("current", "==", true),
     //where("bloodtype", "==", model.user.bloodtype)
-
   )
 
   getDocs(requestsQuery)
@@ -247,8 +233,10 @@ export function connectToPersistence(model, watchFunction) {
 
       snapshot.forEach((doc) => {
         const data = doc.data()
+        console.log("Fetched document:", doc.id, data); // Log each document for debugging
         fetchedRequests.push({ id: doc.id, ...data })
       })
+      console.log("Total fetched requests:", fetchedRequests.length);
 
       if (fetchedRequests.length > 0) {
         fetchedRequests.forEach((newRequest) => {
