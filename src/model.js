@@ -16,12 +16,14 @@ export const model = {
       return id == currentRequest.id
     })
   },
+
   setRequest(arr) {
     this.requests = arr
   },
-  getRequests() {
+   getRequests() {
     return this.requests
   },
+
   updateUser(id, userFields) {
     return {
       ...this.user,
@@ -43,5 +45,8 @@ export const model = {
   },
   getUser() {
     return this.user
+  },
+  clearRequests() {
+    this.requests = [];
   },
 }
