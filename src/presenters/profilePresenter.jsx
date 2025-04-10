@@ -42,18 +42,7 @@ export const Profile = observer((props) => {
       }}
       updateUser={props.model.updateUser}
       edit={edit}
-      setEdit={(val) => {
-        setEdit(val)
-        if (!val) {
-          if (validPhone(phone)) props.model.updateUser({ phonenumber: phone })
-          else setPhone(props.model.user.phonenumber)
-          if (validEmail(email)) props.model.updateUser({ email: email })
-          else setEmail(props.model.user.username)
-
-          props.model.updateUser({ name: username })
-          props.model.updateUser({ bloodtype: selected })
-        }
-      }}
+      setEdit={() => setEdit(true)}
       setName={setUsername}
       username={username}
       phone={phone}
@@ -62,14 +51,32 @@ export const Profile = observer((props) => {
       setEmail={setEmail}
       selected={selected}
       setSelected={setSelected}
+      save = {() => {
+          if (validPhone(phone) && validEmail(email))
+            {
+              props.model.updateUser({ phonenumber: phone })
+              props.model.updateUser({ email: email })
+              props.model.updateUser({ name: username })
+              props.model.updateUser({ bloodtype: selected })
+              setEdit(false)
+            } 
+          else {
+          setPhone(props.model.user.phonenumber)
+          setEmail(props.model.user.username)
+          setEdit(false)
+          }
+
+      }}
     ></ProfileView>
   )
 })
 function validEmail(email) {
+    return true
   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
   return emailRegex.test(email)
 }
 function validPhone(phoneNumber) {
+    return true
   const phoneRegex = /^(?:\(\d{3}\)\s?|\d{3}[-.\s])?\d{3}[-.\s]?\d{4}$/
   return phoneRegex.test(phoneNumber)
 }

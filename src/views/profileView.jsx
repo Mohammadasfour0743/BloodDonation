@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native"
+import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { SelectList } from "react-native-dropdown-select-list"
 import { Link } from "expo-router"
 import Entypo from "@expo/vector-icons/Entypo"
@@ -88,7 +88,7 @@ export function ProfileView(props) {
           />
         </View>
         {props.edit && (
-          <View>
+          <View style = {{flex: 1, gap: 10,}}>
             <SelectList
               boxStyles={{
                 width: "100%",
@@ -117,9 +117,16 @@ export function ProfileView(props) {
               ]}
               save="key"
             />
+               <View style = {styles.saveButton}>
+        <TouchableOpacity style = {{justifyContent: "center", alignItems: "center", padding: 15}} onPress = {props.save}>
+            <Text style = {{color: "white", fontFamily: "Roboto-Medium"}}>Save Changes</Text>
+        </TouchableOpacity>
+      </View>
           </View>
         )}
       </View>
+
+   
     </SafeAreaView>
   )
 }
@@ -194,4 +201,14 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     borderColor: "#9A4040",
   },
+
+  saveButton: {
+    alignSelf: "flex-end",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    borderRadius: 30,
+    backgroundColor: "#9A4040"
+  },
+
+
 })
