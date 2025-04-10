@@ -12,6 +12,8 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { BlurView } from "expo-blur"
 import { Observer, observer } from "mobx-react-lite"
 
+import { registerForPushNotificationsAsync } from "../app/notifications"
+
 export const RequestView = observer(function RequestRender(props) {
   const ModelContent = observer(() => {
     return (
@@ -79,6 +81,13 @@ export const RequestView = observer(function RequestRender(props) {
   })
   return (
     <SafeAreaView style={styles.container}>
+      <Pressable
+        onPress={() => {
+          registerForPushNotificationsAsync()
+        }}
+      >
+        <Text>Notification test button</Text>
+      </Pressable>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Current Requests</Text>
       </View>
@@ -222,7 +231,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     position: "absolute",
     left: "10",
-    top: "-12"
+    top: "-12",
   },
 
   urgentRequest: {
