@@ -1,44 +1,39 @@
-import {
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native"
-import { SelectList } from "react-native-dropdown-select-list"
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native"
 import { Link } from "expo-router"
+import Entypo from "@expo/vector-icons/Entypo"
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { SelectList } from "react-native-dropdown-select-list";
+
 
 export function SignupView(props) {
   return (
     <View style={styles.container}>
-      <View style={styles.textView}>
-        <Text style={styles.text}>Choose Username</Text>
-      </View>
       <View style={styles.inputContainer}>
+      <Entypo
+            name="mail"
+            size={30}
+            color="#9A4040"
+          />
         <TextInput
           onChangeText={props.setUser}
           value={props.user}
-          placeholder="Username"
+          placeholder=" Enter Email"
           style={styles.input}
         />
       </View>
-      <View style={styles.textView}>
-        <Text style={styles.text}>Choose Password</Text>
-      </View>
       <View style={styles.inputContainer}>
+      <AntDesign name="lock1" size={30} color="#9A4040" />
         <TextInput
           onChangeText={props.setPass}
           secureTextEntry={true}
           value={props.pass}
-          placeholder="Password"
+          placeholder="Choose Password"
           style={styles.input}
         />
       </View>
-      <View style={styles.textView}>
-        <Text style={styles.text}>Confirm Password</Text>
-      </View>
+
       <View style={styles.inputContainer}>
+      <AntDesign name="lock1" size={30} color="green" />
         <TextInput
           onChangeText={props.setPass2}
           secureTextEntry={true}
@@ -47,26 +42,38 @@ export function SignupView(props) {
           style={styles.input}
         />
       </View>
-      <View style={styles.textView}>
-        <Text style={styles.text}>Blood Type</Text>
+
+      <View style = {{justifyContent: "center", padding: 15}}>
+      <SelectList
+              boxStyles={{
+                width: "100%",
+                borderColor: "#9A4040",
+                borderWidth: 2,
+                borderRadius: 12,
+              }}
+              dropdownStyles={{
+                width: "100%",
+                borderColor: "#9A4040",
+                borderWidth: 2,
+              }}
+              placeholder="Select Blood Type"
+              search={false}
+              setSelected={props.setSelected}
+              data={[
+                { key: "A+", value: "A RhD positive (A+)" },
+                { key: "A-", value: "A RhD negative (A-)" },
+                { key: "B+", value: "B RhD positive (B+)" },
+                { key: "B-", value: "B RhD negative (B-)" },
+                { key: "O+", value: "O RhD positive (O+)" },
+                { key: "O-", value: "O RhD negative (O-)" },
+                { key: "AB+", value: "AB RhD positive (AB+)" },
+                { key: "AB-", value: "AB RhD negative (AB-)" },
+                { key: "Unknown", value: "Don't Know" },
+              ]}
+              save="key"
+            />
       </View>
-      <View style={styles.selecter}>
-        <SelectList
-          setSelected={(val) => props.setSelected(val)}
-          data={[
-            { key: "A+", value: "A RhD positive (A+)" },
-            { key: "A-", value: "A RhD negative (A-)" },
-            { key: "B+", value: "B RhD positive (B+)" },
-            { key: "B-", value: "B RhD negative (B-)" },
-            { key: "O+", value: "O RhD positive (O+)" },
-            { key: "O-", value: "O RhD negative (O-)" },
-            { key: "AB+", value: "AB RhD positive (AB+)" },
-            { key: "AB-", value: "AB RhD negative (AB-)" },
-            { key: "Unknown", value: "Don't Know" },
-          ]}
-          save="key"
-        />
-      </View>
+  
 
       <View style={styles.buttonView}>
         <Pressable onPress={props.login} style={styles.button}>
@@ -75,7 +82,7 @@ export function SignupView(props) {
       </View>
       <View style={[styles.textView, styles.redirect]}>
         <Text>Already have an account?</Text>
-        <Link href="/">
+        <Link href="/login">
           <Text style={styles.link}>Sign In</Text>
         </Link>
       </View>
@@ -85,37 +92,42 @@ export function SignupView(props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#f9e4e4",
+    backgroundColor: "white",
     flex: 1,
     justifyContent: "center",
+    alignItems: "center",
+    gap: 20,
   },
   button: {
     flex: 1,
     borderWidth: 2,
-    borderRadius: 10,
-    backgroundColor: "#d9d9d9",
-
-    padding: 8,
+    borderRadius: 15,
+    backgroundColor: "transparent",
+    padding: 15,
     alignItems: "center",
     justifyContent: "center",
+    borderColor: "#9A4040",
   },
   input: {
-    padding: 10,
-    backgroundColor: "#d9d9d9",
-    borderWidth: 1,
+    backgroundColor: "transparent",
     width: "50%",
-    borderRadius: 5,
-    flex: 1,
   },
   inputContainer: {
     flexDirection: "row",
-    padding: 20,
+    padding: 15,
+    borderColor: "#9A4040",
+    borderBottomWidth: 2,
+    width: "80%",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    gap: 10,
   },
   text: {},
   textView: {
     flexDirection: "row",
-    alignContent: "flex-start",
-    marginHorizontal: 20,
+    alignItem: "flex-start",
+    alignSelf: "center",
+    justifyContent: "flex-start",
   },
   buttonView: {
     flexDirection: "row",
@@ -123,19 +135,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 100,
   },
   link: {
-    color: "#6c5ce7",
+    color: "#9A4040",
     textDecorationStyle: "solid",
     textDecorationLine: "underline",
   },
   redirect: {
     gap: 10,
-    marginStart: 100,
+    
     marginTop: 20,
-  },
-
-  selecter: {
-    flexDirection: "row",
-    padding: 20,
-    minWidth: Dimensions.get("window").width * 150,
   },
 })
