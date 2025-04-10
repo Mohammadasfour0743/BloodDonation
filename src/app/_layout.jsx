@@ -1,5 +1,6 @@
 import "src/app/bootstrapping"
 
+import { View } from "react-native"
 import { useFonts } from "expo-font"
 import { Stack } from "expo-router"
 
@@ -11,15 +12,17 @@ export default function RootLayout() {
   })
   if (!loaded) return null
   return (
-    <Stack
-      screenOptions={{
-        title: "Blood Donor App",
-      }}
-    >
-      <Stack.Screen name="login" options={{ headerShown: false }} />
-      <Stack.Screen name="signup" options={{ headerShown: false }} />
+    <View style={{ flex: 1, backgroundColor: "transparent" }}>
+      <Stack
+        screenOptions={{
+          title: "Blood Donor App",
+        }}
+      >
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="signup" options={{ headerShown: false }} />
 
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    </Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+    </View>
   )
 }
