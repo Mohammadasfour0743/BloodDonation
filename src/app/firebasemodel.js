@@ -1,4 +1,3 @@
-//
 import React from "react"
 import { router } from "expo-router"
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage"
@@ -24,6 +23,7 @@ import {
   where,
 } from "firebase/firestore"
 import { runInAction } from "mobx"
+import { model } from "../model.js"
 
 import { firebaseConfig } from "./firebaseconfig.js"
 
@@ -55,8 +55,14 @@ export function signIn(username, password) {
 
 export async function signUp(email, password, bloodType) {
   try {
+    // Immediately update the model with the blood type selected in sign-up.
+    model.user.bloodtype = bloodType;
+    console.log("User bloodtype saved to model:", model.user.bloodtype);
+
     console.log("Attempting to sign up with email:", email)
     console.log("Blood type being saved:", bloodType)
+
+
 
     const userCredential = await createUserWithEmailAndPassword(
       auth,
@@ -145,11 +151,12 @@ export function connectToPersistence(model, watchFunction) {
     })
     .catch((error) => console.error("Error reading document:", error))
 
+
   // METHOD FOR REQUESTS - Only fetch documents where current is true
   const requestsQuery = query(
     collection(db, COLLECTION2),
     where("current", "==", true),
-    
+    where("bloodType", "==", model.user.bloodtype)
   )
 
   getDocs(requestsQuery)
@@ -242,22 +249,5 @@ export function connectToPersistence(model, watchFunction) {
 //     console.log("Requests successfully saved to Firestore");
 //   } catch (error) {
 //     console.error("Error saving requests:", error);
-//   }
-// }
-
-//web fxn
-// export async function saveRequests(request) {
-//   try {
-//     const docRef = doc(collection(db, COLLECTION2), request.id);
-//     await setDoc(docRef, {
-//       hospitalId: request.hospitalId,
-//       urgency: request.urgency,
-//       bloodType: request.bloodType,
-//       amount: request.amount,
-//       description: request.description,
-//     });
-//     console.log("Request successfully saved with ID:", request.id);
-//   } catch (error) {
-//     console.error("Error saving request:", error);
 //   }
 // }
