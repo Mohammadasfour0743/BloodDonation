@@ -9,4 +9,5 @@ export const reactiveModel = observable(model)
 
 connectToPersistence(reactiveModel, reaction)
 
+
 global.myModel = reactiveModel
