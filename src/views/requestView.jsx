@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     position: "absolute",
     left: "10",
-    top: "-5",
+    top: "-12"
   },
 
   urgentRequest: {
