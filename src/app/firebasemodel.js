@@ -41,27 +41,57 @@ global.doc = doc
 global.setDoc = setDoc
 global.app = db
 
+// export function signIn(username, password) {
+//   return signInWithEmailAndPassword(auth, username, password)
+//     .then((userCredential) => {
+//       console.log("User signed in:", userCredential.user.email)
+//       console.log("User bloodtype after signIn:", model.user.bloodtype);
+
+//       return userCredential
+//     })
+//     .catch((error) => {
+//       //console.error("Sign In Error:",error.message);
+//       throw error
+//     })
+// }
+
 export function signIn(username, password) {
   return signInWithEmailAndPassword(auth, username, password)
-    .then((userCredential) => {
-      console.log("User signed in:", userCredential.user.email)
-      return userCredential
+    .then(async (userCredential) => {
+      const user = userCredential.user;
+      console.log("User signed in:", user.email);
+
+      // Define a reference to the donor document using the user's UID.
+      const donorDocRef = doc(db, COLLECTION1, user.uid);
+      
+      // Retrieve donor data from Firestore.
+      const donorSnapshot = await getDoc(donorDocRef);
+      let donorData = {};
+      if (donorSnapshot.exists()) {
+        donorData = donorSnapshot.data();
+      } else {
+        console.warn("Donor document does not exist.");
+      }
+
+      console.log("Model updated after sign-in:", donorData.bloodtype);
+
+      return userCredential;
     })
     .catch((error) => {
-      //console.error("Sign In Error:",error.message);
-      throw error
-    })
+      console.error("Sign In Error:", error.message);
+      throw error;
+    });
 }
 
-export async function signUp(email, password, bloodType) {
+
+export async function signUp(email, password, bloodtype) {
   try {
     // Immediately update the model with the blood type selected in sign-up.
-    model.user.bloodtype = bloodType;
+    model.user.bloodtype = bloodtype;
     console.log("User bloodtype saved to model:", model.user.bloodtype);
 
     console.log("Attempting to sign up with email:", email)
-    console.log("Blood type being saved:", bloodType)
-
+    console.log("Blood type being saved:", bloodtype)
 
 
     const userCredential = await createUserWithEmailAndPassword(
@@ -75,9 +105,17 @@ export async function signUp(email, password, bloodType) {
     await setDoc(doc(db, "donors", user.uid), {
       uid: user.uid,
       username: email,
-      bloodType: bloodType,
+      bloodtype: bloodtype,
     })
 
+    // Update the model with the user's information.
+    model.user = {
+      uid: user.uid,
+      username: email,
+      bloodtype: bloodtype,
+    };
+
+    console.log("User bloodtype while user creation:", model.user.bloodtype)
     console.log("Donor profile created for user:", user.uid)
     return userCredential
   } catch (error) {
@@ -89,7 +127,15 @@ export async function signUp(email, password, bloodType) {
 export async function logOut() {
   signOut(auth)
     .then(() => {
+      console.log("User bloodtype before signout:", model.user.bloodtype)
       console.log("User signed out.")
+      model.user = {
+        uid: null,
+        username: null,
+        bloodtype: null,
+      };
+      console.log("User bloodtype after signout:", model.user.bloodtype)
+      
     })
     .catch((error) => {
       const errorCode = error.code
@@ -98,19 +144,51 @@ export async function logOut() {
     })
 }
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
+  console.log("before logging in:", user.bloodtype)
   if (user) {
     console.log("User logged in:", user.email) // User is signed in
+
+    // Define reference to the donor document using the user's UID.
+    const donorDocRef = doc(db, COLLECTION1, user.uid);
+    
+    // Fetch donor data from Firestore.
+    const donorSnapshot = await getDoc(donorDocRef);
+    let donorData = {};
+    if (donorSnapshot.exists()) {
+      donorData = donorSnapshot.data();
+    } else {
+      console.warn("Donor document does not exist.");
+    }
+  // Update the model with donor data. Note: use donorData fields.
+  model.user = {
+    uid: user.uid,
+    username: donorData.username || user.email,
+    bloodtype: donorData.bloodtype || "default",
+  };
+    console.log("User bloodtype after login:", model.user.bloodtype)
+
     router.replace("/(tabs)/requests")
+
+    // Now that the model is updated with a valid UID, you can call persistence.
+    connectToPersistence(model, watchFunction);
   } else {
     console.log("No user is logged in.") // No user is signed in
     router.replace("/login")
   }
 })
 
-const docToStore = doc(db, COLLECTION1, "data")
+//const docToStore = doc(db, COLLECTION1, "data")
 
 export function connectToPersistence(model, watchFunction) {
+   // Check if the user UID is set
+   if (!model.user.uid) {
+    console.error("User UID is not set in the model. Cannot connect to persistence.");
+    return;
+  }
+
+  const docToStore = doc(db, COLLECTION1, model.user.uid);
+
   function modelState() {
     return [model.user.username, model.user.name, model.user.bloodtype]
   }
@@ -139,9 +217,10 @@ export function connectToPersistence(model, watchFunction) {
       // if data exists, updates the model's properties/fields with the stored values
       // if any field is missing, it updates to the default values (given in the model)
       if (data) {
-        model.user.name = data.name ?? "default"
+        // model.user.name = data.name ?? "default"
         model.user.username = data.username ?? "default"
-        model.user.bloodtype = data.bloodtype ?? "default"
+        model.user.bloodtype = data.bloodtype ?? "default";
+
       }
       // if no document during the read, sets the model's properties to the default values.
       else {
@@ -151,12 +230,15 @@ export function connectToPersistence(model, watchFunction) {
     })
     .catch((error) => console.error("Error reading document:", error))
 
+    console.log("User bloodtype before query:", model.user.bloodtype);
+
 
   // METHOD FOR REQUESTS - Only fetch documents where current is true
   const requestsQuery = query(
     collection(db, COLLECTION2),
     where("current", "==", true),
-    where("bloodType", "==", model.user.bloodtype)
+    //where("bloodtype", "==", model.user.bloodtype)
+
   )
 
   getDocs(requestsQuery)
