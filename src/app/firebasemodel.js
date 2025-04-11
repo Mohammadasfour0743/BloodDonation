@@ -126,12 +126,17 @@ export function fetchRequests() {
   }
   console.log("Fetching requests for bloodtype:", reactiveModel.user.bloodtype);
 
-  const requestsCollectionRef = collection(db, "testrequests");
-  getDocs(requestsCollectionRef)
+  const requestsQuery = query(
+    collection(db, COLLECTION2),
+    where("current", "==", true),
+    where("bloodtype", "==", reactiveModel.user.bloodtype),
+  )
+
+  getDocs(requestsQuery)
     .then((snapshot) => {
+      console.log(snapshot)
       snapshot.forEach((doc) => {
         const data = doc.data();
-        // filtering needed
         const request = { id: doc.id, ...data };
         runInAction(() => {
           reactiveModel.addRequest(request);
@@ -140,6 +145,24 @@ export function fetchRequests() {
     })
     .catch((error) => {
       console.error("Error fetching requests:", error);
+    });
+
+    onSnapshot(requestsQuery, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        const data = change.doc.data();
+        const id = change.doc.id;
+        const request = { id, ...data };
+    
+        runInAction(() => {
+          if (change.type === "added") {
+            reactiveModel.addRequest(request);
+          } else if (change.type === "modified") {
+            reactiveModel.updateRequest?.(request); // make sure this method exists
+          } else if (change.type === "removed") {
+            reactiveModel.removeRequest?.(id); // likewise, check existence
+          }
+        });
+      });
     });
 }
 
