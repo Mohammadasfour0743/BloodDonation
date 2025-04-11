@@ -41,7 +41,7 @@ export const RequestView = observer(function RequestRender(props) {
             Blood Type: {props.current?.bloodTypes.join(", ") ?? ""}
           </Text>
           <Text style={styles.detailsText}>
-            Amount: {props.current?.Amount ?? ""}
+            Amount: {props.current?.amount ?? ""}
           </Text>
         </View>
         <Text
