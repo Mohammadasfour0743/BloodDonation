@@ -1,7 +1,7 @@
 export const model = {
   user: {
     username: null,
-    bloodtype: null    
+    bloodtype: null,
   },
 
   //requests: [{}],
@@ -20,12 +20,12 @@ export const model = {
   setRequest(arr) {
     this.requests = arr
   },
-   getRequests() {
+  getRequests() {
     return this.requests
   },
 
-  updateUser(id, userFields) {
-    return {
+  updateUser(userFields) {
+    this.user = {
       ...this.user,
       ...userFields,
     }
@@ -47,6 +47,6 @@ export const model = {
     return this.user
   },
   clearRequests() {
-    this.requests = [];
+    this.requests = []
   },
 }
