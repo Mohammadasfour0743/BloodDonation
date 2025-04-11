@@ -8,6 +8,7 @@ export const model = {
 
   requests: [],
   addRequest(req) {
+    if(this.requests.find(((val)=>val.id==req.id))) return
     this.requests = [req, ...this.requests]
   },
 
@@ -48,5 +49,6 @@ export const model = {
   },
   clearRequests() {
     this.requests = [];
+    console.log(this.requests)
   },
 }

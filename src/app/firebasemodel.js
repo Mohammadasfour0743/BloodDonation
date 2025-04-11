@@ -98,7 +98,6 @@ export async function signUp(email, password, bloodtype) {
 export async function logOut() {
   signOut(auth)
     .then(() => {
-      reactiveModel.setUser({});
       console.log("User bloodtype after logOut:", reactiveModel.user.bloodtype)
     })
     .catch((error) => {
@@ -114,6 +113,8 @@ onAuthStateChanged(auth, async (user) => {
     router.replace("/(tabs)/requests")
   } else {
     console.log("No user is logged in.")
+    reactiveModel.setUser({});
+    reactiveModel.clearRequests();
     router.replace("/login")
   }
 })
@@ -199,6 +200,10 @@ export function connectToPersistence() {
         reactiveModel.user.bloodtype,
       ],
       ([username, name, bloodtype]) => {
+        if (!username || !auth.currentUser || !bloodtype || !name) {
+          return
+        }
+        console.log(username, bloodtype, name)
         console.log("Detected change in user model. Syncing to Firestore.");
         setDoc(
           docToStore,
