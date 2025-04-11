@@ -86,7 +86,6 @@ export const RequestView = observer(function RequestRender(props) {
           registerForPushNotificationsAsync()
         }}
       >
-        <Text>Notification test button</Text>
       </Pressable>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Current Requests</Text>

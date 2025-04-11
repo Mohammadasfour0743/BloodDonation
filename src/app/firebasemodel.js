@@ -24,6 +24,7 @@ import {
   where,
 } from "firebase/firestore"
 import { runInAction } from "mobx"
+import { registerForPushNotificationsAsync} from "./notifications.js"
 
 import { firebaseConfig } from "./firebaseconfig.js"
 
@@ -96,6 +97,7 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
     console.log("User logged in:", user.email) // User is signed in
     router.replace("/(tabs)/requests")
+    registerForPushNotificationsAsync(user.email);
   } else {
     console.log("No user is logged in.") // No user is signed in
     router.replace("/login")

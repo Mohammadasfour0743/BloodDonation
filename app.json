@@ -6,7 +6,8 @@
       }
     },
     "android": {
-      "package": "com.shubhangi_01.blooddonor"
+      "package": "com.shubhangi_01.blooddonor",
+      "googleServicesFile": "./google-services.json"
     }
   }
 }

@@ -3,8 +3,7 @@ import * as Device from 'expo-device'
 import * as Notifications from "expo-notifications"
 import Constants from "expo-constants"
 
-export async function registerForPushNotificationsAsync() {
-  try{
+export async function registerForPushNotificationsAsync(userId) {
   if (Platform.OS === "android") {
     Notifications.setNotificationChannelAsync("default", {
       name: "default",
@@ -33,13 +32,13 @@ export async function registerForPushNotificationsAsync() {
   if (!projectId) {
     handleRegistrationError("Project ID not found")
   }
-    const pushTokenString = (
+  try{  
+  const pushTokenString = (
       await Notifications.getExpoPushTokenAsync({
         projectId,
       })
     ).data
-    console.log(pushTokenString)
-    return pushTokenString
+    await fetch("https://pushnotificationsserver-production.up.railway.app/save-token?userid=" + userId + "&token=" +pushTokenString )
   } catch (e) {
     handleRegistrationError(`${e}`)
   }

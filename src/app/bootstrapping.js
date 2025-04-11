@@ -9,6 +9,5 @@ configure({ enforceActions: "never" })
 export const reactiveModel = observable(model)
 
 connectToPersistence(reactiveModel, reaction)
-registerForPushNotificationsAsync();
 
 global.myModel = reactiveModel
