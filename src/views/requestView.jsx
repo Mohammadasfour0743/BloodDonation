@@ -13,6 +13,7 @@ import { BlurView } from "expo-blur"
 import { Observer, observer } from "mobx-react-lite"
 
 export const RequestView = observer(function RequestRender(props) {
+  console.log("RequestView rendering with data:", props.requestsArray?.length || 0, "items");
   const ModelContent = observer(() => {
     return (
       <View style={styles.modal}>

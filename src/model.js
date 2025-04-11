@@ -1,9 +1,7 @@
 export const model = {
   user: {
-    name: null,
     username: null,
-    bloodtype: null,
-    phonenumber: null,
+    bloodtype: null    
   },
 
   //requests: [{}],
@@ -18,14 +16,16 @@ export const model = {
       return id == currentRequest.id
     })
   },
+
   setRequest(arr) {
     this.requests = arr
   },
-  getRequests() {
+   getRequests() {
     return this.requests
   },
-  updateUser(userFields) {
-    this.user = {
+
+  updateUser(id, userFields) {
+    return {
       ...this.user,
       ...userFields,
     }
@@ -45,5 +45,8 @@ export const model = {
   },
   getUser() {
     return this.user
+  },
+  clearRequests() {
+    this.requests = [];
   },
 }
