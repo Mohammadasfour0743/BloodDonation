@@ -34,7 +34,7 @@ export const RequestView = observer(function RequestRender(props) {
             Location: {props.current?.location ?? "kista"}
           </Text>
           <Text style={styles.detailsText}>
-            Blood Type: {props.current?.bloodType ?? ""}
+            Blood Type: {props.current?.bloodtype ?? ""}
           </Text>
           <Text style={styles.detailsText}>
             Amount: {props.current?.amount ?? ""}
@@ -130,7 +130,7 @@ export const RequestView = observer(function RequestRender(props) {
                     </Text>
                     <Text style={styles.separator}>{"\u2B24"}</Text>
                     <Text style={styles.requestText}>
-                      Blood Type: {req.bloodType}
+                      Blood Type: {req.bloodtype}
                     </Text>
                   </Pressable>
                 </View>
