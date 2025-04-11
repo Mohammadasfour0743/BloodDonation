@@ -132,22 +132,12 @@ export function fetchRequests() {
     where("bloodtype", "==", reactiveModel.user.bloodtype),
   )
 
-  getDocs(requestsQuery)
-    .then((snapshot) => {
-      console.log(snapshot)
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        const request = { id: doc.id, ...data };
-        runInAction(() => {
-          reactiveModel.addRequest(request);
-        });
-      });
-    })
-    .catch((error) => {
-      console.error("Error fetching requests:", error);
-    });
-
     onSnapshot(requestsQuery, (snapshot) => {
+      if (snapshot.empty) {
+        console.warn("No changes detected. Double-check the query and data.");
+        return;
+      }
+    
       snapshot.docChanges().forEach((change) => {
         const data = change.doc.data();
         const id = change.doc.id;
@@ -156,48 +146,63 @@ export function fetchRequests() {
         runInAction(() => {
           if (change.type === "added") {
             reactiveModel.addRequest(request);
-          } else if (change.type === "modified") {
-            reactiveModel.updateRequest?.(request); // make sure this method exists
+          }
+          else if (change.type === "modified") {
+            reactiveModel.updateRequests(id, request);
           } else if (change.type === "removed") {
-            reactiveModel.removeRequest?.(id); // likewise, check existence
+            reactiveModel.removeRequest(id);
           }
         });
       });
     });
+    // Listener for cleanup: remove any documents in the collection that become "not current".
+  const allRequestsQuery = collection(db, COLLECTION2);
+  onSnapshot(allRequestsQuery, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      const data = change.doc.data();
+      const id = change.doc.id;
+      if ((change.type === "modified" && data.current === false) || (change.type === "modified" &&  data.bloodtype !== reactiveModel.user.bloodtype)) {
+        runInAction(() => {
+          reactiveModel.removeRequest(id);
+        });
+      }
+    });
+  });
 }
+
 
 export function connectToPersistence() {
   if (!reactiveModel.user.uid) {
-    console.error("User UID is not set in the reactiveModel. Cannot connect to persistence.");
+    console.log("User UID is not set in the reactiveModel. Cannot connect to persistence.");
     return;
   }
   const docToStore = doc(db, COLLECTION1, reactiveModel.user.uid);
-  reaction(
-    () => [
-      reactiveModel.user.username,
-      reactiveModel.user.name,
-      reactiveModel.user.bloodtype,
-    ],
-    ([username, name, bloodtype]) => {
-      console.log("Detected change in user model. Syncing to Firestore.");
-      setDoc(
-        docToStore,
-        { username, name, bloodtype },
-        { merge: true }
-      ).catch(err => console.error("Error syncing to Firestore:", err));
-    }
-  );
-
+  
   getDoc(docToStore)
-    .then((snapshot) => {
-      const data = snapshot.data();
-      if (data) {
-        runInAction(() => {
-          reactiveModel.user.username = data.username ?? "default";
-          reactiveModel.user.bloodtype = data.bloodtype ?? "default";
-          console.log("getDoc:", reactiveModel.user.bloodtype);
-        });
+  .then((snapshot) => {
+    const data = snapshot.data();
+    if (data) {
+      runInAction(() => {
+        reactiveModel.user.username = data.username ?? "default";
+        reactiveModel.user.bloodtype = data.bloodtype ?? "default";
+        console.log("getDoc:", reactiveModel.user.bloodtype);
+      });
+    }
+    reaction(
+      () => [
+        reactiveModel.user.username,
+        reactiveModel.user.name,
+        reactiveModel.user.bloodtype,
+      ],
+      ([username, name, bloodtype]) => {
+        console.log("Detected change in user model. Syncing to Firestore.");
+        setDoc(
+          docToStore,
+          { username, name, bloodtype },
+          { merge: true }
+        ).catch(err => console.error("Error syncing to Firestore:", err));
       }
+    );
       fetchRequests();
     })
     .catch((error) => console.error("Error reading donor document:", error));
