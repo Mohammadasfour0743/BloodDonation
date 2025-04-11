@@ -226,8 +226,8 @@ const styles = StyleSheet.create({
     padding: 4,
     borderRadius: 4,
     position: "absolute",
-    left: "10",
-    top: "-12",
+    left: 10,
+    top: -12,
   },
 
   urgentRequest: {
@@ -235,8 +235,8 @@ const styles = StyleSheet.create({
     padding: 4,
     borderRadius: 4,
     position: "absolute",
-    left: "15",
-    top: "15",
+    left: 15,
+    top: 15,
   },
 
   urgentText: {
