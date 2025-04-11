@@ -2,7 +2,6 @@ import { Platform } from "react-native"
 import * as Device from "expo-device"
 import * as Notifications from "expo-notifications"
 import Constants from "expo-constants"
-import * as Notifications from "expo-notifications"
 import { useEffect, useRef } from "react"
 
 export async function registerForPushNotificationsAsync(userId) {
@@ -56,8 +55,8 @@ function handleRegistrationError(errorMessage) {
   throw new Error(errorMessage)
 }
 
-export default function Click(model, setCurrentRequest, setVisible) {
-  const navigationRef = useNavigationContainerRef()
+export function Click(model, setCurrentRequest, setVisible) {
+  //const navigationRef = useNavigationContainerRef()
   const responseListener = useRef()
 
   useEffect(() => {
@@ -76,9 +75,5 @@ export default function Click(model, setCurrentRequest, setVisible) {
     }
   }, [])
 
-  return (
-    <NavigationContainer ref={navigationRef}>
-      {/* your navigators here */}
-    </NavigationContainer>
-  )
+
 }
