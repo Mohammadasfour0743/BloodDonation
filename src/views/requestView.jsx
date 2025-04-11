@@ -13,7 +13,11 @@ import { BlurView } from "expo-blur"
 import { Observer, observer } from "mobx-react-lite"
 
 export const RequestView = observer(function RequestRender(props) {
-  console.log("RequestView rendering with data:", props.requestsArray?.length || 0, "items");
+  console.log(
+    "RequestView rendering with data:",
+    props.requestsArray?.length || 0,
+    "items",
+  )
   const ModelContent = observer(() => {
     return (
       <View style={styles.modal}>
@@ -34,7 +38,7 @@ export const RequestView = observer(function RequestRender(props) {
             Location: {props.current?.location ?? "kista"}
           </Text>
           <Text style={styles.detailsText}>
-            Blood Type: {props.current?.bloodType ?? ""}
+            Blood Type: {props.current?.bloodtype ?? ""}
           </Text>
           <Text style={styles.detailsText}>
             Amount: {props.current?.amount ?? ""}
@@ -130,7 +134,7 @@ export const RequestView = observer(function RequestRender(props) {
                     </Text>
                     <Text style={styles.separator}>{"\u2B24"}</Text>
                     <Text style={styles.requestText}>
-                      Blood Type: {req.bloodType}
+                      Blood Type: {req.bloodtype}
                     </Text>
                   </Pressable>
                 </View>
@@ -223,7 +227,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     position: "absolute",
     left: "10",
-    top: "-12"
+    top: "-12",
   },
 
   urgentRequest: {
