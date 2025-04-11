@@ -24,8 +24,8 @@ export const model = {
     return this.requests
   },
 
-  updateUser(id, userFields) {
-    return {
+  updateUser(userFields) {
+    this.user = {
       ...this.user,
       ...userFields,
     }
