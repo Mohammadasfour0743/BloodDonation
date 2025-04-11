@@ -37,7 +37,7 @@ export const auth = initializeAuth(app, {
 })
 
 const COLLECTION1 = "donors"
-const COLLECTION2 = "testrequests"
+const COLLECTION2 = "requests"
 
 global.doc = doc
 global.setDoc = setDoc
@@ -129,7 +129,7 @@ export function fetchRequests() {
   const requestsQuery = query(
     collection(db, COLLECTION2),
     where("current", "==", true),
-    where("bloodtype", "==", reactiveModel.user.bloodtype),
+    where("bloodTypes", "array-contains-any", [reactiveModel.user.bloodtype, "AB+"])
   )
 
     onSnapshot(requestsQuery, (snapshot) => {
@@ -161,7 +161,7 @@ export function fetchRequests() {
     snapshot.docChanges().forEach((change) => {
       const data = change.doc.data();
       const id = change.doc.id;
-      if ((change.type === "modified" && data.current === false) || (change.type === "modified" &&  data.bloodtype !== reactiveModel.user.bloodtype)) {
+      if ((change.type === "modified" && (data.current === false || !data.bloodTypes.includes(reactiveModel.user.bloodtype || "AB+")))) {
         runInAction(() => {
           reactiveModel.removeRequest(id);
         });
@@ -188,6 +188,10 @@ export function connectToPersistence() {
         console.log("getDoc:", reactiveModel.user.bloodtype);
       });
     }
+      fetchRequests();
+    })
+    .catch((error) => console.error("Error reading donor document:", error));
+
     reaction(
       () => [
         reactiveModel.user.username,
@@ -203,7 +207,5 @@ export function connectToPersistence() {
         ).catch(err => console.error("Error syncing to Firestore:", err));
       }
     );
-      fetchRequests();
-    })
-    .catch((error) => console.error("Error reading donor document:", error));
+
 }
