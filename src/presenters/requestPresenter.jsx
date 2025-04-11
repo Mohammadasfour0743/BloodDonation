@@ -9,6 +9,7 @@ export const Request = observer((props) => {
   useEffect(() => {
     if (!props.model.getRequestById(currentRequest?.Id)) setModalVisible(false)
   }, [props.model.requests])
+  Click(props.model, setCurrentRequest, setModalVisible);
   return (
     <RequestView
       requestsArray={props.model.requests}
