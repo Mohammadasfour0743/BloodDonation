@@ -23,7 +23,7 @@ import {
 } from "firebase/firestore"
 import { runInAction } from "mobx"
 import { reactiveModel } from "./bootstrapping";
-
+import { reaction } from "mobx";
 import { firebaseConfig } from "./firebaseconfig.js"
 
 
@@ -173,13 +173,7 @@ function fetchRequests() {
       });
       
       console.log("Total fetched requests (no further filtering):", snapshot.size);
-      
-      const currentRequests = fetchedRequests.filter(req => req.current === true);
-      const matchingRequests = currentRequests.filter(req => req.bloodtype === reactiveModel.user.bloodtype);
-      
-      console.log("Documents with current === true:", currentRequests.length);
-      console.log("Documents matching bloodtype:", matchingRequests.length);
-      
+
       runInAction(() => {
         reactiveModel.clearRequests();
         matchingRequests.forEach(request => {
@@ -232,7 +226,6 @@ function fetchRequests() {
   });
 }
 
-
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     console.log("User logged in:", user.email)
@@ -268,7 +261,7 @@ onAuthStateChanged(auth, async (user) => {
 })
 
 
-export function connectToPersistence(model, watchFunction) {
+export function connectToPersistence() {
   if (!reactiveModel.user.uid) {
     console.error("User UID is not set in the reactiveModel. Cannot connect to persistence.");
     return;
@@ -276,24 +269,24 @@ export function connectToPersistence(model, watchFunction) {
 
   const docToStore = doc(db, COLLECTION1, reactiveModel.user.uid);
 
-  function modelState() {
-    return [reactiveModel.user.username, reactiveModel.user.name, reactiveModel.user.bloodtype];
-  }
+  
+  reaction(
+    () => [
+      reactiveModel.user.username,
+      reactiveModel.user.name,
+      reactiveModel.user.bloodtype,
+    ],
+    ([username, name, bloodtype]) => {
+      console.log("Detected change in user model. Syncing to Firestore.");
+      setDoc(
+        docToStore,
+        { username, name, bloodtype },
+        { merge: true }
+      ).catch(err => console.error("Error syncing to Firestore:", err));
+    }
+  );
 
-  function persistModel() {
-    setDoc(
-      docToStore,
-      {
-        name: reactiveModel.user.name,
-        username: reactiveModel.user.username,
-        bloodtype: reactiveModel.user.bloodtype,
-      },
-      { merge: true }
-    );
-  }
-
-  watchFunction(modelState, persistModel);
-
+  
   getDoc(docToStore)
     .then((snapshot) => {
       const data = snapshot.data();
@@ -302,18 +295,12 @@ export function connectToPersistence(model, watchFunction) {
           reactiveModel.user.username = data.username ?? "default";
           reactiveModel.user.bloodtype = data.bloodtype ?? "default";
         });
-      } else {
-        runInAction(() => {
-          reactiveModel.user.username = "default";
-          reactiveModel.user.bloodtype = "default";
-        });
       }
     })
     .catch((error) => console.error("Error reading donor document:", error));
 
   console.log("Donor persistence established. Current bloodtype:", reactiveModel.user.bloodtype);
 }
-     
 
 //test function for the getDocs methods for requests
 // export async function setRequests(model) {
@@ -328,3 +315,4 @@ export function connectToPersistence(model, watchFunction) {
 //     console.error("Error saving requests:", error);
 //   }
 // }
+
