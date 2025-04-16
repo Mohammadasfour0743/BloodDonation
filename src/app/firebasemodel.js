@@ -1,6 +1,7 @@
-import { router } from "expo-router"
-import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage"
-import { getApps, initializeApp } from "firebase/app"
+import React from 'react';
+import { router } from 'expo-router';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
+import { getApps, initializeApp } from 'firebase/app';
 import {
   createUserWithEmailAndPassword,
   getReactNativePersistence,
@@ -8,234 +9,325 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
-} from "firebase/auth"
-import {
-  collection,
-  doc,
-  getDoc,
-  getFirestore,
-  onSnapshot,
-  query,
-  setDoc,
-  where,
-} from "firebase/firestore"
-import { runInAction } from "mobx"
-import { reactiveModel } from "./bootstrapping";
-import { reaction } from "mobx";
-import { firebaseConfig } from "./firebaseconfig.js"
+} from 'firebase/auth';
+import { collection, doc, getDoc, getDocs, getFirestore, onSnapshot, query, setDoc, where } from 'firebase/firestore';
+import { runInAction } from 'mobx';
+import * as Location from 'expo-location';
+import { reactiveModel } from './bootstrapping';
+import { firebaseConfig } from './firebaseconfig.js';
 
+//const app = initializeApp(firebaseConfig)
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const db = getFirestore(app);
+export const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+});
 
-const app =
-  getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
-const db = getFirestore(app)
-export const auth = initializeAuth(app, {persistence: getReactNativePersistence(ReactNativeAsyncStorage),})
+const COLLECTION1 = 'donors';
+const COLLECTION2 = 'testrequests';
 
-const COLLECTION1 = "donors"
-const COLLECTION2 = "requests"
-
-global.doc = doc
-global.setDoc = setDoc
-global.app = db
+global.doc = doc;
+global.setDoc = setDoc;
+global.app = db;
 
 export function signIn(username, password) {
   return signInWithEmailAndPassword(auth, username, password)
     .then(async (userCredential) => {
       const user = userCredential.user;
-      console.log("User signed in:", user.email);
+      console.log('User signed in:', user.email);
 
-      reactiveModel.user.uid = user.uid;
-      connectToPersistence();
-      console.log("User bloodtype after signin:", reactiveModel.user.bloodtype)
+      const donorDocRef = doc(db, COLLECTION1, user.uid);
+
+      const donorSnapshot = await getDoc(donorDocRef);
+      let donorData = {};
+      if (donorSnapshot.exists()) {
+        donorData = donorSnapshot.data();
+
+        runInAction(() => {
+          reactiveModel.user = {
+            uid: user.uid,
+            username: donorData.username || user.email,
+            bloodtype: donorData.bloodtype || 'default',
+          };
+        });
+        console.log('Model updated after sign-in:', reactiveModel.user.bloodtype);
+      } else {
+        console.warn('Donor document does not exist.');
+        runInAction(() => {
+          reactiveModel.user = {
+            uid: user.uid,
+            username: user.email,
+            bloodtype: 'default',
+          };
+        });
+      }
+
+      fetchRequests();
 
       return userCredential;
     })
     .catch((error) => {
-      console.error("Sign In Error:", error.message)
-      throw error
-    })
+      console.error('Sign In Error:', error.message);
+      throw error;
+    });
 }
 
 export async function signUp(email, password, bloodtype) {
   try {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password,
-    )
-    const user = userCredential.user
-    console.log("User signed up:", user)
+    reactiveModel.user.bloodtype = bloodtype;
+    console.log('User bloodtype saved to model:', reactiveModel.user.bloodtype);
 
-    await setDoc(doc(db, "donors", user.uid), {
+    console.log('Attempting to sign up with email:', email);
+    console.log('Blood type being saved:', bloodtype);
+
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    console.log('User signed up:', user);
+
+    await requestAndSetLocation();
+    await setDoc(doc(db, 'donors', user.uid), {
       uid: user.uid,
       username: email,
       bloodtype: bloodtype,
-    })
+      latitude: reactiveModel.latitude,
+      longitude: reactiveModel.longitude,
+    });
 
-     reactiveModel.user = {
+    reactiveModel.user = {
       uid: user.uid,
       username: email,
       bloodtype: bloodtype,
-    }
+    };
 
-    return userCredential
+    console.log('User bloodtype while user creation:', reactiveModel.user.bloodtype);
+    console.log('Donor profile created for user:', user.uid);
+    return userCredential;
   } catch (error) {
-    console.error("Sign Up Error:", error.message)
-    throw error
+    console.error('Sign Up Error:', error.message);
+    throw error;
   }
 }
 
 export async function logOut() {
   signOut(auth)
     .then(() => {
-      console.log("User bloodtype after logOut:", reactiveModel.user.bloodtype)
+      console.log('User bloodtype before signout:', reactiveModel.user.bloodtype);
+      console.log('User signed out.');
+      reactiveModel.user = {
+        uid: null,
+        username: null,
+        bloodtype: null,
+      };
+      console.log('User bloodtype after signout:', reactiveModel.user.bloodtype);
     })
     .catch((error) => {
-      console.error("Sign Out Error:", error.code, error.message)
-    })
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error('Sign Out Error:', errorCode, errorMessage);
+    });
 }
 
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    reactiveModel.user.uid = user.uid;
-    connectToPersistence(); 
-    router.replace("/(tabs)/requests")
-  } else {
-    console.log("No user is logged in.")
-    reactiveModel.setUser({});
-    reactiveModel.clearRequests();
-    router.replace("/login")
-  }
-})
-
-export function fetchRequests() {
+function fetchRequests() {
   if (!reactiveModel.user || !reactiveModel.user.bloodtype) {
-    console.error("Cannot fetch requests: user or bloodtype not set in model");
+    console.error('Cannot fetch requests: user or bloodtype not set');
     return;
   }
-  console.log("Fetching requests for bloodtype:", reactiveModel.user.bloodtype);
+
+  console.log('Fetching requests for bloodtype:', reactiveModel.user.bloodtype);
 
   const requestsQuery = query(
     collection(db, COLLECTION2),
-    where("current", "==", true),
-    where("bloodTypes", "array-contains-any", [reactiveModel.user.bloodtype, "AB+"])
-  )
+    where('current', '==', true),
+    where('bloodtype', '==', reactiveModel.user.bloodtype)
+  );
 
-    onSnapshot(requestsQuery, (snapshot) => {
-      if (snapshot.empty) {
-        console.warn("No changes detected. Double-check the query and data.");
-        return;
-      }
-    
-      snapshot.docChanges().forEach((change) => {
-        const data = change.doc.data();
-        const id = change.doc.id;
-        const request = { id, ...data };
-    
-        runInAction(() => {
-          if (change.type === "added") {
-            reactiveModel.addRequest(request);
-          }
-          else if (change.type === "modified") {
-            reactiveModel.updateRequests(id, request);
-          } else if (change.type === "removed") {
-            reactiveModel.removeRequest(id);
-          }
+  getDocs(requestsQuery)
+    .then((snapshot) => {
+      const fetchedRequests = [];
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        console.log('Fetched request document:', doc.id, data);
+        fetchedRequests.push({ id: doc.id, ...data });
+      });
+
+      console.log('Total fetched requests (no further filtering):', snapshot.size);
+
+      const currentRequests = fetchedRequests.filter((req) => req.current === true);
+      const matchingRequests = currentRequests.filter((req) => req.bloodtype === reactiveModel.user.bloodtype);
+
+      console.log('Documents with current === true:', currentRequests.length);
+      console.log('Documents matching bloodtype:', matchingRequests.length);
+
+      runInAction(() => {
+        reactiveModel.clearRequests();
+        matchingRequests.forEach((request) => {
+          reactiveModel.addRequest(request);
         });
       });
+
+      console.log('Updated model requests count:', reactiveModel.getRequests().length);
+      reactiveModel.getRequests().forEach((req, index) => {
+        console.log(`Model Request #${index + 1}: ID: ${req.id}, Blood Type: ${req.bloodtype}`);
+      });
+    })
+    .catch((error) => console.error('Error fetching requests:', error));
+
+  onSnapshot(requestsQuery, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+      const data = change.doc.data();
+      const id = change.doc.id;
+      if (change.type === 'added' || change.type === 'modified') {
+        const newRequest = { id, ...data };
+        const existingRequest = reactiveModel.getRequests().find((req) => req.id === id);
+        if (existingRequest) {
+          const updatedFields = {};
+          Object.keys(newRequest).forEach((key) => {
+            if (existingRequest[key] !== newRequest[key]) {
+              updatedFields[key] = newRequest[key];
+            }
+          });
+          if (Object.keys(updatedFields).length > 0) {
+            reactiveModel.updateRequests(id, updatedFields);
+          }
+        } else {
+          reactiveModel.addRequest(newRequest);
+        }
+      } else if (change.type === 'removed') {
+        reactiveModel.removeRequest(id);
+      }
     });
-    
+  });
+
   const allRequestsQuery = collection(db, COLLECTION2);
   onSnapshot(allRequestsQuery, (snapshot) => {
     snapshot.docChanges().forEach((change) => {
       const data = change.doc.data();
       const id = change.doc.id;
-      if ((change.type === "modified" && (data.current === false || !data.bloodTypes.includes(reactiveModel.user.bloodtype || "AB+")))) {
-        runInAction(() => {
-          reactiveModel.removeRequest(id);
-        });
+      if (change.type === 'modified' && data.current === false) {
+        reactiveModel.removeRequest(id);
       }
     });
   });
 }
 
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    console.log('User logged in:', user.email);
+
+    const donorDocRef = doc(db, COLLECTION1, user.uid);
+    const donorSnapshot = await getDoc(donorDocRef);
+
+    let donorData = {};
+    if (donorSnapshot.exists()) {
+      donorData = donorSnapshot.data();
+    } else {
+      console.warn('Donor document does not exist.');
+    }
+
+    console.log('User bloodtype after login:', reactiveModel.user.bloodtype);
+    await requestAndSetLocation();
+
+    runInAction(() => {
+      reactiveModel.user = {
+        uid: user.uid,
+        username: donorData.username || user.email,
+        bloodtype: donorData.bloodtype || 'default',
+        latitude: donorData.latitude || reactiveModel.latitude,
+        longitude: donorData.longitude || reactiveModel.longitude,
+      };
+    });
+
+    fetchRequests();
+    router.replace('/(tabs)/requests');
+  } else {
+    console.log('No user is logged in.');
+    router.replace('/login');
+  }
+});
+
+export async function requestAndSetLocation() {
+  try {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.warn('Permission to access location was denied');
+      return;
+    }
+
+    let currentLocation = await Location.getCurrentPositionAsync({});
+    console.log(`Latitude: ${currentLocation.coords.latitude}, Longitude: ${currentLocation.coords.longitude}`);
+
+    reactiveModel.setLongitude(currentLocation.coords.longitude);
+    reactiveModel.setLatitude(currentLocation.coords.latitude);
+  } catch (error) {
+    console.error('Error fetching location:', error);
+  }
+}
+
 export function connectToPersistence() {
   if (!reactiveModel.user.uid) {
-    console.log("User UID is not set in the reactiveModel. Cannot connect to persistence.");
+    console.error('User UID is not set in the reactiveModel. Cannot connect to persistence.');
     return;
   }
+
   const docToStore = doc(db, COLLECTION1, reactiveModel.user.uid);
-  
+
+  function modelState() {
+    return [
+      reactiveModel.user.username,
+      reactiveModel.user.name,
+      reactiveModel.user.bloodtype,
+      reactiveModel.phonenumber,
+    ];
+  }
+
+  function persistModel() {
+    setDoc(
+      docToStore,
+      {
+        name: reactiveModel.user.name,
+        username: reactiveModel.user.username,
+        bloodtype: reactiveModel.user.bloodtype,
+        phonenumber: reactiveModel.phonenumber,
+      },
+      { merge: true }
+    );
+  }
+
+  watchFunction(modelState, persistModel);
+
   getDoc(docToStore)
-  .then((snapshot) => {
-    const data = snapshot.data();
-    if (data) {
-      runInAction(() => {
-        reactiveModel.user.username = data.username ?? "default";
-        reactiveModel.user.bloodtype = data.bloodtype ?? "default";
-        if (data.name) reactiveModel.user.name = data.name;
-        //console.log("getDoc:", reactiveModel.user.bloodtype);
-      });
-    }
-    
-    fetchRequests();
-  })
-  .catch((error) => console.error("Error reading donor document:", error));
-
-  
-  onSnapshot(docToStore, (snapshot) => {
-    const data = snapshot.data();
-    if (data) {
-      const prevBloodtype = reactiveModel.user.bloodtype;
-      
-      runInAction(() => {
-        if (data.username) reactiveModel.user.username = data.username;
-        if (data.bloodtype) reactiveModel.user.bloodtype = data.bloodtype;
-        if (data.name) reactiveModel.user.name = data.name;
-        //console.log("updater received", reactiveModel.user);
-      });
-      
-      if (prevBloodtype !== data.bloodtype && data.bloodtype) {
-        //console.log("new req fetched ,bloodtype changed to", data.bloodtype);
-        reactiveModel.clearRequests();
-        fetchRequests();
+    .then((snapshot) => {
+      const data = snapshot.data();
+      if (data) {
+        runInAction(() => {
+          reactiveModel.user.username = data.username ?? 'default';
+          reactiveModel.user.bloodtype = data.bloodtype ?? 'default';
+          reactiveModel.user.phonenumber = data.phonenumber ?? 'default';
+        });
+      } else {
+        runInAction(() => {
+          reactiveModel.user.username = 'default';
+          reactiveModel.user.bloodtype = 'default';
+          reactiveModel.user.phonenumber = 'default';
+        });
       }
-    }
-  });
+    })
+    .catch((error) => console.error('Error reading donor document:', error));
 
-  
-  reaction(
-    () => reactiveModel.user.bloodtype,
-    (newBloodtype, oldBloodtype) => {
-      if (newBloodtype && newBloodtype !== oldBloodtype) {
-        //console.log("bloodtype chnaged , new req fetched");
-        reactiveModel.clearRequests();
-        fetchRequests();
-      }
-    }
-  );
-
-  
-  reaction(
-    () => ({
-      username: reactiveModel.user.username,
-      name: reactiveModel.user.name,
-      bloodtype: reactiveModel.user.bloodtype
-    }),
-    (userData) => {
-      if (!auth.currentUser) return;
-      const dataToUpdate = {};
-      if (userData.username) dataToUpdate.username = userData.username;
-      if (userData.name) dataToUpdate.name = userData.name;
-      if (userData.bloodtype) dataToUpdate.bloodtype = userData.bloodtype;
-      
-      if (Object.keys(dataToUpdate).length === 0) return;
-      
-      // console.log("firestore upadted with: ",dataToUpdate);
-      setDoc(
-        docToStore,
-        dataToUpdate,
-        { merge: true }
-      ).catch(err => console.error("Error syncing to Firestore:", err));
-    }
-  );
+  console.log('Donor persistence established. Current bloodtype:', reactiveModel.user.bloodtype);
 }
+
+//test function for the getDocs methods for requests
+// export async function setRequests(model) {
+//   try {
+//     await setDoc(
+//       reqStore,
+//       { requests: reactiveModel.requests },
+//       { merge: true }
+//     );
+//     console.log("Requests successfully saved to Firestore");
+//   } catch (error) {
+//     console.error("Error saving requests:", error);
+//   }
+// }

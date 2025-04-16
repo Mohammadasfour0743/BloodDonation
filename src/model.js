@@ -4,51 +4,60 @@ export const model = {
     bloodtype: null,
   },
 
+  longitude: undefined,
+  latitude: undefined,
+
+  setLongitude(longitude) {
+    this.longitude = longitude;
+  },
+
+  setLatitude(latitude) {
+    this.latitude = latitude;
+  },
+
   //requests: [{}],
 
   requests: [],
   addRequest(req) {
-    if(this.requests.find(((val)=>val.id==req.id))) return
-    this.requests = [req, ...this.requests]
+    this.requests = [req, ...this.requests];
   },
 
   getRequestById(id) {
     return this.requests.find((currentRequest) => {
-      return id == currentRequest.id
-    })
+      return id == currentRequest.id;
+    });
   },
 
   setRequest(arr) {
-    this.requests = arr
+    this.requests = arr;
   },
   getRequests() {
-    return this.requests
+    return this.requests;
   },
 
   updateUser(userFields) {
     this.user = {
       ...this.user,
       ...userFields,
-    }
+    };
   },
   removeRequest(id) {
     this.requests = this.requests.filter((item) => {
-      return item.id != id
-    })
+      return item.id != id;
+    });
   },
   updateRequests(id, requestFields) {
     Object.keys(requestFields).forEach((key) => {
-      this.getRequestById(id)[key] = requestFields[key]
-    })
+      this.getRequestById(id)[key] = requestFields[key];
+    });
   },
   setUser(user) {
-    this.user = user
+    this.user = user;
   },
   getUser() {
-    return this.user
+    return this.user;
   },
   clearRequests() {
     this.requests = [];
-    console.log(this.requests)
   },
-}
+};

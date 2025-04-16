@@ -1,46 +1,48 @@
-import { useEffect, useState } from "react"
-import { ActivityIndicator, View } from "react-native"
-import { useRouter } from "expo-router"
-import AsyncStorage from "@react-native-async-storage/async-storage" // or use your auth provider
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // or use your auth provider
 
 export default function Index() {
-  const router = useRouter()
-  const [loading, setLoading] = useState(true)
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [location, setLocation] = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const userToken = await AsyncStorage.getItem("userToken") // Check if token exists
+        const userToken = await AsyncStorage.getItem('userToken'); // Check if token exists
         if (userToken) {
-          router.replace("/(tabs)/requests") // Redirect to Requests Tab if logged in
+          router.replace('/(tabs)/requests'); // Redirect to Requests Tab if logged in
         } else {
-          router.replace("/login") // Redirect to Login if not logged in
+          router.replace('/login'); // Redirect to Login if not logged in
         }
       } catch (error) {
-        console.error("Error checking auth:", error)
-        router.replace("/login")
+        console.error('Error checking auth:', error);
+        router.replace('/login');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    checkAuth()
-  }, [])
+    checkAuth();
+  }, []);
 
   if (loading) {
     return (
       <View
         style={{
           flex: 1,
-          backgroundColor: "transparent",
-          justifyContent: "center",
-          alignItems: "center",
+          backgroundColor: 'transparent',
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
         <ActivityIndicator size="large" color="#FF0000" />
       </View>
-    )
+    );
   }
 
-  return null // Nothing renders since the user is redirected
+  return null; // Nothing renders since the user is redirected
 }
