@@ -122,7 +122,7 @@ export const RequestView = observer(function RequestRender(props) {
       </BlurView>
       </Modal>
       </View>
-      <View>
+      <View style={{flex:1}}>
       <Modal
         animationType="slide"
         transparent={true}
@@ -144,6 +144,7 @@ export const RequestView = observer(function RequestRender(props) {
       </Modal>
 
       <FlatList
+      contentContainerStyle={{}}
         renderItem={(element) => {
           const req = element.item
           return (
