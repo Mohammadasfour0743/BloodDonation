@@ -75,6 +75,7 @@ export const RequestView = observer(function RequestRender(props) {
           style={styles.button}
           onPress={() => {
             props.setVisible(false)
+            props.setResponded(true)
           }}
         >
           <Text style={{ fontFamily: "Roboto-Bold" }}>Respond</Text>
@@ -87,7 +88,41 @@ export const RequestView = observer(function RequestRender(props) {
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Current Requests</Text>
       </View>
-
+      <View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        style={{ flex: 1 }}
+        visible={props.responded}
+        onRequestClose={() => {
+          props.setResponded(!props.responded)
+        }}
+      >
+      <BlurView style = {{flex:1, justifyContent: "center", alignItems: "center"}}>
+        <View style = {{borderWidth: 2, borderRadius: 15, padding: 10, margin: 8, borderColor: "#9A4040", flex: 1, maxWidth: 400, maxHeight: 200, justifyContent: "space-around", alignItems: "center", backgroundColor: "white", gap: 10}}>
+          <View>
+            <Text style = {{fontFamily: "Roboto-Bold", color: "#9A4040", fontSize: 20,}}>Important!</Text>
+          </View>
+          <View style = {{padding: 5}}>
+            <Text>It is recommended to wait 8 weeks between blood donations. If you have donated blood within the last 8 weeks, please wait before donating again.</Text>
+          </View>
+          <View style = {{justifyContent: "space-around", flex: 1, alignItems: "center", flexDirection: "row"}}>
+            <View  style = {{flex:1, justifyContent: "center", alignItems: "center"}}>
+            <Pressable style = {{padding: 10}} onPress = {() => props.setResponded(false)}>
+              <Text style = {{color: "#4285F4", fontFamily: "roboto-medium"}}>Cancel</Text>
+            </Pressable>
+            </View>
+            <View  style = {{flex:1, justifyContent: "center", alignItems: "center"}}>
+            <Pressable style = {{backgroundColor: "#FFEE93", padding: 10, borderRadius: 8}} onPress = {props.donate}>
+              <Text style = {{fontFamily: "roboto-bold"}}>I can donate!</Text>
+            </Pressable>
+            </View>
+          </View>
+        </View>
+      </BlurView>
+      </Modal>
+      </View>
+      <View>
       <Modal
         animationType="slide"
         transparent={true}
@@ -116,8 +151,9 @@ export const RequestView = observer(function RequestRender(props) {
               {() => (
                 <View>
                   <Pressable
-                    style={styles.requestContainer}
+                    style = {props.isPress && req.id == props.current.id ? styles.requestContainerSelected : styles.requestContainer}
                     onPress={() => {
+                      props.setIsPress(true)
                       props.setCurrent(req)
                       props.setVisible(true)
                     }}
@@ -129,13 +165,19 @@ export const RequestView = observer(function RequestRender(props) {
                         </Text>
                       </View>
                     )}
-                    <Text style={styles.requestText}>
+                    <View style = {{maxWidth: 180, flexDirection: "row", flex: 1}}>
+                    <Text style = {props.isPress && req.id == props.current.id ? styles.requestTextSelected : styles.requestText}>
                       {req.hospitalName ?? "Hospital name"}
                     </Text>
-                    <Text style={styles.separator}>{"\u2B24"}</Text>
-                    <Text style={styles.requestText}>
+                    </View>
+                    <View style = {{}}>
+                    <Text style={props.isPress && req.id == props.current.id ? styles.separatorSelected: styles.separator}>{"\u2B24"}</Text>
+                    </View>
+                    <View style = {{maxWidth: 220, flexDirection: "row", flex: 1}}>
+                    <Text style={props.isPress && req.id == props.current.id ? styles.requestTextSelected : styles.requestText}>
                       Blood Type: {req.bloodTypes.join(", ")}
                     </Text>
+                    </View>
                   </Pressable>
                 </View>
               )}
@@ -147,6 +189,7 @@ export const RequestView = observer(function RequestRender(props) {
           return element.id
         }}
       />
+      </View>
     </SafeAreaView>
   )
 })
@@ -199,8 +242,10 @@ const styles = StyleSheet.create({
   },
 
   requestContainer: {
-    backgroundColor: "#9A4040",
+    borderColor: "#9A4040",
+    backgroundColor: "#F7F7F7",
     borderRadius: 8,
+    borderWidth: 2,
     padding: 15,
     marginVertical: 7,
     justifyContent: "center",
@@ -210,15 +255,16 @@ const styles = StyleSheet.create({
   },
 
   requestText: {
-    color: "white",
+    color: "black",
     fontSize: 14,
     marginHorizontal: 12,
     fontFamily: "Roboto-Medium",
   },
 
   separator: {
-    color: "white",
+    color: "black",
     fontSize: 10,
+    padding: 2,
   },
 
   urgent: {
@@ -290,5 +336,30 @@ const styles = StyleSheet.create({
     maxHeight: 100,
     maxWidth: 340,
     left: 35,
+  },
+
+  requestContainerSelected: {
+    backgroundColor: "#9A4040", 
+    borderRadius: 8,
+    padding: 15,
+    marginVertical: 7,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    position: "relative",
+  },
+
+  requestTextSelected: {
+    color: "white",
+    fontSize: 14,
+    marginHorizontal: 12,
+    fontFamily: "Roboto-Medium",
+  },
+
+  separatorSelected: {
+    color: "white",
+    fontSize: 10,
+    padding: 2,
+
   },
 })
