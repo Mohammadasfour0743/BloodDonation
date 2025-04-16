@@ -117,7 +117,8 @@ export function fetchRequests() {
   const requestsQuery = query(
     collection(db, COLLECTION2),
     where("current", "==", true),
-    where("bloodTypes", "array-contains-any", [reactiveModel.user.bloodtype, "AB+"])
+    //where("bloodTypes", "array-contains-any", [reactiveModel.user.bloodtype, "AB+"])
+    where("bloodTypes", "array-contains", reactiveModel.user.bloodtype)
   )
 
     onSnapshot(requestsQuery, (snapshot) => {
@@ -149,7 +150,8 @@ export function fetchRequests() {
     snapshot.docChanges().forEach((change) => {
       const data = change.doc.data();
       const id = change.doc.id;
-      if ((change.type === "modified" && (data.current === false || !data.bloodTypes.includes(reactiveModel.user.bloodtype || "AB+")))) {
+      // if ((change.type === "modified" && (data.current === false || !data.bloodTypes.includes(reactiveModel.user.bloodtype || "AB+")))) {
+        if ((change.type === "modified" && (data.current === false || !data.bloodTypes.includes(reactiveModel.user.bloodtype)))) {
         runInAction(() => {
           reactiveModel.removeRequest(id);
         });
