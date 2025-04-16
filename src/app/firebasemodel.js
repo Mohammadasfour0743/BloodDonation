@@ -170,6 +170,7 @@ onAuthStateChanged(auth, async (user) => {
     reactiveModel.user.uid = user.uid
     console.log(reactiveModel.user.uid)
     connectToPersistence()
+    updateUserLocation()
     router.replace("/(tabs)/requests")
   } else {
     console.log("No user is logged in.")
@@ -188,6 +189,29 @@ async function getCurrentLocation() {
 
     let location = await Location.getCurrentPositionAsync({})
     return location
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export async function updateUserLocation() {
+  if (!reactiveModel.user.uid) {
+    console.log("a")
+    return
+  }
+  try {
+    const location = await getCurrentLocation()
+    if (!location) return
+    await setDoc(
+      doc(db, COLLECTION1, reactiveModel.user.uid),
+      {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      },
+      {
+        merge: true,
+      },
+    )
   } catch (e) {
     console.log(e)
   }
@@ -278,10 +302,11 @@ export function connectToPersistence() {
   getDoc(docToStore)
     .then((snapshot) => {
       const data = snapshot.data()
+      console.log("Initial getDoc ", data)
       if (data) {
         runInAction(() => {
-          reactiveModel.user.username = data.username ?? "default"
-          reactiveModel.user.bloodtype = data.bloodtype ?? "default"
+          if (data.username) reactiveModel.user.username = data.username
+          if (data.bloodtype) reactiveModel.user.bloodtype = data.bloodtype
           if (data.name) reactiveModel.user.name = data.name
           //console.log("getDoc:", reactiveModel.user.bloodtype);
         })
