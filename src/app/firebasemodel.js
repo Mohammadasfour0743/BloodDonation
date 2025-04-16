@@ -37,6 +37,8 @@ global.doc = doc
 global.setDoc = setDoc
 global.app = db
 
+export { db };
+
 export function signIn(username, password) {
   return signInWithEmailAndPassword(auth, username, password)
     .then(async (userCredential) => {
