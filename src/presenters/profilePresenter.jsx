@@ -14,6 +14,19 @@ export const Profile = observer((props) => {
   const [phone, setPhone] = useState(props.model.user.phonenumber)
   const [edit, setEdit] = useState(false)
   const navigation = useNavigation()
+
+  useEffect(() => {
+    setSelected(props.model.user.bloodtype || "")
+    setUsername(props.model.user.name || "")
+    setEmail(props.model.user.username || "")
+    setPhone(props.model.user.phonenumber || "")
+  }, [
+    props.model.user.bloodtype,
+    props.model.user.name,
+    props.model.user.username,
+    props.model.user.phonenumber
+  ])
+
   useEffect(() => {
     navigation.setOptions({
       tabBarStyle: {

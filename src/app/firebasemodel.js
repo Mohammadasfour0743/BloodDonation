@@ -1,4 +1,3 @@
-import React from "react"
 import { router } from "expo-router"
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage"
 import { getApps, initializeApp } from "firebase/app"
@@ -14,7 +13,6 @@ import {
   collection,
   doc,
   getDoc,
-  getDocs,
   getFirestore,
   onSnapshot,
   query,
@@ -26,13 +24,11 @@ import { reactiveModel } from "./bootstrapping";
 import { reaction } from "mobx";
 import { firebaseConfig } from "./firebaseconfig.js"
 
-//const app = initializeApp(firebaseConfig)
+
 const app =
   getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
 const db = getFirestore(app)
-export const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
-})
+export const auth = initializeAuth(app, {persistence: getReactNativePersistence(ReactNativeAsyncStorage),})
 
 const COLLECTION1 = "donors"
 const COLLECTION2 = "requests"
@@ -47,7 +43,6 @@ export function signIn(username, password) {
       const user = userCredential.user;
       console.log("User signed in:", user.email);
 
-      // setting reactiveModel.user.uid for connectToPersistance
       reactiveModel.user.uid = user.uid;
       connectToPersistence();
       console.log("User bloodtype after signin:", reactiveModel.user.bloodtype)
@@ -70,14 +65,12 @@ export async function signUp(email, password, bloodtype) {
     const user = userCredential.user
     console.log("User signed up:", user)
 
-    // creating a doc for each user
     await setDoc(doc(db, "donors", user.uid), {
       uid: user.uid,
       username: email,
       bloodtype: bloodtype,
     })
 
-    // saving it to the model
      reactiveModel.user = {
       uid: user.uid,
       username: email,
@@ -103,7 +96,6 @@ export async function logOut() {
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    // setting reactiveModel.user.uid for connectToPersistance
     reactiveModel.user.uid = user.uid;
     connectToPersistence(); 
     router.replace("/(tabs)/requests")
@@ -114,7 +106,6 @@ onAuthStateChanged(auth, async (user) => {
     router.replace("/login")
   }
 })
-
 
 export function fetchRequests() {
   if (!reactiveModel.user || !reactiveModel.user.bloodtype) {
@@ -152,7 +143,7 @@ export function fetchRequests() {
         });
       });
     });
-    // Listener for cleanup: remove any documents in the collection that become "not current".
+    
   const allRequestsQuery = collection(db, COLLECTION2);
   onSnapshot(allRequestsQuery, (snapshot) => {
     snapshot.docChanges().forEach((change) => {
@@ -166,7 +157,6 @@ export function fetchRequests() {
     });
   });
 }
-
 
 export function connectToPersistence() {
   if (!reactiveModel.user.uid) {
@@ -182,31 +172,70 @@ export function connectToPersistence() {
       runInAction(() => {
         reactiveModel.user.username = data.username ?? "default";
         reactiveModel.user.bloodtype = data.bloodtype ?? "default";
-        console.log("getDoc:", reactiveModel.user.bloodtype);
+        if (data.name) reactiveModel.user.name = data.name;
+        //console.log("getDoc:", reactiveModel.user.bloodtype);
       });
     }
-      fetchRequests();
-    })
-    .catch((error) => console.error("Error reading donor document:", error));
+    
+    fetchRequests();
+  })
+  .catch((error) => console.error("Error reading donor document:", error));
 
-    reaction(
-      () => [
-        reactiveModel.user.username,
-        reactiveModel.user.name,
-        reactiveModel.user.bloodtype,
-      ],
-      ([username, name, bloodtype]) => {
-        if (!username || !auth.currentUser || !bloodtype || !name) {
-          return
-        }
-        console.log(username, bloodtype, name)
-        console.log("Detected change in user model. Syncing to Firestore.");
-        setDoc(
-          docToStore,
-          { username, name, bloodtype },
-          { merge: true }
-        ).catch(err => console.error("Error syncing to Firestore:", err));
+  
+  onSnapshot(docToStore, (snapshot) => {
+    const data = snapshot.data();
+    if (data) {
+      const prevBloodtype = reactiveModel.user.bloodtype;
+      
+      runInAction(() => {
+        if (data.username) reactiveModel.user.username = data.username;
+        if (data.bloodtype) reactiveModel.user.bloodtype = data.bloodtype;
+        if (data.name) reactiveModel.user.name = data.name;
+        //console.log("updater received", reactiveModel.user);
+      });
+      
+      if (prevBloodtype !== data.bloodtype && data.bloodtype) {
+        //console.log("new req fetched ,bloodtype changed to", data.bloodtype);
+        reactiveModel.clearRequests();
+        fetchRequests();
       }
-    );
+    }
+  });
 
+  
+  reaction(
+    () => reactiveModel.user.bloodtype,
+    (newBloodtype, oldBloodtype) => {
+      if (newBloodtype && newBloodtype !== oldBloodtype) {
+        //console.log("bloodtype chnaged , new req fetched");
+        reactiveModel.clearRequests();
+        fetchRequests();
+      }
+    }
+  );
+
+  
+  reaction(
+    () => ({
+      username: reactiveModel.user.username,
+      name: reactiveModel.user.name,
+      bloodtype: reactiveModel.user.bloodtype
+    }),
+    (userData) => {
+      if (!auth.currentUser) return;
+      const dataToUpdate = {};
+      if (userData.username) dataToUpdate.username = userData.username;
+      if (userData.name) dataToUpdate.name = userData.name;
+      if (userData.bloodtype) dataToUpdate.bloodtype = userData.bloodtype;
+      
+      if (Object.keys(dataToUpdate).length === 0) return;
+      
+      // console.log("firestore upadted with: ",dataToUpdate);
+      setDoc(
+        docToStore,
+        dataToUpdate,
+        { merge: true }
+      ).catch(err => console.error("Error syncing to Firestore:", err));
+    }
+  );
 }
