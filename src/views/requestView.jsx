@@ -17,7 +17,8 @@ import { getFirestore, setDoc, doc, collection , getDoc } from "firebase/firesto
 
 export const RequestView = observer(function RequestRender(props) {
   const [hasClicked, setHasClicked] = useState(false);
-  const [alreadyResponded, setAlreadyResponded] = useState(false);
+  const [respondedMap, setRespondedMap] = useState({});
+
 
 
   console.log(
@@ -37,18 +38,19 @@ export const RequestView = observer(function RequestRender(props) {
       const responseDoc = await getDoc(responseRef);
   
       if (responseDoc.exists()) {
-        setAlreadyResponded(true);
+        setRespondedMap(prev => ({
+          ...prev,
+          [props.current.id]: true,
+        }));
       }
     };
     checkIfResponded();
   }, [props.current]);
-  
+
   const handleRespond = async () => {
-    if (alreadyResponded || !props.current) return;
+    if (!props.current || respondedMap[props.current.id]) return;
   
     try {
-      setAlreadyResponded(true);
-  
       const db = getFirestore();
       const user = getAuth().currentUser;
   
@@ -64,14 +66,18 @@ export const RequestView = observer(function RequestRender(props) {
         respondedAt: new Date().toISOString(),
       });
   
+      setRespondedMap(prev => ({
+        ...prev,
+        [props.current.id]: true,
+      }));
+  
       console.log("Response stored!");
       props.setVisible(false); 
     } catch (err) {
       console.error("Failed to respond:", err);
-      setAlreadyResponded(false); 
     }
   };
-
+  
   const ModelContent = observer(() => {
     return (
       <View style={styles.modal}>
@@ -128,13 +134,13 @@ export const RequestView = observer(function RequestRender(props) {
         <Pressable
         style={[
         styles.button,
-        (alreadyResponded || hasClicked) && { opacity: 0.5 },
+        (respondedMap[props.current?.id] || hasClicked) && { opacity: 0.5 },
         ]}
         onPress={handleRespond}
-        disabled={alreadyResponded || hasClicked}
+        disabled={respondedMap[props.current?.id] || hasClicked}
         >
         <Text style={{ fontFamily: "Roboto-Bold" }}>
-        {alreadyResponded ? "Already Responded" : "Respond"}
+        {respondedMap[props.current?.id] ? "Already Responded" : "Respond"}
         </Text>
         </Pressable>
       </View>
@@ -337,3 +343,5 @@ const styles = StyleSheet.create({
     left: 35,
   },
 })
+
+
