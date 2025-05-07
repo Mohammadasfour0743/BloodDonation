@@ -40,7 +40,7 @@ const COLLECTION2 = "requests"
 global.doc = doc
 global.setDoc = setDoc
 global.app = db
-
+/*
 // Fetch all requests near a donor
 export async function getNearbyRequestsForDonor(donorId, radiusInKm = 10) {
   console.log("getting requests " + donorId)
@@ -106,7 +106,7 @@ function getBoundingBox(lat, lng, radius) {
   const lngMax = lng + toDeg(radius / R / Math.cos(latRadian))
 
   return { latMin, latMax, lngMin, lngMax }
-}
+}*/
 
 export function signIn(username, password) {
   return signInWithEmailAndPassword(auth, username, password)
