@@ -113,6 +113,8 @@ export function signIn(username, password) {
     .then(async (userCredential) => {
       const user = userCredential.user
       console.log("User signed in:", user.email)
+      reactiveModel.clearUser()
+      reactiveModel.clearRequests()
 
       reactiveModel.user.uid = user.uid
       connectToPersistence()
@@ -128,6 +130,7 @@ export function signIn(username, password) {
 
 export async function signUp(email, password, bloodtype) {
   try {
+    reactiveModel.clearUser()
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -135,19 +138,24 @@ export async function signUp(email, password, bloodtype) {
     )
     const user = userCredential.user
     console.log("User signed up:", user)
-
-    await setDoc(doc(db, "donors", user.uid), {
-      uid: user.uid,
-      username: email,
-      bloodtype: bloodtype,
-    })
+    console.log("Blodtypeeeee", bloodtype)
+    reactiveModel.ready = false
+    await setDoc(
+      doc(db, "donors", user.uid),
+      {
+        uid: user.uid,
+        username: email,
+        bloodtype: bloodtype,
+      },
+      { merge: true },
+    )
 
     reactiveModel.user = {
       uid: user.uid,
       username: email,
       bloodtype: bloodtype,
     }
-
+    reactiveModel.ready = true
     return userCredential
   } catch (error) {
     console.error("Sign Up Error:", error.message)
@@ -156,17 +164,22 @@ export async function signUp(email, password, bloodtype) {
 }
 
 export async function logOut() {
-  signOut(auth)
-    .then(() => {
-      console.log("User bloodtype after logOut:", reactiveModel.user.bloodtype)
-    })
-    .catch((error) => {
-      console.error("Sign Out Error:", error.code, error.message)
-    })
+  try {
+    reactiveModel.clearUser()
+    reactiveModel.clearRequests()
+
+    await signOut(auth)
+    console.log("User signed out successfully")
+  } catch (error) {
+    console.error("Sign Out Error:", error.code, error.message)
+    throw error
+  }
 }
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
+    /* reactiveModel.clearUser();
+    reactiveModel.clearRequests(); */
     reactiveModel.user.uid = user.uid
     console.log(reactiveModel.user.uid)
     connectToPersistence()
@@ -174,7 +187,7 @@ onAuthStateChanged(auth, async (user) => {
     router.replace("/(tabs)/requests")
   } else {
     console.log("No user is logged in.")
-    reactiveModel.setUser({})
+    reactiveModel.clearUser()
     reactiveModel.clearRequests()
     router.replace("/login")
   }
@@ -202,6 +215,7 @@ export async function updateUserLocation() {
   try {
     const location = await getCurrentLocation()
     if (!location) return
+    reactiveModel.ready = false
     await setDoc(
       doc(db, COLLECTION1, reactiveModel.user.uid),
       {
@@ -212,6 +226,7 @@ export async function updateUserLocation() {
         merge: true,
       },
     )
+    reactiveModel.ready = true
   } catch (e) {
     console.log(e)
   }
@@ -297,9 +312,8 @@ export function connectToPersistence() {
     )
     return
   }
-  const docToStore = doc(db, COLLECTION1, reactiveModel.user.uid)
 
-  getDoc(docToStore)
+  getDoc(doc(db, COLLECTION1, reactiveModel.user.uid))
     .then((snapshot) => {
       const data = snapshot.data()
       console.log("Initial getDoc ", data)
@@ -316,7 +330,7 @@ export function connectToPersistence() {
     })
     .catch((error) => console.error("Error reading donor document:", error))
 
-  onSnapshot(docToStore, (snapshot) => {
+  onSnapshot(doc(db, COLLECTION1, reactiveModel.user.uid), (snapshot) => {
     const data = snapshot.data()
     if (data) {
       const prevBloodtype = reactiveModel.user.bloodtype
@@ -338,34 +352,49 @@ export function connectToPersistence() {
 
   reaction(
     () => reactiveModel.user.bloodtype,
-    (newBloodtype, oldBloodtype) => {
+    async (newBloodtype, oldBloodtype) => {
+      if (!reactiveModel.ready) {
+        return
+      }
       if (newBloodtype && newBloodtype !== oldBloodtype) {
         //console.log("bloodtype chnaged , new req fetched");
         reactiveModel.clearRequests()
         fetchRequests()
+        const docToStore = doc(db, COLLECTION1, reactiveModel.user.uid)
+        reactiveModel.ready = false
+        await setDoc(
+          docToStore,
+          { bloodtype: newBloodtype },
+          { merge: true },
+        ).catch((err) => console.error("Error syncing to Firestore:", err))
+        reactiveModel.ready = true
       }
     },
   )
 
-  reaction(
+  /*  reaction(
     () => ({
       username: reactiveModel.user.username,
       name: reactiveModel.user.name,
       bloodtype: reactiveModel.user.bloodtype,
     }),
-    (userData) => {
-      if (!auth.currentUser) return
-      const dataToUpdate = {}
-      if (userData.username) dataToUpdate.username = userData.username
-      if (userData.name) dataToUpdate.name = userData.name
-      if (userData.bloodtype) dataToUpdate.bloodtype = userData.bloodtype
+    async (userData) => {
+      if (!reactiveModel.ready) {
+        return;
+      }
+      if (!auth.currentUser) return;
+      const dataToUpdate = {};
+      if (userData.username) dataToUpdate.username = userData.username;
+      if (userData.name) dataToUpdate.name = userData.name;
+      if (userData.bloodtype) dataToUpdate.bloodtype = userData.bloodtype;
 
-      if (Object.keys(dataToUpdate).length === 0) return
-
+      if (Object.keys(dataToUpdate).length === 0) return;
+      reactiveModel.ready = false;
       // console.log("firestore upadted with: ",dataToUpdate);
-      setDoc(docToStore, dataToUpdate, { merge: true }).catch((err) =>
-        console.error("Error syncing to Firestore:", err),
-      )
-    },
-  )
+      /*  await setDoc(docToStore, dataToUpdate, { merge: true }).catch((err) =>
+        console.error('Error syncing to Firestore:', err)
+      ); 
+      reactiveModel.ready = true;
+    }
+  ); */
 }

@@ -1,5 +1,6 @@
 export const model = {
   user: {
+    uid: null,
     username: null,
     bloodtype: null,
   },
@@ -8,7 +9,7 @@ export const model = {
 
   requests: [],
   addRequest(req) {
-    if(this.requests.find(((val)=>val.id==req.id))) return
+    if (this.requests.find((val) => val.id == req.id)) return
     this.requests = [req, ...this.requests]
   },
 
@@ -48,7 +49,14 @@ export const model = {
     return this.user
   },
   clearRequests() {
-    this.requests = [];
+    this.requests = []
     console.log(this.requests)
+  },
+
+  clearUser() {
+    this.user = {
+      username: null,
+      bloodtype: null,
+    }
   },
 }
