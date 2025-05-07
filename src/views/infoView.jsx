@@ -93,7 +93,7 @@ export function InfoView(props) {
         <View style = {{marginLeft: 15, marginBottom: 10}}>
           <Text style = {{fontFamily: "Roboto-bold", fontSize: 15, color: "#9a4040"}}>Criteria for Blood Donor Selection is according to Association for the Advancement of Blood & Biotherapies</Text>
         </View>
-        <View style = {{marginBottom: 30, marginLeft: 15}}>
+        <View style = {{marginBottom: 100, marginLeft: 15}}>
           <Text style = {{color: "#9a4040", fontSize: 15, textDecorationLine: "underline"}} onPress={() => Linking.openURL("https://www.aabb.org/for-donors-patients/about-blood-donation")}>Learn more</Text>
         </View>
       </ScrollView>
