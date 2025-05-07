@@ -24,24 +24,29 @@ export const Profile = observer((props) => {
     props.model.user.bloodtype,
     props.model.user.name,
     props.model.user.username,
-    props.model.user.phonenumber
+    props.model.user.phonenumber,
   ])
 
   useEffect(() => {
     navigation.setOptions({
       tabBarStyle: {
         display: edit ? "none" : "flex",
-        alignSelf: "center",
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: 25,
+        marginHorizontal: "10%",
         borderRadius: 15,
         width: "80%",
+        alignSelf: "center",
         borderTopWidth: 0,
         shadowOpacity: 0.5,
-        marginBottom: 20,
         height: 60,
         paddingTop: 5,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "white",
+        backgroundColor: "rgba(255, 255, 255, 1)",
+        elevation: 2,
       },
     })
   }, [edit])
