@@ -83,7 +83,7 @@ export async function getNearbyRequestsForDonor(donorId, radiusInKm = 10) {
   } catch (e) {
     console.log(e)
   }
-}
+}*/
 
 const R = 6371 // Earth's radius in km
 const radius = 50 // 50 km
@@ -96,7 +96,7 @@ function toDeg(radians) {
   return (radians * 180) / Math.PI
 }
 
-function getBoundingBox(lat, lng, radius) {
+export function getBoundingBox(lat, lng, radius) {
   const latRadian = toRad(lat)
 
   const latMin = lat - toDeg(radius / R)
@@ -106,7 +106,7 @@ function getBoundingBox(lat, lng, radius) {
   const lngMax = lng + toDeg(radius / R / Math.cos(latRadian))
 
   return { latMin, latMax, lngMin, lngMax }
-}*/
+}
 
 export function signIn(username, password) {
   return signInWithEmailAndPassword(auth, username, password)
@@ -193,7 +193,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 })
 
-async function getCurrentLocation() {
+export async function getCurrentLocation() {
   try {
     let { status } = await Location.requestForegroundPermissionsAsync()
     if (status !== "granted") {
