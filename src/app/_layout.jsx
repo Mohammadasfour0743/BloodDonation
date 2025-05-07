@@ -5,6 +5,9 @@ import { View } from "react-native"
 import { useFonts } from "expo-font"
 import { Stack } from "expo-router"
 
+import "react-native-reanimated"
+import "react-native-gesture-handler"
+
 import { getNearbyRequestsForDonor } from "./firebasemodel"
 
 export default function RootLayout() {
@@ -18,10 +21,13 @@ export default function RootLayout() {
   return (
     <View style={{ flex: 1, backgroundColor: "transparent" }}>
       <Stack
+        initialRouteName="index"
         screenOptions={{
           title: "Blood Donor App",
         }}
       >
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="signup" options={{ headerShown: false }} />
 

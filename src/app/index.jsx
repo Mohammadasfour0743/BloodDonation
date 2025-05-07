@@ -14,7 +14,7 @@ export default function Index() {
         if (userToken) {
           router.replace("/(tabs)/requests") // Redirect to Requests Tab if logged in
         } else {
-          router.replace("/(tabs)/information") // Redirect to Login if not logged in
+          // Redirect to Login if not logged in
         }
       } catch (error) {
         console.error("Error checking auth:", error)

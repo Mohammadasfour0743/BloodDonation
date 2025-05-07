@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import {
   Dimensions,
   FlatList,
@@ -10,67 +11,77 @@ import {
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { BlurView } from "expo-blur"
-import { Observer, observer } from "mobx-react-lite"
-import { useEffect, useState } from "react"
 import { getAuth } from "firebase/auth"
-import { getFirestore, setDoc, doc, collection , getDoc } from "firebase/firestore"
+import {
+  collection,
+  doc,
+  getDoc,
+  getFirestore,
+  setDoc,
+} from "firebase/firestore"
+import { Observer, observer } from "mobx-react-lite"
+import { MotiView } from "moti"
+import { Skeleton } from "moti/skeleton"
 
 export const RequestView = observer(function RequestRender(props) {
-  const [hasClicked, setHasClicked] = useState(false);
-  const [alreadyResponded, setAlreadyResponded] = useState(false);
-
+  const [hasClicked, setHasClicked] = useState(false)
+  const [alreadyResponded, setAlreadyResponded] = useState(false)
 
   console.log(
     "RequestView rendering with data:",
     props.requestsArray?.length || 0,
-    "items"
+    "items",
   )
 
   useEffect(() => {
     const checkIfResponded = async () => {
-      const db = getFirestore();
-      const user = getAuth().currentUser;
-  
-      if (!user || !props.current) return;
-  
-      const responseRef = doc(db, "responses", `${user.uid}_${props.current.id}`);
-      const responseDoc = await getDoc(responseRef);
-  
-      if (responseDoc.exists()) {
-        setAlreadyResponded(true);
-      }
-    };
-    checkIfResponded();
-  }, [props.current]);
-  
-  const handleRespond = async () => {
-    if (alreadyResponded || !props.current) return;
-  
-    try {
-      setAlreadyResponded(true);
-  
-      const db = getFirestore();
-      const user = getAuth().currentUser;
-  
+      const db = getFirestore()
+      const user = getAuth().currentUser
+
+      if (!user || !props.current) return
+
       const responseRef = doc(
         db,
         "responses",
-        `${user.uid}_${props.current.id}`
-      );
-  
+        `${user.uid}_${props.current.id}`,
+      )
+      const responseDoc = await getDoc(responseRef)
+
+      if (responseDoc.exists()) {
+        setAlreadyResponded(true)
+      }
+    }
+    checkIfResponded()
+  }, [props.current])
+
+  const handleRespond = async () => {
+    if (alreadyResponded || !props.current) return
+
+    try {
+      setAlreadyResponded(true)
+
+      const db = getFirestore()
+      const user = getAuth().currentUser
+
+      const responseRef = doc(
+        db,
+        "responses",
+        `${user.uid}_${props.current.id}`,
+      )
+
       await setDoc(responseRef, {
         userId: user.uid,
         requestId: props.current.id,
         respondedAt: new Date().toISOString(),
-      });
-  
-      console.log("Response stored!");
-      props.setVisible(false); 
+      })
+
+      console.log("Response stored!")
+      props.setVisible(false)
     } catch (err) {
-      console.error("Failed to respond:", err);
-      setAlreadyResponded(false); 
+      console.error("Failed to respond:", err)
+      setAlreadyResponded(false)
     }
-  };
+  }
 
   const ModelContent = observer(() => {
     return (
@@ -126,21 +137,93 @@ export const RequestView = observer(function RequestRender(props) {
           </Text>
         </View>
         <Pressable
-        style={[
-        styles.button,
-        (alreadyResponded || hasClicked) && { opacity: 0.5 },
-        ]}
-        onPress={handleRespond}
-        disabled={alreadyResponded || hasClicked}
+          style={[
+            styles.button,
+            (alreadyResponded || hasClicked) && { opacity: 0.5 },
+          ]}
+          onPress={handleRespond}
+          disabled={alreadyResponded || hasClicked}
         >
-        <Text style={{ fontFamily: "Roboto-Bold" }}>
-        {alreadyResponded ? "Already Responded" : "Respond"}
-        </Text>
+          <Text style={{ fontFamily: "Roboto-Bold" }}>
+            {alreadyResponded ? "Already Responded" : "Respond"}
+          </Text>
         </Pressable>
       </View>
     )
   })
+  if (props.requestsArray?.length < 1) {
+    return (
+      <MotiView
+        transition={{
+          type: "timing",
+        }}
+        style={[styles.container, { alignItems: "center" }]}
+        animate={{ backgroundColor: "#ffffff" }}
+      >
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>Current Requests</Text>
+        </View>
 
+        <Spacer />
+        <Skeleton
+          colorMode="light"
+          radius={"round"}
+          height={60}
+          width={"90%"}
+        />
+        <Spacer />
+        <Skeleton
+          colorMode="light"
+          radius={"round"}
+          height={60}
+          width={"90%"}
+        />
+        <Spacer />
+        <Skeleton
+          colorMode="light"
+          radius={"round"}
+          height={60}
+          width={"90%"}
+        />
+        <Spacer />
+        <Skeleton
+          colorMode="light"
+          radius={"round"}
+          height={60}
+          width={"90%"}
+        />
+        <Spacer />
+        <Skeleton
+          colorMode="light"
+          radius={"round"}
+          height={60}
+          width={"90%"}
+        />
+        <Spacer />
+        <Skeleton
+          colorMode="light"
+          radius={"round"}
+          height={60}
+          width={"90%"}
+        />
+        <Spacer />
+        <Skeleton
+          colorMode="light"
+          radius={"round"}
+          height={60}
+          width={"90%"}
+        />
+        <Spacer />
+        <Skeleton
+          colorMode="light"
+          radius={"round"}
+          height={60}
+          width={"90%"}
+        />
+        <Spacer />
+      </MotiView>
+    )
+  }
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.titleContainer}>
@@ -209,12 +292,24 @@ export const RequestView = observer(function RequestRender(props) {
     </SafeAreaView>
   )
 })
+const Spacer = ({ height = 16 }) => <View style={{ height }} />
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "transparent",
     flex: 1,
     padding: 10,
+  },
+  shape: {
+    justifyContent: "center",
+    height: 250,
+    width: 250,
+    borderRadius: 25,
+    marginRight: 10,
+    backgroundColor: "white",
+  },
+  padded: {
+    padding: 16,
   },
   title: {
     color: "#9A4040",

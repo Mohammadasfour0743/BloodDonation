@@ -186,10 +186,10 @@ onAuthStateChanged(auth, async (user) => {
     updateUserLocation()
     router.replace("/(tabs)/requests")
   } else {
+    router.replace("/login")
     console.log("No user is logged in.")
     reactiveModel.clearUser()
     reactiveModel.clearRequests()
-    router.replace("/login")
   }
 })
 
