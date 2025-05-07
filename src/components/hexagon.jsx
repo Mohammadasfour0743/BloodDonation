@@ -21,7 +21,7 @@ import Vaccines from "./vaccines";
 import InfoText from "./infoText";
 import Temperature from "./temperature";
 
-const Hexagon = ({ name, size, style, open, color }) => {
+const Hexagon = ({ name, size, style, open, color, text1 }) => {
   const height = Math.sqrt(3) * size;
   const randcolor = chooseColor(); // just the color string now
   const points = `
@@ -35,18 +35,40 @@ const Hexagon = ({ name, size, style, open, color }) => {
 
   return (
     <View style={{ justifyContent: "center", alignItems: "center", flex: 1, width: 2 * size, height, ...style }}>
-      <TouchableOpacity onPress={open}>
+      <TouchableOpacity disabled = {name == null || name == undefined} onPress={open}>
       <Svg height={height} width={2 * size}>
         <Polygon points={points} fill={color??randcolor} />
         <Text fontWeight={700} fill="#780000" fontSize={12} x = {74} y = {30} textAnchor= "middle">{name?.toUpperCase()}</Text>
-        <G x = {38} y = {50} >{React.cloneElement(getIcon(name))}</G>
+        <G x = {38} y = {50} >{React.cloneElement(getIcon(name, text1))}</G>
       </Svg>
       </TouchableOpacity>
     </View>
   );
+  
 };
 
 export default Hexagon;
+
+const dictionary = {
+  "Age": "You can donate if you are between 18 and 60 years old.",
+  "Smoking": "Smoking does not affect blood donation. You can still donate.",
+  "Hemoglobin": "Hemoglobin level should be above 13 for women, and above 13.5 for men.",
+  "Tattoo": "12 months waiting period.",
+  "Health": "You cannot donate if you have ongoing liver, lung or heart conditions",
+  "Weight": "Women above 50 kg can donate. Men above 60 kg can donate.",
+  "Dental": "Can donate if no surgery and/or anesthesia was applied.",
+  "Surgery": "12 months waiting period after surgery.",
+  "Allergies": "You can donate if you are feeling well. 14 days waiting period if the symptoms are severe.",
+  "Viruses":"It depends on each virus. Waiting period for Covid-19 is 1-3 months.",
+  "Vaccines": "Waiting period between 1 and 3 months depending on the vaccine.",
+  "Cholestorol": "Can donate if regulated depending on hospital.",
+  "Pregnancy": "Cannot donate if pregnant or breastfeeding (12 months waiting period postpartum).",
+  "Diabetes": "Cannot donate if taking insulin injections.",
+  "Pressure": "Can donate if regulated, no signs of hypertension.",
+  "Travel": "You cannot donate if you traveled to an endemic country for malaria.",
+  "Temperature": "To donate, your body temperature should not exceed 36-37°C.",
+  "Antibiotics":"Waiting period 14 days after completion of treatment."
+}
 
 function chooseColor() {
   const colors = [
@@ -59,7 +81,7 @@ function chooseColor() {
   return colors[index];
 }
 
-function getIcon(name){
+function getIcon(name, text1){
   switch(name){
       case "Hemoglobin": 
         return <Hemoglobin width = {70} height = {70} />;
@@ -98,6 +120,6 @@ function getIcon(name){
       case "Temperature":
         return <Temperature width = {70} height = {70} />;
       default:
-        return <InfoText startY = {80} centerX = {80} text = "alalalalllaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" />
+        return <InfoText startY = {70} centerX = {105} text = {dictionary[text1] ?? "wroefai"} />;
     }
 }

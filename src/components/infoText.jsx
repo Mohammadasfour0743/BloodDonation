@@ -8,6 +8,8 @@ const InfoText = ({centerX, startY, text}) =>{
         x={centerX}
         y={startY}
         textAnchor="middle"
+        fontWeight={800}
+        fontSize={13}
       >
         {textLines.map((line, index) => (
           <TSpan

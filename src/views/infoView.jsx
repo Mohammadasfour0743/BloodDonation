@@ -1,5 +1,7 @@
-import { SafeAreaView, ScrollView, StyleSheet, View, Modal, Text } from "react-native"
+import { SafeAreaView, ScrollView, StyleSheet, View, Modal, Text, Dimensions, TouchableOpacity, Pressable } from "react-native"
 import Hexagon from "../components/hexagon"
+
+const windowWidth = Dimensions.get('window').width;
 
 export function InfoView(props) {
   return (
@@ -12,41 +14,42 @@ export function InfoView(props) {
               onRequestClose={() => {
                 props.setModalVisible(!props.modalVisible)
               }}>
-              <View style = {styles.modalContainer}>
-                <Hexagon color = "white" size={180}></Hexagon>
-              </View>
+              <Pressable onPress = {()=>props.setModalVisible(false)} style = {styles.modalContainer}>
+                <Hexagon color = "#F0F0F0" size={150} text1 = {props.selected}>
+                </Hexagon>
+              </Pressable>
               </Modal>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={{ height: 7 * (75 * 1.732 + 32) }}> 
           <View style={styles.hexRow}>
-            <Hexagon style={styles.hex1} open={()=>props.setModalVisible(true)} size={75} name="Hemoglobin"/>
-            <Hexagon style={styles.hex2} size={75} name="Smoking"/>
-            <Hexagon style={styles.hex3} size={75} name="Dental"/>
+            <Hexagon style={styles.hex1} open={()=>{props.setModalVisible(true); props.setSelected("Hemoglobin")}} size={75} name="Hemoglobin"/>
+            <Hexagon style={styles.hex2} open={()=>{props.setModalVisible(true); props.setSelected("Smoking")}} size={75} name="Smoking"/>
+            <Hexagon style={styles.hex3} open={()=>{props.setModalVisible(true); props.setSelected("Dental")}} size={75} name="Dental"/>
           </View>
           <View style={styles.hexRow}>
-            <Hexagon style={styles.hex1} size={75} name="Tattoo"/>
-            <Hexagon style={styles.hex2} size={75} name="Antibiotics"/>
-            <Hexagon style={styles.hex3} size={75} name="Viruses"/>
+            <Hexagon style={styles.hex1} open={()=>{props.setModalVisible(true); props.setSelected("Tattoo")}} size={75} name="Tattoo"/>
+            <Hexagon style={styles.hex2} open={()=>{props.setModalVisible(true); props.setSelected("Antibiotics")}} size={75} name="Antibiotics"/>
+            <Hexagon style={styles.hex3} open={()=>{props.setModalVisible(true); props.setSelected("Viruses")}} size={75} name="Viruses"/>
           </View>
           <View style={styles.hexRow}>
-            <Hexagon style={styles.hex1} size={75} name="Weight"/>
-            <Hexagon style={styles.hex2} size={75} name="Health"/>
-            <Hexagon style={styles.hex3} size={75} name="Surgery"/>
+            <Hexagon style={styles.hex1} open={()=>{props.setModalVisible(true); props.setSelected("Weight")}} size={75} name="Weight"/>
+            <Hexagon style={styles.hex2} open={()=>{props.setModalVisible(true); props.setSelected("Health")}} size={75} name="Health"/>
+            <Hexagon style={styles.hex3} open={()=>{props.setModalVisible(true); props.setSelected("Surgery")}} size={75} name="Surgery"/>
           </View>
           <View style={styles.hexRow}>
-            <Hexagon style={styles.hex1} size={75} name="Pregnancy"/>
-            <Hexagon style={styles.hex2} size={75} name="Vaccines"/>
-            <Hexagon style={styles.hex3} size={75} name="Cholestorol"/>
+            <Hexagon style={styles.hex1} open={()=>{props.setModalVisible(true); props.setSelected("Pregnancy")}} size={75} name="Pregnancy"/>
+            <Hexagon style={styles.hex2} open={()=>{props.setModalVisible(true); props.setSelected("Vaccines")}} size={75} name="Vaccines"/>
+            <Hexagon style={styles.hex3} open={()=>{props.setModalVisible(true); props.setSelected("Cholestorol")}} size={75} name="Cholestorol"/>
           </View>
           <View style={styles.hexRow}>
-            <Hexagon style={styles.hex1} size={75} name="Diabetes"/>
-            <Hexagon style={styles.hex2} size={75} name="Age"/>
-            <Hexagon style={styles.hex3} size={75} name="Allergies"/>
+            <Hexagon style={styles.hex1} open={()=>{props.setModalVisible(true); props.setSelected("Diabetes")}} size={75} name="Diabetes"/>
+            <Hexagon style={styles.hex2} open={()=>{props.setModalVisible(true); props.setSelected("Age")}} size={75} name="Age"/>
+            <Hexagon style={styles.hex3} open={()=>{props.setModalVisible(true); props.setSelected("Allergies")}} size={75} name="Allergies"/>
           </View>
           <View style={styles.hexRow}>
-            <Hexagon style={styles.hex1} size={75} name="Travel"/>
-            <Hexagon style={styles.hex2} size={75} name="Pressure"/>
-            <Hexagon style={styles.hex3} size={75} name="Temperature"/>
+            <Hexagon style={styles.hex1} open={()=>{props.setModalVisible(true); props.setSelected("Travel")}} size={75} name="Travel"/>
+            <Hexagon style={styles.hex2} open={()=>{props.setModalVisible(true); props.setSelected("Pressure")}} size={75} name="Pressure"/>
+            <Hexagon style={styles.hex3} open={()=>{props.setModalVisible(true); props.setSelected("Temperature")}} size={75} name="Temperature"/>
           </View>
         </View>
       </ScrollView>
@@ -58,9 +61,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
+    justifyContent: "center",
   },
   content: {
     flexGrow: 1,
+    marginLeft: (3 / 7) * windowWidth - 166.14,
   },
   hexRow: {
     maxHeight: 75 * 1.732 + 1,
@@ -80,7 +85,7 @@ const styles = StyleSheet.create({
   hex3: {
     position: "absolute",
     top: 65,
-    right: 4,
+    left: 236,
   },
   modalContainer: {
     flex: 1,
