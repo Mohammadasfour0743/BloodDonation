@@ -10,22 +10,29 @@ export default function TabLayout() {
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            alignSelf: "center",
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 25,
+            marginHorizontal: "10%",
             borderRadius: 15,
             width: "80%",
+            alignSelf: "center",
             borderTopWidth: 0,
             shadowOpacity: 0.5,
-            marginBottom: 20,
             height: 60,
             paddingTop: 5,
             justifyContent: "center",
             alignItems: "center",
-            backgroundColor: "white",
+            backgroundColor: "rgba(255, 255, 255, 1)",
+            elevation: 2,
           },
           tabBarLabelStyle: {
             fontFamily: "Roboto-Medium",
-            fontSize: 12, // Adjust label size
-            backgroundColor: "white",
+            fontSize: 12,
+          },
+          tabBarItemStyle: {
+            backgroundColor: "transparent",
           },
         }}
       >
@@ -66,13 +73,7 @@ export default function TabLayout() {
           options={{
             title: "Information",
             tabBarIcon: () => {
-              return (
-                <MaterialIcons
-                  name="opacity"
-                  size={24}
-                  color="#9A4040"
-                />
-              )
+              return <MaterialIcons name="opacity" size={24} color="#9A4040" />
             },
             tabBarLabelStyle: {
               color: "#9A4040",
