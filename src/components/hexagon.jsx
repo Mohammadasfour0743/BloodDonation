@@ -15,15 +15,16 @@ import Age from "./age";
 import Diabetes from "./diabetes";
 import Antibiotics from "./antibiotics";
 import Pressure from "./pressure";
-import Cholestorol from "./cholestorol";
+import Cholesterol from "./cholesterol";
 import Allergies from "./allergies";
 import Vaccines from "./vaccines";
 import InfoText from "./infoText";
 import Temperature from "./temperature";
+import { useMemo } from "react"
 
 const Hexagon = ({ name, size, style, open, color, text1 }) => {
   const height = Math.sqrt(3) * size;
-  const randcolor = chooseColor(); // just the color string now
+  const randcolor = useMemo(() => chooseColor(), []); // just the color string now
   const points = `
     ${size / 2},0 
     ${1.5 * size},0 
@@ -107,8 +108,8 @@ function getIcon(name, text1){
         return <Age width = {80} height = {80} />;
       case "Diabetes":
         return <Diabetes width = {77} height = {77} />;
-      case "Cholestorol":
-        return <Cholestorol width = {80} height = {80} />;
+      case "Cholesterol":
+        return <Cholesterol width = {80} height = {80} />;
       case "Antibiotics":
         return <Antibiotics width = {70} height = {70} />; 
       case "Allergies":
