@@ -1,14 +1,14 @@
-import { useState, useEffect} from "react"
-import { router } from "expo-router"
-import { observer } from "mobx-react-lite"
-import { RequestView } from "src/views/requestView"
+import { useState, useEffect } from 'react';
+import { router } from 'expo-router';
+import { observer } from 'mobx-react-lite';
+import { RequestView } from 'src/views/requestView';
 
 export const Request = observer((props) => {
-  const [modalVisible, setModalVisible] = useState(false)
-  const [currentRequest, setCurrentRequest] = useState(null)
+  const [modalVisible, setModalVisible] = useState(false);
+  const [currentRequest, setCurrentRequest] = useState(null);
   useEffect(() => {
-    if (!props.model.getRequestById(currentRequest?.Id)) setModalVisible(false)
-  }, [props.model.requests])
+    if (!props.model.getRequestById(currentRequest?.Id)) setModalVisible(false);
+  }, [props.model.requests]);
   return (
     <RequestView
       requestsArray={props.model.requests}
@@ -16,6 +16,7 @@ export const Request = observer((props) => {
       setVisible={setModalVisible}
       current={currentRequest}
       setCurrent={setCurrentRequest}
+      bloodType={props.model.user.bloodtype}
     />
-  )
-})
+  );
+});

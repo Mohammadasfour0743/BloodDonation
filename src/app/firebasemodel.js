@@ -42,6 +42,10 @@ global.setDoc = setDoc
 global.app = db
 
 // Fetch all requests near a donor
+/* export async function getNearbyRequestsForDonor(donorId, radiusInKm = 10) {
+  console.log('getting requests ' + donorId);
+  const donorRef = doc(db, 'donors', donorId);
+  const donorSnap = await getDoc(donorRef);
 export async function getNearbyRequestsForDonor(donorId, radiusInKm = 10) {
   console.log("getting requests " + donorId)
   const donorRef = doc(db, "donors", donorId)
@@ -83,7 +87,7 @@ export async function getNearbyRequestsForDonor(donorId, radiusInKm = 10) {
   } catch (e) {
     console.log(e)
   }
-}
+} */
 
 const R = 6371 // Earth's radius in km
 const radius = 50 // 50 km
@@ -96,6 +100,8 @@ function toDeg(radians) {
   return (radians * 180) / Math.PI
 }
 
+export function getBoundingBox(lat, lng, radius) {
+  const latRadian = toRad(lat);
 function getBoundingBox(lat, lng, radius) {
   const latRadian = toRad(lat)
 
@@ -111,6 +117,8 @@ function getBoundingBox(lat, lng, radius) {
 export function signIn(username, password) {
   return signInWithEmailAndPassword(auth, username, password)
     .then(async (userCredential) => {
+      const user = userCredential.user;
+      console.log('User signed in:', user.email);
       const user = userCredential.user
       console.log("User signed in:", user.email)
       reactiveModel.clearUser()
@@ -130,6 +138,15 @@ export function signIn(username, password) {
 
 export async function signUp(email, password, bloodtype) {
   try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    console.log('User signed up:', user);
+
+    await setDoc(doc(db, 'donors', user.uid), {
+      uid: user.uid,
+      username: email,
+      bloodtype: bloodtype,
+    });
     reactiveModel.clearUser()
     const userCredential = await createUserWithEmailAndPassword(
       auth,
@@ -154,6 +171,9 @@ export async function signUp(email, password, bloodtype) {
       uid: user.uid,
       username: email,
       bloodtype: bloodtype,
+    };
+
+    return userCredential;
     }
     reactiveModel.ready = true
     return userCredential
@@ -164,6 +184,13 @@ export async function signUp(email, password, bloodtype) {
 }
 
 export async function logOut() {
+  signOut(auth)
+    .then(() => {
+      console.log('User bloodtype after logOut:', reactiveModel.user.bloodtype);
+    })
+    .catch((error) => {
+      console.error('Sign Out Error:', error.code, error.message);
+    });
   try {
     reactiveModel.clearUser()
     reactiveModel.clearRequests()
@@ -178,6 +205,11 @@ export async function logOut() {
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
+    reactiveModel.user.uid = user.uid;
+    console.log(reactiveModel.user.uid);
+    connectToPersistence();
+    updateUserLocation();
+    router.replace('/(tabs)/requests');
     /* reactiveModel.clearUser();
     reactiveModel.clearRequests(); */
     reactiveModel.user.uid = user.uid
@@ -186,6 +218,10 @@ onAuthStateChanged(auth, async (user) => {
     updateUserLocation()
     router.replace("/(tabs)/requests")
   } else {
+    console.log('No user is logged in.');
+    reactiveModel.setUser({});
+    reactiveModel.clearRequests();
+    router.replace('/login');
     console.log("No user is logged in.")
     reactiveModel.clearUser()
     reactiveModel.clearRequests()
@@ -193,7 +229,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 })
 
-async function getCurrentLocation() {
+export async function getCurrentLocation() {
   try {
     let { status } = await Location.requestForegroundPermissionsAsync()
     if (status !== "granted") {
@@ -213,6 +249,8 @@ export async function updateUserLocation() {
     return
   }
   try {
+    const location = await getCurrentLocation();
+    if (!location) return;
     const location = await getCurrentLocation()
     if (!location) return
     reactiveModel.ready = false
@@ -224,6 +262,8 @@ export async function updateUserLocation() {
       },
       {
         merge: true,
+      }
+    );
       },
     )
     reactiveModel.ready = true
@@ -237,12 +277,15 @@ export async function fetchRequests() {
     console.error("Cannot fetch requests: user or bloodtype not set in model")
     return
   }
+  console.log('Fetching requests for bloodtype:', reactiveModel.user.bloodtype);
   console.log("Fetching requests for bloodtype:", reactiveModel.user.bloodtype)
   const location = await getCurrentLocation()
   let requestsQuery = query(
     collection(db, COLLECTION2),
+    where('current', '==', true)
     where("current", "==", true),
     //where("bloodTypes", "array-contains-any", [reactiveModel.user.bloodtype, "AB+"])
+  );
     where("bloodTypes", "array-contains", reactiveModel.user.bloodtype),
   )
   if (location) {
@@ -312,8 +355,9 @@ export function connectToPersistence() {
     )
     return
   }
+  const docToStore = doc(db, COLLECTION1, reactiveModel.user.uid);
 
-  getDoc(doc(db, COLLECTION1, reactiveModel.user.uid))
+  getDoc(docToStore)
     .then((snapshot) => {
       const data = snapshot.data()
       console.log("Initial getDoc ", data)
@@ -330,6 +374,8 @@ export function connectToPersistence() {
     })
     .catch((error) => console.error("Error reading donor document:", error))
 
+  onSnapshot(docToStore, (snapshot) => {
+    const data = snapshot.data();
   onSnapshot(doc(db, COLLECTION1, reactiveModel.user.uid), (snapshot) => {
     const data = snapshot.data()
     if (data) {
@@ -352,12 +398,15 @@ export function connectToPersistence() {
 
   reaction(
     () => reactiveModel.user.bloodtype,
+    (newBloodtype, oldBloodtype) => {
     async (newBloodtype, oldBloodtype) => {
       if (!reactiveModel.ready) {
         return
       }
       if (newBloodtype && newBloodtype !== oldBloodtype) {
         //console.log("bloodtype chnaged , new req fetched");
+        reactiveModel.clearRequests();
+        fetchRequests();
         reactiveModel.clearRequests()
         fetchRequests()
         const docToStore = doc(db, COLLECTION1, reactiveModel.user.uid)
@@ -372,16 +421,13 @@ export function connectToPersistence() {
     },
   )
 
-  /*  reaction(
+  reaction(
     () => ({
       username: reactiveModel.user.username,
       name: reactiveModel.user.name,
       bloodtype: reactiveModel.user.bloodtype,
     }),
-    async (userData) => {
-      if (!reactiveModel.ready) {
-        return;
-      }
+    (userData) => {
       if (!auth.currentUser) return;
       const dataToUpdate = {};
       if (userData.username) dataToUpdate.username = userData.username;
@@ -389,12 +435,11 @@ export function connectToPersistence() {
       if (userData.bloodtype) dataToUpdate.bloodtype = userData.bloodtype;
 
       if (Object.keys(dataToUpdate).length === 0) return;
-      reactiveModel.ready = false;
+
       // console.log("firestore upadted with: ",dataToUpdate);
-      /*  await setDoc(docToStore, dataToUpdate, { merge: true }).catch((err) =>
+      setDoc(docToStore, dataToUpdate, { merge: true }).catch((err) =>
         console.error('Error syncing to Firestore:', err)
-      ); 
-      reactiveModel.ready = true;
+      );
     }
-  ); */
+  );
 }
