@@ -61,6 +61,25 @@ export default function TabLayout() {
             },
           }}
         />
+        <Tabs.Screen
+          name="information"
+          options={{
+            title: "Information",
+            tabBarIcon: () => {
+              return (
+                <MaterialIcons
+                  name="opacity"
+                  size={24}
+                  color="#9A4040"
+                />
+              )
+            },
+            tabBarLabelStyle: {
+              color: "#9A4040",
+              fontFamily: "Roboto-Medium",
+            },
+          }}
+        />
       </Tabs>
     </View>
   )
