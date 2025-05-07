@@ -11,13 +11,67 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context"
 import { BlurView } from "expo-blur"
 import { Observer, observer } from "mobx-react-lite"
+import { useEffect, useState } from "react"
+import { getAuth } from "firebase/auth"
+import { getFirestore, setDoc, doc, collection , getDoc } from "firebase/firestore"
 
 export const RequestView = observer(function RequestRender(props) {
+  const [hasClicked, setHasClicked] = useState(false);
+  const [alreadyResponded, setAlreadyResponded] = useState(false);
+
+
   console.log(
     "RequestView rendering with data:",
     props.requestsArray?.length || 0,
-    "items",
+    "items"
   )
+
+  useEffect(() => {
+    const checkIfResponded = async () => {
+      const db = getFirestore();
+      const user = getAuth().currentUser;
+  
+      if (!user || !props.current) return;
+  
+      const responseRef = doc(db, "responses", `${user.uid}_${props.current.id}`);
+      const responseDoc = await getDoc(responseRef);
+  
+      if (responseDoc.exists()) {
+        setAlreadyResponded(true);
+      }
+    };
+    checkIfResponded();
+  }, [props.current]);
+  
+  const handleRespond = async () => {
+    if (alreadyResponded || !props.current) return;
+  
+    try {
+      setAlreadyResponded(true);
+  
+      const db = getFirestore();
+      const user = getAuth().currentUser;
+  
+      const responseRef = doc(
+        db,
+        "responses",
+        `${user.uid}_${props.current.id}`
+      );
+  
+      await setDoc(responseRef, {
+        userId: user.uid,
+        requestId: props.current.id,
+        respondedAt: new Date().toISOString(),
+      });
+  
+      console.log("Response stored!");
+      props.setVisible(false); 
+    } catch (err) {
+      console.error("Failed to respond:", err);
+      setAlreadyResponded(false); 
+    }
+  };
+
   const ModelContent = observer(() => {
     return (
       <View style={styles.modal}>
@@ -72,16 +126,21 @@ export const RequestView = observer(function RequestRender(props) {
           </Text>
         </View>
         <Pressable
-          style={styles.button}
-          onPress={() => {
-            props.setVisible(false)
-          }}
+        style={[
+        styles.button,
+        (alreadyResponded || hasClicked) && { opacity: 0.5 },
+        ]}
+        onPress={handleRespond}
+        disabled={alreadyResponded || hasClicked}
         >
-          <Text style={{ fontFamily: "Roboto-Bold" }}>Respond</Text>
+        <Text style={{ fontFamily: "Roboto-Bold" }}>
+        {alreadyResponded ? "Already Responded" : "Respond"}
+        </Text>
         </Pressable>
       </View>
     )
   })
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.titleContainer}>
@@ -162,13 +221,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "Roboto-Bold",
   },
-
   titleContainer: {
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
   },
-
   modal: {
     maxHeight: Dimensions.get("window").height * 0.6,
     backgroundColor: "#D3C2C2",
@@ -179,12 +236,10 @@ const styles = StyleSheet.create({
     position: "relative",
     flexDirection: "column",
   },
-
   close: {
     maxHeight: Dimensions.get("window").height * 0.5,
     flex: 0.7,
   },
-
   button: {
     width: "90%",
     borderWidth: 0,
@@ -197,7 +252,6 @@ const styles = StyleSheet.create({
     bottom: 20,
     margin: "auto",
   },
-
   requestContainer: {
     backgroundColor: "#9A4040",
     borderRadius: 8,
@@ -208,19 +262,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     position: "relative",
   },
-
   requestText: {
     color: "white",
     fontSize: 14,
     marginHorizontal: 12,
     fontFamily: "Roboto-Medium",
   },
-
   separator: {
     color: "white",
     fontSize: 10,
   },
-
   urgent: {
     backgroundColor: "#D3C2C2",
     padding: 4,
@@ -229,7 +280,6 @@ const styles = StyleSheet.create({
     left: 10,
     top: -12,
   },
-
   urgentRequest: {
     backgroundColor: "#9A4040",
     padding: 4,
@@ -238,21 +288,18 @@ const styles = StyleSheet.create({
     left: 15,
     top: 15,
   },
-
   urgentText: {
     color: "white",
     fontSize: 14,
     fontWeight: 45,
     fontFamily: "Roboto-Medium",
   },
-
   requestTitle: {
     color: "black",
     fontSize: 16,
     fontWeight: 100,
     fontFamily: "Roboto-Bold",
   },
-
   hospitalDetails: {
     flex: 1,
     color: "black",
@@ -263,13 +310,11 @@ const styles = StyleSheet.create({
     top: 65,
     left: 35,
   },
-
   detailsText: {
     fontSize: 14,
     fontWeight: 100,
     fontFamily: "Roboto-Medium",
   },
-
   contactDetails: {
     flex: 1,
     color: "black",
