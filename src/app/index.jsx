@@ -12,9 +12,9 @@ export default function Index() {
       try {
         const userToken = await AsyncStorage.getItem("userToken") // Check if token exists
         if (userToken) {
-          router.replace("/(tabs)/requests") // Redirect to Requests Tab if logged in
+          // Redirect to Requests Tab if logged in
         } else {
-          router.replace("/(tabs)/information") // Redirect to Login if not logged in
+          // Redirect to Login if not logged in
         }
       } catch (error) {
         console.error("Error checking auth:", error)
