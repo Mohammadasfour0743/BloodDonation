@@ -8,6 +8,9 @@ export default function TabLayout() {
     <View style={{ flex: 1, backgroundColor: "transparent" }}>
       <Tabs
         screenOptions={{
+          tabBarActiveTintColor: "#B47F7F",
+          tabBarInactiveTintColor: "#780000",
+
           headerShown: false,
           tabBarStyle: {
             position: "absolute",
@@ -40,8 +43,8 @@ export default function TabLayout() {
           name="requests"
           options={{
             title: "Requests",
-            tabBarIcon: () => {
-              return <Octicons name="inbox" size={24} color="#9A4040" />
+            tabBarIcon: ({ color }) => {
+              return <Octicons name="inbox" size={24} color={color} />
             },
             tabBarLabelStyle: {
               color: "#9A4040",
@@ -53,13 +56,9 @@ export default function TabLayout() {
           name="profile"
           options={{
             title: "User Profile",
-            tabBarIcon: () => {
+            tabBarIcon: ({ color }) => {
               return (
-                <MaterialIcons
-                  name="manage-accounts"
-                  size={24}
-                  color="#9A4040"
-                />
+                <MaterialIcons name="manage-accounts" size={24} color={color} />
               )
             },
             tabBarLabelStyle: {
@@ -72,8 +71,8 @@ export default function TabLayout() {
           name="information"
           options={{
             title: "Information",
-            tabBarIcon: () => {
-              return <MaterialIcons name="opacity" size={24} color="#9A4040" />
+            tabBarIcon: ({ color }) => {
+              return <MaterialIcons name="opacity" size={24} color={color} />
             },
             tabBarLabelStyle: {
               color: "#9A4040",

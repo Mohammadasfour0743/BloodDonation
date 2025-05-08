@@ -320,6 +320,7 @@ export const RequestView = observer(function RequestRender(props) {
       {loading && <ActivityIndicator size={"large"} />}
       {!loading && (
         <FlatList
+          contentContainerStyle={{ paddingBottom: 80 }}
           renderItem={(element) => {
             const req = element.item
             return (
@@ -327,8 +328,13 @@ export const RequestView = observer(function RequestRender(props) {
                 {() => (
                   <View>
                     <Pressable
-                      style={styles.requestContainer}
+                      style={
+                        props.isPress && req.id == props.current.id
+                          ? styles.requestContainerSelected
+                          : styles.requestContainer
+                      }
                       onPress={() => {
+                        props.setIsPress(true)
                         props.setCurrent(req)
                         props.setVisible(true)
                       }}
@@ -340,13 +346,43 @@ export const RequestView = observer(function RequestRender(props) {
                           </Text>
                         </View>
                       )}
-                      <Text style={styles.requestText}>
-                        {req.hospitalName ?? "Hospital name"}
-                      </Text>
-                      <Text style={styles.separator}>{"\u2B24"}</Text>
-                      <Text style={styles.requestText}>
-                        Blood Type: {req.bloodTypes.join(", ")}
-                      </Text>
+                      <View
+                        style={{ maxWidth: 180, flexDirection: "row", flex: 1 }}
+                      >
+                        <Text
+                          style={
+                            props.isPress && req.id == props.current.id
+                              ? styles.requestTextSelected
+                              : styles.requestText
+                          }
+                        >
+                          {req.hospitalName ?? "Hospital name"}
+                        </Text>
+                      </View>
+                      <View style={{}}>
+                        <Text
+                          style={
+                            props.isPress && req.id == props.current.id
+                              ? styles.separatorSelected
+                              : styles.separator
+                          }
+                        >
+                          {"\u2B24"}
+                        </Text>
+                      </View>
+                      <View
+                        style={{ maxWidth: 220, flexDirection: "row", flex: 1 }}
+                      >
+                        <Text
+                          style={
+                            props.isPress && req.id == props.current.id
+                              ? styles.requestTextSelected
+                              : styles.requestText
+                          }
+                        >
+                          Blood Type: {req.bloodTypes.join(", ")}
+                        </Text>
+                      </View>
                     </Pressable>
                   </View>
                 )}
@@ -407,7 +443,10 @@ const styles = StyleSheet.create({
     margin: "auto",
   },
   requestContainer: {
-    backgroundColor: "#9A4040",
+    backgroundColor: "#ffffff",
+    borderWidth: 2,
+
+    borderColor: "#9A4040",
     borderRadius: 8,
     padding: 15,
     marginVertical: 7,
@@ -417,13 +456,13 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   requestText: {
-    color: "white",
+    color: "black",
     fontSize: 14,
     marginHorizontal: 12,
     fontFamily: "Roboto-Medium",
   },
   separator: {
-    color: "white",
+    color: "black",
     fontSize: 10,
   },
   urgent: {
@@ -489,5 +528,27 @@ const styles = StyleSheet.create({
     maxHeight: 100,
     maxWidth: 340,
     left: 35,
+  },
+  requestContainerSelected: {
+    backgroundColor: "#9A4040",
+    borderRadius: 8,
+    padding: 15,
+    marginVertical: 7,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    position: "relative",
+  },
+
+  requestTextSelected: {
+    color: "white",
+    fontSize: 14,
+    marginHorizontal: 12,
+    fontFamily: "Roboto-Medium",
+  },
+
+  separatorSelected: {
+    color: "white",
+    fontSize: 10,
   },
 })
