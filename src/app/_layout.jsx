@@ -9,9 +9,9 @@ import { getNearbyRequestsForDonor } from "./firebasemodel"
 
 export default function RootLayout() {
   const [loaded] = useFonts({
-    Roboto: require("../assets/fonts/Roboto-Regular.ttf"),
-    "Roboto-Medium": require("src/assets/fonts/Roboto-Medium.ttf"),
-    "Roboto-Bold": require("src/assets/fonts/Roboto-Bold.ttf"),
+    Roboto: require("../../assets/fonts/Roboto-Regular.ttf"),
+    "Roboto-Medium": require("assets/fonts/Roboto-Medium.ttf"),
+    "Roboto-Bold": require("assets/fonts/Roboto-Bold.ttf"),
   })
 
   if (!loaded) return null
