@@ -125,7 +125,7 @@ export const RequestView = observer(function RequestRender(props) {
       await setDoc(responseRef, {
         userId: user.uid,
         requestId: props.current.id,
-        respondedAt: new Date().toString(),
+        respondedAt: Timestamp.now(),
       })
 
       setRespondedMap((prev) => ({
