@@ -1,3 +1,4 @@
+import { use } from "react"
 import { loadAsync } from "expo-font"
 import * as Location from "expo-location"
 import { router } from "expo-router"
@@ -5,6 +6,7 @@ import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage"
 import { getApps, initializeApp } from "firebase/app"
 import {
   createUserWithEmailAndPassword,
+  getAdditionalUserInfo,
   getReactNativePersistence,
   initializeAuth,
   onAuthStateChanged,
@@ -186,7 +188,11 @@ onAuthStateChanged(auth, async (user) => {
     connectToPersistence()
     updateUserLocation()
     registerForPushNotificationsAsync(user.uid)
-    router.replace("/(tabs)/requests")
+
+    if (Date.now() - Date.parse(user.metadata.creationTime) < 5000) {
+      console.log("asd")
+      router.replace("/warnings")
+    } else router.replace("/(tabs)/requests")
   } else {
     console.log("No user is logged in.")
     reactiveModel.clearUser()
