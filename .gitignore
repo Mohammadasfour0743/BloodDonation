@@ -2,6 +2,7 @@
 
 # dependencies
 node_modules/
+blooddonation-7434c-firebase-adminsdk-fbsvc-*.json
 
 # Expo
 .expo/

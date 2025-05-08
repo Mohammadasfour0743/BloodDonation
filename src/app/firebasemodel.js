@@ -28,6 +28,7 @@ import { reaction, runInAction } from "mobx"
 
 import { reactiveModel } from "./bootstrapping"
 import { firebaseConfig } from "./firebaseconfig.js"
+import { registerForPushNotificationsAsync } from "./notification.js"
 
 const app =
   getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
@@ -186,7 +187,7 @@ onAuthStateChanged(auth, async (user) => {
     console.log(reactiveModel.user.uid)
     connectToPersistence()
     updateUserLocation()
-    console.log(Date.now() - Date.parse(user.metadata.creationTime))
+    registerForPushNotificationsAsync(user.uid)
 
     if (Date.now() - Date.parse(user.metadata.creationTime) < 5000) {
       console.log("asd")
