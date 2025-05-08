@@ -28,7 +28,7 @@ import { getBoundingBox, getCurrentLocation } from "../app/firebasemodel"
 
 export const RequestView = observer(function RequestRender(props) {
   const [hasClicked, setHasClicked] = useState(false)
-  const [respondedMap, setRespondedMap] = useState({});
+  const [alreadyResponded, setAlreadyResponded] = useState({});
   //const [alreadyResponded, setAlreadyResponded] = useState(false)
   const [tab, setTab] = useState("RELEVANT")
   const [filteredRequests, setFilteredRequests] = useState([])
@@ -51,9 +51,13 @@ export const RequestView = observer(function RequestRender(props) {
           location.coords.longitude,
           50,
         )
+
+        const timedreq = [...props.requestsArray].sort(
+          (a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0),
+        )
         const filtered = []
 
-        for (const element of props.requestsArray) {
+        for (const element of timedreq) {
           if (tab === "RELEVANT") {
             if (
               element.latitude > latMin &&
@@ -96,7 +100,7 @@ export const RequestView = observer(function RequestRender(props) {
       const responseDoc = await getDoc(responseRef);
   
       if (responseDoc.exists()) {
-        setRespondedMap(prev => ({
+        setAlreadyResponded(prev => ({
           ...prev,
           [props.current.id]: true,
         }));
@@ -106,7 +110,7 @@ export const RequestView = observer(function RequestRender(props) {
   }, [props.current]);
 
   const handleRespond = async () => {
-    if (!props.current || respondedMap[props.current.id]) return;
+    if (!props.current || alreadyResponded[props.current.id]) return;
   
     try {
       const db = getFirestore();
@@ -124,7 +128,7 @@ export const RequestView = observer(function RequestRender(props) {
         respondedAt: new Date().toString(),
       });
   
-      setRespondedMap(prev => ({
+      setAlreadyResponded(prev => ({
         ...prev,
         [props.current.id]: true,
       }));
@@ -192,13 +196,13 @@ export const RequestView = observer(function RequestRender(props) {
         <Pressable
         style={[
         styles.button,
-        (respondedMap[props.current?.id] || hasClicked) && { opacity: 0.5 },
+        (alreadyResponded[props.current?.id] || hasClicked) && { opacity: 0.5 },
         ]}
         onPress={handleRespond}
-        disabled={respondedMap[props.current?.id] || hasClicked}
+        disabled={alreadyResponded[props.current?.id] || hasClicked}
         >
         <Text style={{ fontFamily: "Roboto-Bold" }}>
-        {respondedMap[props.current?.id] ? "Already Responded" : "Respond"}
+        {alreadyResponded[props.current?.id] ? "Already Responded" : "Respond"}
         </Text>
         </Pressable>
       </View>
