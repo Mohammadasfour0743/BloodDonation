@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react"
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   Modal,
@@ -10,14 +12,128 @@ import {
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { BlurView } from "expo-blur"
+import { isLoaded, isLoading } from "expo-font"
+import Ionicons from "@expo/vector-icons/Ionicons"
+import { getAuth } from "firebase/auth"
+import {
+  collection,
+  doc,
+  getDoc,
+  getFirestore,
+  setDoc,
+} from "firebase/firestore"
 import { Observer, observer } from "mobx-react-lite"
 
+import { getBoundingBox, getCurrentLocation } from "../app/firebasemodel"
+
 export const RequestView = observer(function RequestRender(props) {
-  console.log(
-    "RequestView rendering with data:",
-    props.requestsArray?.length || 0,
-    "items",
-  )
+  const [hasClicked, setHasClicked] = useState(false)
+  const [alreadyResponded, setAlreadyResponded] = useState(false)
+  const [tab, setTab] = useState("RELEVANT")
+  const [filteredRequests, setFilteredRequests] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [urgentSelected, setUrgentSelected] = useState(false)
+
+  // console.log('RequestView rendering with data:', props.requestsArray?.length || 0, 'items');
+
+  useEffect(() => {
+    // Create an async function inside useEffect
+
+    async function filterData() {
+      setLoading(true)
+
+      try {
+        const location = await getCurrentLocation()
+
+        const { latMin, latMax, lngMin, lngMax } = getBoundingBox(
+          location.coords.latitude,
+          location.coords.longitude,
+          50,
+        )
+        const filtered = []
+
+        for (const element of props.requestsArray) {
+          if (tab === "RELEVANT") {
+            if (
+              element.latitude > latMin &&
+              element.latitude < latMax &&
+              element.longitude < lngMax &&
+              element.longitude > lngMin &&
+              element.bloodTypes.includes(props.bloodType) &&
+              (urgentSelected ? element.urgency : true)
+            ) {
+              filtered.push(element)
+            }
+          } else if (tab === "URGENT") {
+            if (element.urgency && (urgentSelected ? element.urgency : true)) {
+              filtered.push(element)
+            }
+          } else {
+            if (urgentSelected ? element.urgency : true) filtered.push(element)
+          }
+        }
+
+        setFilteredRequests(filtered)
+      } catch (error) {
+        console.error("Error filtering requests:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    filterData()
+  }, [props.requestsArray, props.bloodType, tab, urgentSelected])
+
+  useEffect(() => {
+    const checkIfResponded = async () => {
+      const db = getFirestore()
+      const user = getAuth().currentUser
+
+      if (!user || !props.current) return
+
+      const responseRef = doc(
+        db,
+        "responses",
+        `${user.uid}_${props.current.id}`,
+      )
+      const responseDoc = await getDoc(responseRef)
+
+      if (responseDoc.exists()) {
+        setAlreadyResponded(true)
+      }
+    }
+    checkIfResponded()
+  }, [props.current])
+
+  const handleRespond = async () => {
+    if (alreadyResponded || !props.current) return
+
+    try {
+      setAlreadyResponded(true)
+
+      const db = getFirestore()
+      const user = getAuth().currentUser
+
+      const responseRef = doc(
+        db,
+        "responses",
+        `${user.uid}_${props.current.id}`,
+      )
+
+      await setDoc(responseRef, {
+        userId: user.uid,
+        requestId: props.current.id,
+        respondedAt: new Date().toISOString(),
+      })
+
+      console.log("Response stored!")
+      props.setVisible(false)
+    } catch (err) {
+      console.error("Failed to respond:", err)
+      setAlreadyResponded(false)
+    }
+  }
+
   const ModelContent = observer(() => {
     return (
       <View style={styles.modal}>
@@ -38,7 +154,7 @@ export const RequestView = observer(function RequestRender(props) {
             Location: {props.current?.location ?? "kista"}
           </Text>
           <Text style={styles.detailsText}>
-            Blood Type: {props.current?.bloodtype ?? ""}
+            Blood Type: {props.current?.bloodTypes.join(", ") ?? ""}
           </Text>
           <Text style={styles.detailsText}>
             Amount: {props.current?.amount ?? ""}
@@ -72,20 +188,113 @@ export const RequestView = observer(function RequestRender(props) {
           </Text>
         </View>
         <Pressable
-          style={styles.button}
-          onPress={() => {
-            props.setVisible(false)
-          }}
+          style={[
+            styles.button,
+            (alreadyResponded || hasClicked) && { opacity: 0.5 },
+          ]}
+          onPress={handleRespond}
+          disabled={alreadyResponded || hasClicked}
         >
-          <Text style={{ fontFamily: "Roboto-Bold" }}>Respond</Text>
+          <Text style={{ fontFamily: "Roboto-Bold" }}>
+            {alreadyResponded ? "Already Responded" : "Respond"}
+          </Text>
         </Pressable>
       </View>
     )
   })
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.titleContainer}>
+      <View style={{ marginVertical: 15 }}>
+        <Text style={[styles.title, { fontSize: 28 }]}>Current requests</Text>
+      </View>
+      {/*       <View style={styles.titleContainer}>
         <Text style={styles.title}>Current Requests</Text>
+      </View> */}
+      <View
+        style={{
+          flexDirection: "row",
+          gap: 15,
+          marginBottom: 10,
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Text style={{ fontSize: 13, fontWeight: 600 }}>Filter by</Text>
+        <View style={{ flexDirection: "row", flex: 1 }}>
+          <Pressable
+            style={{
+              backgroundColor: tab === "RELEVANT" ? "#9A4040" : "#B47F7F",
+              padding: 12,
+              borderTopLeftRadius: 12,
+              borderBottomLeftRadius: 12,
+              justifyContent: "center",
+              width: "50%",
+              alignItems: "center",
+            }}
+            onPress={() => {
+              console.log("Relevant")
+              setTab("RELEVANT")
+            }}
+          >
+            <Text style={{ color: "white", fontSize: 12 }}>Personal</Text>
+          </Pressable>
+          <Pressable
+            style={{
+              backgroundColor: tab === "ALL" ? "#9A4040" : "#B47F7F",
+              padding: 12,
+              borderTopRightRadius: 12,
+              borderBottomRightRadius: 12,
+              justifyContent: "center",
+              width: "50%",
+              alignItems: "center",
+            }}
+            onPress={() => {
+              console.log("all")
+              setTab("ALL")
+            }}
+          >
+            <Text style={{ color: "white", fontSize: 12 }}>All</Text>
+          </Pressable>
+        </View>
+        <Pressable
+          onPress={() => setUrgentSelected((prev) => !prev)}
+          style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
+        >
+          <View
+            style={{
+              backgroundColor: urgentSelected ? "#65558F" : "#b9b9b9",
+              width: 24,
+              height: 24,
+              borderRadius: 6,
+              position: "relative",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {urgentSelected && (
+              <Ionicons name="checkmark-outline" size={20} color="white" />
+            )}
+          </View>
+          <Text style={{ fontSize: 13 }}>Urgent only</Text>
+        </Pressable>
+
+        {/*  <Pressable
+          style={{
+            backgroundColor: tab === 'URGENT' ? '#b35d5d' : '#b47f7f',
+            padding: 12,
+            borderRadius: 12,
+            width: '48%',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          onPress={() => {
+            console.log('urgent');
+            setTab('URGENT');
+          }}
+        >
+          <Text style={{ color: 'white' }}>Urgent</Text>
+        </Pressable> */}
       </View>
 
       <Modal
@@ -108,45 +317,48 @@ export const RequestView = observer(function RequestRender(props) {
         <Observer>{() => <ModelContent />}</Observer>
       </Modal>
 
-      <FlatList
-        renderItem={(element) => {
-          const req = element.item
-          return (
-            <Observer>
-              {() => (
-                <View>
-                  <Pressable
-                    style={styles.requestContainer}
-                    onPress={() => {
-                      props.setCurrent(req)
-                      props.setVisible(true)
-                    }}
-                  >
-                    {req.urgency && (
-                      <View style={styles.urgent}>
-                        <Text style={{ fontFamily: "Roboto-Medium" }}>
-                          URGENT
-                        </Text>
-                      </View>
-                    )}
-                    <Text style={styles.requestText}>
-                      {req.hospitalName ?? "Hospital name"}
-                    </Text>
-                    <Text style={styles.separator}>{"\u2B24"}</Text>
-                    <Text style={styles.requestText}>
-                      Blood Type: {req.bloodtype}
-                    </Text>
-                  </Pressable>
-                </View>
-              )}
-            </Observer>
-          )
-        }}
-        data={props.requestsArray}
-        keyExtractor={(element) => {
-          return element.id
-        }}
-      />
+      {loading && <ActivityIndicator size={"large"} />}
+      {!loading && (
+        <FlatList
+          renderItem={(element) => {
+            const req = element.item
+            return (
+              <Observer>
+                {() => (
+                  <View>
+                    <Pressable
+                      style={styles.requestContainer}
+                      onPress={() => {
+                        props.setCurrent(req)
+                        props.setVisible(true)
+                      }}
+                    >
+                      {req.urgency && (
+                        <View style={styles.urgent}>
+                          <Text style={{ fontFamily: "Roboto-Medium" }}>
+                            URGENT
+                          </Text>
+                        </View>
+                      )}
+                      <Text style={styles.requestText}>
+                        {req.hospitalName ?? "Hospital name"}
+                      </Text>
+                      <Text style={styles.separator}>{"\u2B24"}</Text>
+                      <Text style={styles.requestText}>
+                        Blood Type: {req.bloodTypes.join(", ")}
+                      </Text>
+                    </Pressable>
+                  </View>
+                )}
+              </Observer>
+            )
+          }}
+          data={filteredRequests}
+          keyExtractor={(element) => {
+            return element.id
+          }}
+        />
+      )}
     </SafeAreaView>
   )
 })
@@ -156,19 +368,18 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     flex: 1,
     padding: 10,
+    marginHorizontal: 10,
   },
   title: {
     color: "#9A4040",
     fontSize: 20,
     fontFamily: "Roboto-Bold",
   },
-
   titleContainer: {
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
   },
-
   modal: {
     maxHeight: Dimensions.get("window").height * 0.6,
     backgroundColor: "#D3C2C2",
@@ -179,12 +390,10 @@ const styles = StyleSheet.create({
     position: "relative",
     flexDirection: "column",
   },
-
   close: {
     maxHeight: Dimensions.get("window").height * 0.5,
     flex: 0.7,
   },
-
   button: {
     width: "90%",
     borderWidth: 0,
@@ -197,7 +406,6 @@ const styles = StyleSheet.create({
     bottom: 20,
     margin: "auto",
   },
-
   requestContainer: {
     backgroundColor: "#9A4040",
     borderRadius: 8,
@@ -208,51 +416,44 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     position: "relative",
   },
-
   requestText: {
     color: "white",
     fontSize: 14,
     marginHorizontal: 12,
     fontFamily: "Roboto-Medium",
   },
-
   separator: {
     color: "white",
     fontSize: 10,
   },
-
   urgent: {
     backgroundColor: "#D3C2C2",
     padding: 4,
     borderRadius: 4,
     position: "absolute",
-    left: "10",
-    top: "-12",
+    left: 10,
+    top: -12,
   },
-
   urgentRequest: {
     backgroundColor: "#9A4040",
     padding: 4,
     borderRadius: 4,
     position: "absolute",
-    left: "15",
-    top: "15",
+    left: 15,
+    top: 15,
   },
-
   urgentText: {
     color: "white",
     fontSize: 14,
     fontWeight: 45,
     fontFamily: "Roboto-Medium",
   },
-
   requestTitle: {
     color: "black",
     fontSize: 16,
     fontWeight: 100,
     fontFamily: "Roboto-Bold",
   },
-
   hospitalDetails: {
     flex: 1,
     color: "black",
@@ -263,13 +464,11 @@ const styles = StyleSheet.create({
     top: 65,
     left: 35,
   },
-
   detailsText: {
     fontSize: 14,
     fontWeight: 100,
     fontFamily: "Roboto-Medium",
   },
-
   contactDetails: {
     flex: 1,
     color: "black",

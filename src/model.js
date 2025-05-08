@@ -1,13 +1,15 @@
 export const model = {
   user: {
+    uid: null,
     username: null,
-    bloodtype: null    
+    bloodtype: null,
   },
 
   //requests: [{}],
 
   requests: [],
   addRequest(req) {
+    if (this.requests.find((val) => val.id == req.id)) return
     this.requests = [req, ...this.requests]
   },
 
@@ -20,12 +22,12 @@ export const model = {
   setRequest(arr) {
     this.requests = arr
   },
-   getRequests() {
+  getRequests() {
     return this.requests
   },
 
-  updateUser(id, userFields) {
-    return {
+  updateUser(userFields) {
+    this.user = {
       ...this.user,
       ...userFields,
     }
@@ -47,6 +49,14 @@ export const model = {
     return this.user
   },
   clearRequests() {
-    this.requests = [];
+    this.requests = []
+    console.log(this.requests)
+  },
+
+  clearUser() {
+    this.user = {
+      username: null,
+      bloodtype: null,
+    }
   },
 }

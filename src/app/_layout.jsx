@@ -1,8 +1,11 @@
 import "src/app/bootstrapping"
 
+import { useEffect } from "react"
 import { View } from "react-native"
 import { useFonts } from "expo-font"
 import { Stack } from "expo-router"
+
+import { getNearbyRequestsForDonor } from "./firebasemodel"
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -10,6 +13,7 @@ export default function RootLayout() {
     "Roboto-Medium": require("src/assets/fonts/Roboto-Medium.ttf"),
     "Roboto-Bold": require("src/assets/fonts/Roboto-Bold.ttf"),
   })
+
   if (!loaded) return null
   return (
     <View style={{ flex: 1, backgroundColor: "transparent" }}>
