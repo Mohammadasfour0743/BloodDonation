@@ -26,6 +26,7 @@ import { reaction, runInAction } from "mobx"
 
 import { reactiveModel } from "./bootstrapping"
 import { firebaseConfig } from "./firebaseconfig.js"
+import { registerForPushNotificationsAsync } from "./notification.js"
 
 const app =
   getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
@@ -184,6 +185,7 @@ onAuthStateChanged(auth, async (user) => {
     console.log(reactiveModel.user.uid)
     connectToPersistence()
     updateUserLocation()
+    registerForPushNotificationsAsync(user.uid)
     router.replace("/(tabs)/requests")
   } else {
     console.log("No user is logged in.")

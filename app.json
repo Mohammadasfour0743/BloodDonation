@@ -5,19 +5,19 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "myapp",
-    
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
+    "icon": "./assets/images/icon.png",
     "android": {
-
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
       ],
-      "package": "com.mohammadasfour.bd"
+      "googleServicesFile": "./google-services.json",
+      "package": "com.shubhangi_01.blooddonor"
     },
     "web": {
       "bundler": "metro",
@@ -40,6 +40,9 @@
     "extra": {
       "router": {
         "origin": false
+      },
+      "eas": {
+        "projectId": "9d49a591-ceab-4ec7-9057-a8677bd8901f"
       }
     }
   }
