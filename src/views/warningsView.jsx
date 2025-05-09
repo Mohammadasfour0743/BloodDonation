@@ -8,7 +8,13 @@ import { useState } from "react";
 import Dots from "react-native-dots-pagination"
 
 export function WarningsView(props) {
-  const pages = ["Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in lectus eu erat lacinia efficitur. Morbi pretium ex sit amet dictum vehicula. Fusce sit amet vestibulum neque. Quisque volutpat luctus nunc et tempor. Integer sodales nibh at ligula pretium dictum. Aenean et ante ipsum. In commodo tellus nulla. Integer semper dignissim mauris eget sodales. In risus dui, tincidunt in accumsan et, vehicula ac ante. Aliquam erat volutpat.", "Don't Drink", "Get Sleep", "Eat Well"]
+  const pages = [
+    "⚠️ Welcome to BloodShare, a real-time blood donation application. The safety of patients is our top priority, that is why we will ask you to review the following information carefully",
+    "Thank you for considering donating blood💉🩸!                                  Please note that you should be at least 16 years old and weigh at least 50kg. You also need to be in good general health and feel well on the day of donation. Also, recent travel to certain countries or taking certain medications may affect your eligibility",
+    "🚫Restrictions:                                                 If you’ve ever been diagnosed with HIV, hepatitis, or certain infections like syphilis, unfortunately, you won’t be eligible to donate. It is also very important to be upfront about your medical history!",
+    "💧 After donating, drink fluids for 24–48 hours, avoid heavy activity for 5 hours, eat well, and lie down if you feel dizzy.",
+    "🔒 By continuing, you confirm you’ve read and accepted these guidelines."
+  ]
   return (
     <View style={styles.container}>
       
@@ -53,9 +59,10 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   text: {
-    fontSize: 22,
+    fontSize: 27,
     fontWeight: "600",
     textAlign: "center",
+    color: "#780000"
   },
 
   button: {
