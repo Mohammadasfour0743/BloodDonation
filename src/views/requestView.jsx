@@ -191,7 +191,7 @@ export const RequestView = observer(function RequestRender(props) {
             Contact Hospital
           </Text>
           <Text style={styles.detailsText}>
-            {props.current?.email ?? "test@email.se.co.org"}
+            {props.current?.hospitalEmail ?? "test@email.se.co.org"}
           </Text>
           <Text style={styles.detailsText}>
             {props.current?.phoneNumber ?? "5441 243563"}
