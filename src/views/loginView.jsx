@@ -1,19 +1,20 @@
-import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native"
 import { Link } from "expo-router"
+import AntDesign from "@expo/vector-icons/AntDesign"
 import Entypo from "@expo/vector-icons/Entypo"
-import AntDesign from '@expo/vector-icons/AntDesign';
-
 
 export function LoginView(props) {
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
-      <Entypo
-            name="mail"
-            size={30}
-            color="#9A4040"
-            
-          />
+        <Entypo name="mail" size={30} color="#9A4040" />
         <TextInput
           onChangeText={props.setUser}
           value={props.user}
@@ -22,12 +23,13 @@ export function LoginView(props) {
         />
       </View>
       <View style={styles.inputContainer}>
-      <AntDesign name="lock1" size={30} color="#9A4040" />
+        <AntDesign name="lock1" size={30} color="#9A4040" />
         <TextInput
           onChangeText={props.setPass}
           secureTextEntry={true}
           value={props.pass}
           placeholder="Password"
+          placeholderTextColor={"gray"}
           style={styles.input}
         />
       </View>
@@ -98,7 +100,7 @@ const styles = StyleSheet.create({
   },
   redirect: {
     gap: 10,
-    
+
     marginTop: 20,
   },
 })

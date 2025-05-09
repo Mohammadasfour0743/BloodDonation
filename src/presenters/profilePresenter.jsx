@@ -13,6 +13,8 @@ export const Profile = observer((props) => {
   const [email, setEmail] = useState(props.model.user.username)
   const [phone, setPhone] = useState(props.model.user.phonenumber)
   const [edit, setEdit] = useState(false)
+  const [edit2, setEdit2] = useState(false)
+
   const navigation = useNavigation()
 
   useEffect(() => {
@@ -49,7 +51,7 @@ export const Profile = observer((props) => {
         elevation: 2,
       },
     })
-  }, [edit])
+  }, [edit, edit2])
   return (
     <ProfileView
       user={props.model.user}
@@ -61,6 +63,8 @@ export const Profile = observer((props) => {
       updateUser={props.model.updateUser}
       edit={edit}
       setEdit={() => setEdit(true)}
+      edit2={edit2}
+      setEdit2={() => setEdit2(true)}
       setName={setUsername}
       username={username}
       phone={phone}
@@ -82,6 +86,11 @@ export const Profile = observer((props) => {
           setEmail(props.model.user.username)
           setEdit(false)
         }
+      }}
+      saveBlood={() => {
+        props.model.updateUser({ bloodtype: selected })
+
+        setEdit2(false)
       }}
     ></ProfileView>
   )

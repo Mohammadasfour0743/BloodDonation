@@ -52,14 +52,13 @@ export default function TabLayout() {
             },
           }}
         />
+
         <Tabs.Screen
-          name="profile"
+          name="information"
           options={{
-            title: "User Profile",
+            title: "Information",
             tabBarIcon: ({ color }) => {
-              return (
-                <MaterialIcons name="manage-accounts" size={24} color={color} />
-              )
+              return <MaterialIcons name="opacity" size={24} color={color} />
             },
             tabBarLabelStyle: {
               color: "#9A4040",
@@ -68,11 +67,13 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="information"
+          name="profile"
           options={{
-            title: "Information",
+            title: "User Profile",
             tabBarIcon: ({ color }) => {
-              return <MaterialIcons name="opacity" size={24} color={color} />
+              return (
+                <MaterialIcons name="manage-accounts" size={24} color={color} />
+              )
             },
             tabBarLabelStyle: {
               color: "#9A4040",
