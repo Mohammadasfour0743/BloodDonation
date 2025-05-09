@@ -5,6 +5,7 @@ import Entypo from "@expo/vector-icons/Entypo"
 import Feather from "@expo/vector-icons/Feather"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import MaterialIcons from "@expo/vector-icons/MaterialIcons"
+import { Linking } from "react-native"
 
 import { logOut } from "../app/firebasemodel"
 import { SafeAreaView } from "react-native-safe-area-context"
@@ -125,9 +126,24 @@ export function ProfileView(props) {
           </View>
         )}
       </View>
+      <View style={styles.footerButtons}>
+        <TouchableOpacity
+          style={styles.footerButton}
+          onPress={() => Linking.openURL("https://teamsigmoidwebsite.vercel.app/")}
+        >
+          <Text style={styles.footerButtonText}>Contact Us/Report a Bug</Text>
+        </TouchableOpacity>
 
-   
+        {/* <TouchableOpacity
+          style={styles.footerButton}
+          onPress={() => Linking.openURL("https://teamsigmoidwebsite.vercel.app/report")}
+        >
+          <Text style={styles.footerButtonText}>Report a Bug</Text>
+        </TouchableOpacity> */}
+      </View>
+
     </SafeAreaView>
+
   )
 }
 
@@ -210,5 +226,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#9A4040"
   },
 
-
+  footerButtons: {
+       flexDirection: "row",
+       justifyContent: "space-around",
+       paddingVertical: 60,
+       marginHorizontal: 40,
+     },
+     footerButton: {
+       backgroundColor: "#9A4040",
+       paddingVertical: 12,
+       paddingHorizontal: 24,
+       borderRadius: 25,
+     },
+     footerButtonText: {
+       color: "white",
+       fontSize: 16,
+       fontFamily: "Roboto-Medium",
+       textAlign: "center",
+     },
 })
