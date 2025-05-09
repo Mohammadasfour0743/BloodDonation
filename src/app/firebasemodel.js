@@ -43,50 +43,6 @@ const COLLECTION2 = "requests"
 global.doc = doc
 global.setDoc = setDoc
 global.app = db
-/*
-// Fetch all requests near a donor
-export async function getNearbyRequestsForDonor(donorId, radiusInKm = 10) {
-  console.log("getting requests " + donorId)
-  const donorRef = doc(db, "donors", donorId)
-  const donorSnap = await getDoc(donorRef)
-
-  if (!donorSnap.exists()) {
-    console.error("Donor not found")
-    return []
-  }
-
-  const donorLocation = donorSnap.data().location
-
-  if (!donorLocation) {
-    console.error("Donor has no location field")
-    return []
-  }
-
-  try {
-    const { latMin, latMax, lngMin, lngMax } = getBoundingBox(
-      donorLocation.latitude,
-      donorLocation.longitude,
-      1500,
-    )
-
-    const requestsRef = collection(db, "requests")
-    const q = query(
-      requestsRef,
-      where("latitude", ">=", latMin),
-      where("latitude", "<=", latMax),
-      where("longitude", ">=", lngMin),
-      where("longitude", "<=", lngMax),
-    )
-
-    const docs = await getDocs(q)
-    console.log(docs.length)
-    docs.forEach((doc) => {
-      console.log(doc.data())
-    })
-  } catch (e) {
-    console.log(e)
-  }
-}*/
 
 const R = 6371 // Earth's radius in km
 const radius = 50 // 50 km
@@ -185,14 +141,14 @@ onAuthStateChanged(auth, async (user) => {
     reactiveModel.clearRequests(); */
     reactiveModel.user.uid = user.uid
     console.log(reactiveModel.user.uid)
-    connectToPersistence()
-    updateUserLocation()
-    registerForPushNotificationsAsync(user.uid)
 
     if (Date.now() - Date.parse(user.metadata.creationTime) < 5000) {
       console.log("asd")
       router.replace("/warnings")
     } else router.replace("/(tabs)/requests")
+    await updateUserLocation()
+    await connectToPersistence()
+    registerForPushNotificationsAsync(user.uid)
   } else {
     console.log("No user is logged in.")
     reactiveModel.clearUser()
@@ -241,18 +197,38 @@ export async function updateUserLocation() {
 }
 
 export async function fetchRequests() {
-  if (!reactiveModel.user || reactiveModel.user.bloodtype == "default") {
+  if (!reactiveModel.user || !reactiveModel.user.bloodtype) {
     console.error("Cannot fetch requests: user or bloodtype not set in model")
     return
   }
+  reactiveModel.ready = false
+  await getDocs(
+    query(collection(db, COLLECTION2), where("current", "==", true)),
+  ).then((snapshot) => {
+    const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+    runInAction(() => {
+      reactiveModel.setRequest(data)
+    })
+  })
+  reactiveModel.ready = true
   console.log("Fetching requests for bloodtype:", reactiveModel.user.bloodtype)
-  let requestsQuery = query(
-    collection(db, COLLECTION2),
-    where("current", "==", true),
-  )
+}
 
-  onSnapshot(requestsQuery, (snapshot) => {
-    if (snapshot.empty) {
+onSnapshot(collection(db, COLLECTION2), (snapshot) => {
+  snapshot.docChanges().forEach((change) => {
+    const data = change.doc.data()
+    const id = change.doc.id
+    if (change.type === "modified" && data.current === false) {
+      runInAction(() => {
+        reactiveModel.removeRequest(id)
+      })
+    }
+  })
+})
+onSnapshot(
+  query(collection(db, COLLECTION2), where("current", "==", true)),
+  (snapshot) => {
+    if (snapshot.empty || !reactiveModel.user.bloodtype) {
       console.warn("No changes detected. Double-check the query and data.")
       return
     }
@@ -272,71 +248,36 @@ export async function fetchRequests() {
         }
       })
     })
-  })
+  },
+)
 
-  const allRequestsQuery = collection(db, COLLECTION2)
-  onSnapshot(allRequestsQuery, (snapshot) => {
-    snapshot.docChanges().forEach((change) => {
-      const data = change.doc.data()
-      const id = change.doc.id
-      // if ((change.type === "modified" && (data.current === false || !data.bloodTypes.includes(reactiveModel.user.bloodtype || "AB+")))) {
-      if (
-        change.type === "modified" &&
-        (data.current === false ||
-          !data.bloodTypes.includes(reactiveModel.user.bloodtype))
-      ) {
-        runInAction(() => {
-          reactiveModel.removeRequest(id)
-        })
-      }
-    })
-  })
-}
-
-export function connectToPersistence() {
+export async function connectToPersistence() {
   if (!reactiveModel.user.uid) {
     console.log(
       "User UID is not set in the reactiveModel. Cannot connect to persistence.",
     )
     return
   }
+  reactiveModel.ready = false
 
   getDoc(doc(db, COLLECTION1, reactiveModel.user.uid))
     .then((snapshot) => {
       const data = snapshot.data()
-      console.log("Initial getDoc ", data)
+      console.log("Initial getDoc ", data, reactiveModel.user.uid)
       if (data) {
         runInAction(() => {
           if (data.username) reactiveModel.user.username = data.username
           if (data.bloodtype) reactiveModel.user.bloodtype = data.bloodtype
           if (data.name) reactiveModel.user.name = data.name
-          //console.log("getDoc:", reactiveModel.user.bloodtype);
+          //console.log("updater received", reactiveModel.user);
         })
       }
-
+    })
+    .then(() => {
       fetchRequests()
     })
     .catch((error) => console.error("Error reading donor document:", error))
-
-  onSnapshot(doc(db, COLLECTION1, reactiveModel.user.uid), (snapshot) => {
-    const data = snapshot.data()
-    if (data) {
-      const prevBloodtype = reactiveModel.user.bloodtype
-
-      runInAction(() => {
-        if (data.username) reactiveModel.user.username = data.username
-        if (data.bloodtype) reactiveModel.user.bloodtype = data.bloodtype
-        if (data.name) reactiveModel.user.name = data.name
-        //console.log("updater received", reactiveModel.user);
-      })
-
-      if (prevBloodtype !== data.bloodtype && data.bloodtype) {
-        //console.log("new req fetched ,bloodtype changed to", data.bloodtype);
-        reactiveModel.clearRequests()
-        fetchRequests()
-      }
-    }
-  })
+  reactiveModel.ready = true
 
   reaction(
     () => reactiveModel.user.bloodtype,
@@ -359,30 +300,4 @@ export function connectToPersistence() {
       }
     },
   )
-
-  /*  reaction(
-    () => ({
-      username: reactiveModel.user.username,
-      name: reactiveModel.user.name,
-      bloodtype: reactiveModel.user.bloodtype,
-    }),
-    async (userData) => {
-      if (!reactiveModel.ready) {
-        return;
-      }
-      if (!auth.currentUser) return;
-      const dataToUpdate = {};
-      if (userData.username) dataToUpdate.username = userData.username;
-      if (userData.name) dataToUpdate.name = userData.name;
-      if (userData.bloodtype) dataToUpdate.bloodtype = userData.bloodtype;
-
-      if (Object.keys(dataToUpdate).length === 0) return;
-      reactiveModel.ready = false;
-      // console.log("firestore upadted with: ",dataToUpdate);
-      /*  await setDoc(docToStore, dataToUpdate, { merge: true }).catch((err) =>
-        console.error('Error syncing to Firestore:', err)
-      ); 
-      reactiveModel.ready = true;
-    }
-  ); */
 }

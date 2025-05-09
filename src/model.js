@@ -38,8 +38,10 @@ export const model = {
     })
   },
   updateRequests(id, requestFields) {
+    const req = this.getRequestById(id)
+
     Object.keys(requestFields).forEach((key) => {
-      this.getRequestById(id)[key] = requestFields[key]
+      req[key] = requestFields[key]
     })
   },
   setUser(user) {

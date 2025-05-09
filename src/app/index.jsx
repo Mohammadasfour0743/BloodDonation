@@ -18,7 +18,7 @@ export default function Index() {
         }
       } catch (error) {
         console.error("Error checking auth:", error)
-        router.replace("/login")
+        //router.replace("/login")
       } finally {
         setLoading(false)
       }
