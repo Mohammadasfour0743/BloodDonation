@@ -64,7 +64,7 @@ export const RequestView = observer(function RequestRender(props) {
               element.latitude < latMax &&
               element.longitude < lngMax &&
               element.longitude > lngMin &&
-              (!props.bloodType == "N/A"
+              (props.bloodType != "N/A"
                 ? element.bloodTypes.includes(props.bloodType)
                 : true) &&
               (urgentSelected ? element.urgency : true)

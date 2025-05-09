@@ -58,18 +58,20 @@ export function ProfileView(props) {
                 {props.selected}
               </Text>
             </View>
-            <Pressable
-              style={{
-                alignSelf: "flex-end",
-                marginTop: -100,
-                paddingBottom: 90,
-              }}
-              onPress={() => {
-                props.setEdit2(!props.edit2)
-              }}
-            >
-              <Entypo name="edit" size={30} color="black" />
-            </Pressable>
+            {props.edit && (
+              <Pressable
+                style={{
+                  alignSelf: "flex-end",
+                  marginTop: -100,
+                  paddingBottom: 90,
+                }}
+                onPress={() => {
+                  props.setEdit2(!props.edit2)
+                }}
+              >
+                <Entypo name="edit" size={30} color="black" />
+              </Pressable>
+            )}
           </View>
         </View>
       </View>
@@ -134,8 +136,8 @@ export function ProfileView(props) {
               </View>
             </View>
           ) : (
-            <View style={{ flex: 1 }}>
-              <View style={styles.donor}>
+            <View style={{ flex: 1, alignItems: "center" }}>
+              <View style={props.edit ? styles.indonor : styles.donor}>
                 <TextInput
                   editable={props.edit}
                   placeholder="Insert Name"
@@ -144,19 +146,12 @@ export function ProfileView(props) {
                   onChangeText={props.setName}
                   value={props.username}
                 ></TextInput>
-                <Pressable
-                  onPress={() => {
-                    props.setEdit(!props.edit)
-                  }}
-                >
-                  <Entypo name="edit" size={30} color="black" />
-                </Pressable>
               </View>
               <View style={styles.title}>
                 <View>
                   <Text style={styles.personal}>Personal Information</Text>
                 </View>
-                <View style={styles.input}>
+                <View style={props.edit ? styles.input : styles.unput}>
                   <Entypo
                     name="mail"
                     size={30}
@@ -172,7 +167,7 @@ export function ProfileView(props) {
                     style={{ width: "100%" }}
                   ></TextInput>
                 </View>
-                <View style={styles.input}>
+                <View style={props.edit ? styles.input : styles.unput}>
                   <Feather
                     name="phone"
                     size={30}
@@ -189,7 +184,7 @@ export function ProfileView(props) {
                     value={props.phone}
                   />
                 </View>
-                {props.edit && (
+                {props.edit ? (
                   <View style={{ flex: 1, gap: 10 }}>
                     <View style={styles.saveButton}>
                       <TouchableOpacity
@@ -211,20 +206,44 @@ export function ProfileView(props) {
                       </TouchableOpacity>
                     </View>
                   </View>
+                ) : (
+                  <View style={{ flex: 1, gap: 10 }}>
+                    <View style={styles.saveButton}>
+                      <TouchableOpacity
+                        style={{
+                          justifyContent: "center",
+                          alignItems: "center",
+                          padding: 15,
+                        }}
+                        onPress={props.setEdit}
+                      >
+                        <Text
+                          style={{
+                            color: "white",
+                            fontFamily: "Roboto-Medium",
+                          }}
+                        >
+                          Edit Profile
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 )}
               </View>
-              <View style={styles.footerButtons}>
-                <TouchableOpacity
-                  style={styles.footerButton}
-                  onPress={() =>
-                    Linking.openURL("https://teamsigmoidwebsite.vercel.app/")
-                  }
-                >
-                  <Text style={styles.footerButtonText}>
-                    Contact Us/Report a Bug
-                  </Text>
-                </TouchableOpacity>
-              </View>
+              {!props.edit && (
+                <View style={styles.footerButtons}>
+                  <TouchableOpacity
+                    style={styles.footerButton}
+                    onPress={() =>
+                      Linking.openURL("https://teamsigmoidwebsite.vercel.app/")
+                    }
+                  >
+                    <Text style={styles.footerButtonText}>
+                      Contact Us/Report a Bug
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           )}
         </View>
@@ -269,8 +288,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    width: "80%",
   },
 
+  indonor: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    width: "80%",
+    borderWidth: 2,
+    borderRadius: 15,
+    borderColor: "#9A4040",
+  },
   donorText: {
     fontSize: 35,
     color: "#9A4040",
@@ -294,7 +324,7 @@ const styles = StyleSheet.create({
 
   input: {
     flexDirection: "row",
-    width: "100%",
+    width: "80%",
     gap: 10,
     padding: 10,
     justifyContent: "flex-start",
@@ -302,6 +332,14 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 15,
     borderColor: "#9A4040",
+  },
+  unput: {
+    flexDirection: "row",
+    width: "80%",
+    gap: 10,
+    padding: 10,
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
 
   saveButton: {
