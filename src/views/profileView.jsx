@@ -21,8 +21,27 @@ export function ProfileView(props) {
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        <View style={styles.logout}>
-          <Pressable onPress={props.logout}>
+        <View
+          style={[
+            styles.logout,
+            {
+              flexDirection: "row",
+              justifyContent: "space-between",
+            },
+          ]}
+        >
+          <Text
+            style={{
+              marginLeft: 10,
+              alignSelf: "flex-start",
+              fontFamily: "Roboto-bold",
+              fontSize: 28,
+              color: "#9a4040",
+            }}
+          >
+            Profile
+          </Text>
+          <Pressable onPress={[props.logout]}>
             <MaterialIcons name="logout" size={40} color="#9A4040" />
           </Pressable>
         </View>
