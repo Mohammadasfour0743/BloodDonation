@@ -130,7 +130,7 @@ export function ProfileView(props) {
         <TouchableOpacity
           style={styles.contactUsButton}
           onPress={() => {
-            Linking.openURL("https://teamsigmoidwebsite.vercel.app/team");
+            Linking.openURL("https://teamsigmoidwebsite.vercel.app/");
           }}
         >
         <Text style={styles.contactUsText}>Report a Bug</Text>
