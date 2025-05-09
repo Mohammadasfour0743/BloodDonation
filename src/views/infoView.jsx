@@ -453,7 +453,7 @@ export function InfoView(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f7f7f7",
+    backgroundColor: "transparent",
     justifyContent: "center",
   },
   content: {

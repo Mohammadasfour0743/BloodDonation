@@ -42,7 +42,7 @@ export function ProfileView(props) {
           >
             Profile
           </Text>
-          <Pressable onPress={[props.logout]}>
+          <Pressable onPress={props.logout}>
             <MaterialIcons name="logout" size={40} color="#9A4040" />
           </Pressable>
         </View>
@@ -262,6 +262,7 @@ export function ProfileView(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "transparent",
   },
 
   logout: {

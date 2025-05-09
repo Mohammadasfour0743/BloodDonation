@@ -30,6 +30,7 @@ import { reactiveModel } from "./bootstrapping"
 import { firebaseConfig } from "./firebaseconfig.js"
 import { registerForPushNotificationsAsync } from "./notification.js"
 
+let unsub = null
 const app =
   getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
 const db = getFirestore(app)
@@ -124,6 +125,8 @@ export async function signUp(email, password, bloodtype) {
 
 export async function logOut() {
   try {
+    unsub()
+    unsub = null
     reactiveModel.clearUser()
     reactiveModel.clearRequests()
 
@@ -276,13 +279,13 @@ export async function connectToPersistence() {
         })
       }
     })
-    .then(() => {
-      fetchRequests()
+    .then(async () => {
+      await fetchRequests()
     })
     .catch((error) => console.error("Error reading donor document:", error))
   reactiveModel.ready = true
 
-  reaction(
+  unsub = reaction(
     () => [
       reactiveModel.user.bloodtype,
       reactiveModel.user.phonenumber,
@@ -295,7 +298,8 @@ export async function connectToPersistence() {
 
       //console.log("bloodtype chnaged , new req fetched");
       reactiveModel.clearRequests()
-      fetchRequests()
+
+      await fetchRequests()
       const docToStore = doc(db, COLLECTION1, reactiveModel.user.uid)
       reactiveModel.ready = false
       await setDoc(

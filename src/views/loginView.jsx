@@ -20,6 +20,7 @@ export function LoginView(props) {
           value={props.user}
           placeholder="Email"
           style={styles.input}
+          placeholderTextColor={"gray"}
         />
       </View>
       <View style={styles.inputContainer}>
