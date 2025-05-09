@@ -297,9 +297,12 @@ export async function connectToPersistence() {
       }
 
       //console.log("bloodtype chnaged , new req fetched");
-      reactiveModel.clearRequests()
+      if (newBloodtype[0] != oldBloodtype[0]) {
+        reactiveModel.clearRequests()
 
-      await fetchRequests()
+        await fetchRequests()
+      }
+
       const docToStore = doc(db, COLLECTION1, reactiveModel.user.uid)
       reactiveModel.ready = false
       await setDoc(

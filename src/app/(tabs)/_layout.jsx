@@ -5,13 +5,17 @@ import Octicons from "@expo/vector-icons/Octicons"
 
 export default function TabLayout() {
   return (
-    <View style={{ flex: 1, backgroundColor: "transparent" }}>
+    <View style={{ flex: 1, backgroundColor: "#900000" }}>
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: "#B47F7F",
           tabBarInactiveTintColor: "#780000",
-
           headerShown: false,
+          contentStyle: { backgroundColor: "#900000" },
+          // For older versions of React Navigation
+          cardStyle: { backgroundColor: "#900000" },
+          // For the tab screens specifically
+          sceneContainerStyle: { backgroundColor: "#900000" },
           tabBarStyle: {
             position: "absolute",
             left: 0,
@@ -52,7 +56,6 @@ export default function TabLayout() {
             },
           }}
         />
-
         <Tabs.Screen
           name="information"
           options={{

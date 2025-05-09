@@ -74,18 +74,12 @@ export const Profile = observer((props) => {
       selected={selected}
       setSelected={setSelected}
       save={() => {
-        if (validPhone(phone) && validEmail(email)) {
-          props.model.updateUser({ phonenumber: phone })
-          props.model.updateUser({ email: email })
-          props.model.updateUser({ name: username })
-          props.model.updateUser({ bloodtype: selected })
+        props.model.updateUser({ phonenumber: phone })
+        props.model.updateUser({ email: email })
+        props.model.updateUser({ name: username })
+        props.model.updateUser({ bloodtype: selected })
 
-          setEdit(false)
-        } else {
-          setPhone(props.model.user.phonenumber)
-          setEmail(props.model.user.username)
-          setEdit(false)
-        }
+        setEdit(false)
       }}
       saveBlood={() => {
         props.model.updateUser({ bloodtype: selected })
