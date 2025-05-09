@@ -13,6 +13,7 @@ import { Link } from "expo-router"
 import Entypo from "@expo/vector-icons/Entypo"
 import Feather from "@expo/vector-icons/Feather"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons"
 import MaterialIcons from "@expo/vector-icons/MaterialIcons"
 
 import { logOut } from "../app/firebasemodel"
@@ -62,14 +63,20 @@ export function ProfileView(props) {
               <Pressable
                 style={{
                   alignSelf: "flex-end",
-                  marginTop: -100,
-                  paddingBottom: 90,
+                  marginTop: -150,
+                  paddingBottom: 130,
                 }}
                 onPress={() => {
                   props.setEdit2(!props.edit2)
                 }}
               >
-                <Entypo name="edit" size={30} color="black" />
+                <MaterialCommunityIcons
+                  name="pencil-circle"
+                  size={40}
+                  color="black"
+                  backgroundColor="white"
+                  borderRadius={80}
+                />
               </Pressable>
             )}
           </View>
