@@ -131,7 +131,7 @@ export function ProfileView(props) {
           style={styles.footerButton}
           onPress={() => Linking.openURL("https://teamsigmoidwebsite.vercel.app/")}
         >
-          <Text style={styles.footerButtonText}>Contact Us</Text>
+          <Text style={styles.footerButtonText}>Contact Us/Report a Bug</Text>
         </TouchableOpacity>
 
         {/* <TouchableOpacity
