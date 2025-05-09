@@ -269,6 +269,9 @@ export async function connectToPersistence() {
           if (data.username) reactiveModel.user.username = data.username
           if (data.bloodtype) reactiveModel.user.bloodtype = data.bloodtype
           if (data.name) reactiveModel.user.name = data.name
+          if (data.phonenumber)
+            reactiveModel.user.phonenumber = data.phonenumber
+
           //console.log("updater received", reactiveModel.user);
         })
       }
@@ -289,7 +292,6 @@ export async function connectToPersistence() {
       if (!reactiveModel.ready) {
         return
       }
-      console.log(newBloodtype[0], newBloodtype[1], newBloodtype[2])
 
       //console.log("bloodtype chnaged , new req fetched");
       reactiveModel.clearRequests()

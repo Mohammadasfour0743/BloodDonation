@@ -81,7 +81,6 @@ export const Profile = observer((props) => {
           props.model.updateUser({ bloodtype: selected })
 
           setEdit(false)
-          console.log(props.model.user)
         } else {
           setPhone(props.model.user.phonenumber)
           setEmail(props.model.user.username)
