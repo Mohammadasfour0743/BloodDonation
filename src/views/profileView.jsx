@@ -134,12 +134,12 @@ export function ProfileView(props) {
           <Text style={styles.footerButtonText}>Contact Us</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.footerButton}
           onPress={() => Linking.openURL("https://teamsigmoidwebsite.vercel.app/report")}
         >
           <Text style={styles.footerButtonText}>Report a Bug</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
     </SafeAreaView>
@@ -244,49 +244,4 @@ const styles = StyleSheet.create({
        fontFamily: "Roboto-Medium",
        textAlign: "center",
      },
-
-// contactUsContainer: {
-//   alignItems: "center",
-//   justifyContent: "center",
-//   marginBottom: 20,
-// },
-
-// contactUsButton: {
-//   backgroundColor: "#9A4040",
-//   paddingVertical: 12,
-//   paddingHorizontal: 20,
-//   borderRadius: 25,
-//   marginHorizontal: 110,
-//   bottom: 80,
-//   right: 70,
-// },
-
-// contactUsText: {
-//   color: "white",
-//   fontSize: 16,
-//   fontFamily: "Roboto-Medium",
-//   textAlign: "center",
-//   bottom: 0,
-// },
-
-// reportButton: {
-//   backgroundColor: "#9A4040",
-//   paddingVertical: 12,
-//   paddingHorizontal: 20,
-//   borderRadius: 25,
-//   marginHorizontal: 110,
-//   bottom: 80,
-//   left: 70,
-// },
-
-// reportButtonText: {
-//   color: "white",
-//   fontSize: 16,
-//   fontFamily: "Roboto-Medium",
-//   textAlign: "center",
-//   bottom: 0,
-// },
-
-
-
 })
