@@ -32,7 +32,7 @@ export const Profile = observer((props) => {
   useEffect(() => {
     navigation.setOptions({
       tabBarStyle: {
-        display: edit ? "none" : "flex",
+        display: edit || edit2 ? "none" : "flex",
         position: "absolute",
         left: 0,
         right: 0,

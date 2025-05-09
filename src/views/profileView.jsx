@@ -171,7 +171,7 @@ export function ProfileView(props) {
                   />
                 </View>
                 {props.edit && (
-                  <View style={{ flex: 1, gap: 10, borderWidth: 1 }}>
+                  <View style={{ flex: 1, gap: 10 }}>
                     <View style={styles.saveButton}>
                       <TouchableOpacity
                         style={{
