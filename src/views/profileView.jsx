@@ -5,6 +5,7 @@ import Entypo from "@expo/vector-icons/Entypo"
 import Feather from "@expo/vector-icons/Feather"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
 import MaterialIcons from "@expo/vector-icons/MaterialIcons"
+import { Linking } from "react-native"
 
 import { logOut } from "../app/firebasemodel"
 import { SafeAreaView } from "react-native-safe-area-context"
@@ -125,9 +126,19 @@ export function ProfileView(props) {
           </View>
         )}
       </View>
-
-   
+      <View style={styles.contactUsContainer}>
+        <TouchableOpacity
+          style={styles.contactUsButton}
+          onPress={() => {
+            Linking.openURL("https://teamsigmoidwebsite.vercel.app/team");
+          }}
+        >
+        <Text style={styles.contactUsText}>Report a Bug</Text>
+        </TouchableOpacity>
+    </View>
+  
     </SafeAreaView>
+
   )
 }
 
@@ -209,6 +220,25 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     backgroundColor: "#9A4040"
   },
+
+  contactUsContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 60,
+  },
+  
+  contactUsButton: {
+    backgroundColor: "#9A4040",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+  },
+  
+  contactUsText: {
+    color: "white",
+    fontSize: 16,
+    fontFamily: "Roboto-Medium",
+  }
 
 
 })
