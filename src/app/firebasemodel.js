@@ -82,7 +82,7 @@ export function signIn(username, password) {
       return userCredential
     })
     .catch((error) => {
-      console.error("Sign In Error:", error.message)
+      //console.error("Sign In Error:", error.message)
       throw error
     })
 }

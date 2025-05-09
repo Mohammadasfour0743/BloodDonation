@@ -16,13 +16,14 @@ export const Signup = observer((props) => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [password2, setPassword2] = useState("")
+  const [errorMsg, setErrorMsg] = useState("");
 
   return (
     <SignupView
       login={() => {
         console.log("Selected blood type:", selected)
         if (password !== password2) {
-          console.error("Passwords do not match")
+          setErrorMsg("Passwords do not match")
           return
         }
 
@@ -31,7 +32,7 @@ export const Signup = observer((props) => {
             // router.replace("/(tabs)/requests")
           })
           .catch((error) => {
-            alert("Sign-up failed: " + error.message)
+            setErrorMsg("Sign-up failed")
           })
       }}
       setUser={setUsername}
@@ -41,6 +42,7 @@ export const Signup = observer((props) => {
       pass2={password2}
       setPass2={setPassword2}
       setSelected={setSelected}
+      errorMsg={errorMsg}
     ></SignupView>
   )
 })
