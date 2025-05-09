@@ -28,7 +28,7 @@ import { getBoundingBox, getCurrentLocation } from "../app/firebasemodel"
 
 export const RequestView = observer(function RequestRender(props) {
   const [hasClicked, setHasClicked] = useState(false)
-  const [alreadyResponded, setAlreadyResponded] = useState({});
+  const [alreadyResponded, setAlreadyResponded] = useState({})
   //const [alreadyResponded, setAlreadyResponded] = useState(false)
   const [tab, setTab] = useState("RELEVANT")
   const [filteredRequests, setFilteredRequests] = useState([])
@@ -104,7 +104,7 @@ export const RequestView = observer(function RequestRender(props) {
       const responseDoc = await getDoc(responseRef)
 
       if (responseDoc.exists()) {
-        setAlreadyResponded(prev => ({
+        setAlreadyResponded((prev) => ({
           ...prev,
           [props.current.id]: true,
         }))
@@ -114,8 +114,8 @@ export const RequestView = observer(function RequestRender(props) {
   }, [props.current])
 
   const handleRespond = async () => {
-    if (!props.current || alreadyResponded[props.current.id]) return;
-  
+    if (!props.current || alreadyResponded[props.current.id]) return
+
     try {
       const db = getFirestore()
       const user = getAuth().currentUser
@@ -130,9 +130,9 @@ export const RequestView = observer(function RequestRender(props) {
         userId: user.uid,
         requestId: props.current.id,
         respondedAt: new Date().toString(),
-      });
-  
-      setAlreadyResponded(prev => ({
+      })
+
+      setAlreadyResponded((prev) => ({
         ...prev,
         [props.current.id]: true,
       }))
@@ -198,16 +198,23 @@ export const RequestView = observer(function RequestRender(props) {
           </Text>
         </View>
         <Pressable
-        style={[
-        styles.button,
-        (alreadyResponded[props.current?.id] || hasClicked) && { opacity: 0.5 },
-        ]}
-        onPress={handleRespond}
-        disabled={alreadyResponded[props.current?.id] || hasClicked}
+          style={[
+            styles.button,
+            (alreadyResponded[props.current?.id] || hasClicked) && {
+              opacity: 0.5,
+            },
+          ]}
+          onPress={() => {
+            props.setVisible(false)
+            props.setResponded(true)
+          }}
+          disabled={alreadyResponded[props.current?.id] || hasClicked}
         >
-        <Text style={{ fontFamily: "Roboto-Bold" }}>
-        {alreadyResponded[props.current?.id] ? "Already Responded" : "Respond"}
-        </Text>
+          <Text style={{ fontFamily: "Roboto-Bold" }}>
+            {alreadyResponded[props.current?.id]
+              ? "Already Responded"
+              : "Respond"}
+          </Text>
         </Pressable>
       </View>
     )
@@ -306,27 +313,128 @@ export const RequestView = observer(function RequestRender(props) {
           <Text style={{ color: 'white' }}>Urgent</Text>
         </Pressable> */}
       </View>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        style={{ flex: 1 }}
-        visible={props.visible}
-        onRequestClose={() => {
-          props.setVisible(!props.visible)
-        }}
-      >
-        <BlurView intensity={8} style={styles.close}>
-          <Pressable
-            style={{ flex: 1 }}
-            onPress={() => {
-              props.setVisible(false)
-            }}
-          ></Pressable>
-        </BlurView>
-        <Observer>{() => <ModelContent />}</Observer>
-      </Modal>
-
+      <View>
+        <Modal
+          animationType="fade"
+          transparent={true}
+          style={{ flex: 1 }}
+          visible={props.responded}
+          onRequestClose={() => {
+            props.setResponded(!props.responded)
+          }}
+        >
+          <BlurView
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <View
+              style={{
+                borderWidth: 2,
+                borderRadius: 15,
+                padding: 10,
+                margin: 8,
+                borderColor: "#9A4040",
+                flex: 1,
+                maxWidth: 400,
+                maxHeight: 200,
+                justifyContent: "space-around",
+                alignItems: "center",
+                backgroundColor: "white",
+                gap: 10,
+              }}
+            >
+              <View>
+                <Text
+                  style={{
+                    fontFamily: "Roboto-Bold",
+                    color: "#9A4040",
+                    fontSize: 20,
+                  }}
+                >
+                  Important!
+                </Text>
+              </View>
+              <View style={{ padding: 5 }}>
+                <Text>
+                  It is recommended to wait 8 weeks between blood donations. If
+                  you have donated blood within the last 8 weeks, please wait
+                  before donating again.
+                </Text>
+              </View>
+              <View
+                style={{
+                  justifyContent: "space-around",
+                  flex: 1,
+                  alignItems: "center",
+                  flexDirection: "row",
+                }}
+              >
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Pressable
+                    style={{ padding: 10 }}
+                    onPress={() => props.setResponded(false)}
+                  >
+                    <Text
+                      style={{ color: "#4285F4", fontFamily: "roboto-medium" }}
+                    >
+                      Cancel
+                    </Text>
+                  </Pressable>
+                </View>
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Pressable
+                    style={{
+                      backgroundColor: "#FFEE93",
+                      padding: 10,
+                      borderRadius: 8,
+                    }}
+                    onPress={() => {
+                      handleRespond()
+                      props.setResponded(false)
+                    }}
+                  >
+                    <Text style={{ fontFamily: "roboto-bold" }}>
+                      I can donate!
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+          </BlurView>
+        </Modal>
+      </View>
+      <View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          style={{ flex: 1 }}
+          visible={props.visible}
+          onRequestClose={() => {
+            props.setVisible(!props.visible)
+          }}
+        >
+          <BlurView intensity={8} style={styles.close}>
+            <Pressable
+              style={{ flex: 1 }}
+              onPress={() => {
+                props.setVisible(false)
+              }}
+            ></Pressable>
+          </BlurView>
+          <Observer>{() => <ModelContent />}</Observer>
+        </Modal>
+      </View>
       {loading && <ActivityIndicator size={"large"} />}
       {!loading && (
         <FlatList

@@ -5,6 +5,7 @@ import { RequestView } from "src/views/requestView"
 
 export const Request = observer((props) => {
   const [modalVisible, setModalVisible] = useState(false)
+  const [responded, setResponded] = useState(false)
   const [currentRequest, setCurrentRequest] = useState(null)
   const [isPress, setIsPress] = useState(false)
   useEffect(() => {
@@ -20,6 +21,8 @@ export const Request = observer((props) => {
       bloodType={props.model.user.bloodtype}
       isPress={isPress}
       setIsPress={setIsPress}
+      responded={responded}
+      setResponded={setResponded}
     />
   )
 })
