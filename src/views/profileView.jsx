@@ -363,6 +363,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     paddingVertical: 60,
     marginHorizontal: 40,
+    marginBottom: 40,
   },
   footerButton: {
     backgroundColor: "#9A4040",
