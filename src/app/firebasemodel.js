@@ -23,6 +23,7 @@ import {
   query,
   setDoc,
   where,
+  orderBy,
 } from "firebase/firestore"
 import { reaction, runInAction } from "mobx"
 
@@ -203,18 +204,22 @@ export async function fetchRequests() {
     console.error("Cannot fetch requests: user or bloodtype not set in model")
     return
   }
+
   reactiveModel.ready = false
-  await getDocs(
-    query(collection(db, COLLECTION2), where("current", "==", true)),
-  ).then((snapshot) => {
-    const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+  const snapshot = await getDocs(
+    query(collection(db, COLLECTION2), where("current", "==", true), orderBy("updatedAt", "desc")
+    )
+  )
+
+
+  const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
     runInAction(() => {
       reactiveModel.setRequest(data)
-    })
-  })
+    });
   reactiveModel.ready = true
   console.log("Fetching requests for bloodtype:", reactiveModel.user.bloodtype)
 }
+
 
 onSnapshot(collection(db, COLLECTION2), (snapshot) => {
   snapshot.docChanges().forEach((change) => {
@@ -228,7 +233,7 @@ onSnapshot(collection(db, COLLECTION2), (snapshot) => {
   })
 })
 onSnapshot(
-  query(collection(db, COLLECTION2), where("current", "==", true)),
+  query(collection(db, COLLECTION2), where("current", "==", true), orderBy("updatedAt", "desc")),
   (snapshot) => {
     if (snapshot.empty || !reactiveModel.user.bloodtype) {
       console.warn("No changes detected. Double-check the query and data.")

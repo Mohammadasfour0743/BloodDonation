@@ -51,12 +51,12 @@ export const RequestView = observer(function RequestRender(props) {
           50,
         )
 
-        const timedreq = [...props.requestsArray].sort(
-          (a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0),
-        )
+        // const timedreq = [...props.requestsArray].sort(
+        //   (a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0),
+        // )
         const filtered = []
 
-        for (const element of timedreq) {
+        for (const element of props.requestsArray) {
           if (tab === "RELEVANT") {
             if (
               element.latitude > latMin &&
