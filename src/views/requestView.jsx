@@ -145,7 +145,7 @@ export const RequestView = observer(function RequestRender(props) {
 
   const ModelContent = observer(() => {
     const { latitude, longitude } = props.current || {};
-    console.log("📍 request coords:", { latitude, longitude });
+    //console.log("request coords:", { latitude, longitude });
 
     const mapsUrl =
       latitude != null && longitude != null
