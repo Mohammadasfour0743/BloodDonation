@@ -291,11 +291,7 @@ export async function connectToPersistence() {
       reactiveModel.user.name,
     ],
     async (newBloodtype, oldBloodtype) => {
-      if (!reactiveModel.ready || !reactiveModel || !reactiveModel.user) {
-        return
-      }
-
-      //console.log("bloodtype chnaged , new req fetched");
+      console.log(newBloodtype)
       if (newBloodtype[0] != oldBloodtype[0]) {
         reactiveModel.clearRequests()
 
@@ -307,10 +303,9 @@ export async function connectToPersistence() {
       await setDoc(
         docToStore,
         {
-          bloodtype: newBloodtype[0] ?? oldBloodtype[0],
-          phonenumber:
-            newBloodtype[1] == "" ? newBloodtype[1] : oldBloodtype[1],
-          name: newBloodtype[2] == "" ? newBloodtype[2] : oldBloodtype[2],
+          bloodtype: reactiveModel.user.bloodtype,
+          phonenumber: reactiveModel.user.phonenumber,
+          name: reactiveModel.user.name,
         },
         { merge: true },
       ).catch((err) => console.error("Error syncing to Firestore:", err))(
