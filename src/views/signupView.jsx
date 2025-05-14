@@ -17,9 +17,9 @@ export function SignupView(props) {
       <View style={styles.inputContainer}>
         <Entypo name="mail" size={30} color="#9A4040" />
         <TextInput
+          placeholderTextColor={"gray"}
           onChangeText={props.setUser}
           value={props.user}
-          placeholderTextColor={"gray"}
           placeholder=" Enter Email"
           style={styles.input}
         />
@@ -27,9 +27,9 @@ export function SignupView(props) {
       <View style={styles.inputContainer}>
         <AntDesign name="lock1" size={30} color="#9A4040" />
         <TextInput
+          placeholderTextColor={"gray"}
           onChangeText={props.setPass}
           secureTextEntry={true}
-          placeholderTextColor={"gray"}
           value={props.pass}
           placeholder="Choose Password"
           style={styles.input}
@@ -39,9 +39,9 @@ export function SignupView(props) {
       <View style={styles.inputContainer}>
         <AntDesign name="lock1" size={30} color="green" />
         <TextInput
+          placeholderTextColor={"gray"}
           onChangeText={props.setPass2}
           secureTextEntry={true}
-          placeholderTextColor={"gray"}
           value={props.pass2}
           placeholder="Confirm Password"
           style={styles.input}

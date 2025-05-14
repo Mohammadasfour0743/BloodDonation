@@ -19,8 +19,8 @@ export function LoginView(props) {
           onChangeText={props.setUser}
           value={props.user}
           placeholder="Email"
-          style={styles.input}
           placeholderTextColor={"gray"}
+          style={styles.input}
         />
       </View>
       <View style={styles.inputContainer}>

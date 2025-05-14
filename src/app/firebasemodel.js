@@ -77,13 +77,12 @@ export function signIn(username, password) {
       reactiveModel.clearRequests()
 
       reactiveModel.user.uid = user.uid
-      connectToPersistence()
       console.log("User bloodtype after signin:", reactiveModel.user.bloodtype)
 
       return userCredential
     })
     .catch((error) => {
-      //console.error("Sign In Error:", error.message)
+      // console.error("Sign In Error:", error.message)
       throw error
     })
 }
@@ -118,14 +117,14 @@ export async function signUp(email, password, bloodtype) {
     reactiveModel.ready = true
     return userCredential
   } catch (error) {
-    console.error("Sign Up Error:", error.message)
+    //console.error("Sign Up Error:", error.message)
     throw error
   }
 }
 
 export async function logOut() {
   try {
-    unsub()
+    await unsub()
     unsub = null
     reactiveModel.clearUser()
     reactiveModel.clearRequests()
@@ -272,20 +271,27 @@ export async function connectToPersistence() {
           if (data.username) reactiveModel.user.username = data.username
           if (data.bloodtype) reactiveModel.user.bloodtype = data.bloodtype
           if (data.name) reactiveModel.user.name = data.name
+          if (data.phonenumber)
+            reactiveModel.user.phonenumber = data.phonenumber
+
           //console.log("updater received", reactiveModel.user);
         })
       }
     })
-    .then(() => {
-      fetchRequests()
+    .then(async () => {
+      await fetchRequests()
     })
     .catch((error) => console.error("Error reading donor document:", error))
   reactiveModel.ready = true
 
-  reaction(
-    () => reactiveModel.user.bloodtype,
+  unsub = reaction(
+    () => [
+      reactiveModel.user.bloodtype,
+      reactiveModel.user.phonenumber,
+      reactiveModel.user.name,
+    ],
     async (newBloodtype, oldBloodtype) => {
-      if (!reactiveModel.ready) {
+      if (!reactiveModel.ready || !reactiveModel || !reactiveModel.user) {
         return
       }
 
