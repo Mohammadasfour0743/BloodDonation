@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Linking
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { BlurView } from "expo-blur"
@@ -35,10 +36,8 @@ export const RequestView = observer(function RequestRender(props) {
   const [loading, setLoading] = useState(false)
   const [urgentSelected, setUrgentSelected] = useState(false)
 
-  // console.log('RequestView rendering with data:', props.requestsArray?.length || 0, 'items');
 
   useEffect(() => {
-    // Create an async function inside useEffect
 
     async function filterData() {
       setLoading(true)
@@ -147,6 +146,13 @@ export const RequestView = observer(function RequestRender(props) {
   }
 
   const ModelContent = observer(() => {
+    const { latitude, longitude } = props.current || {};
+    //console.log("request coords:", { latitude, longitude });
+
+    const mapsUrl =
+      latitude != null && longitude != null
+        ? `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
+        : null;
     return (
       <View style={styles.modal}>
         {props.current?.urgency && (
@@ -162,9 +168,25 @@ export const RequestView = observer(function RequestRender(props) {
           <Text style={{ fontSize: 17, fontFamily: "Roboto-Bold" }}>
             Hospital Details:
           </Text>
-          <Text style={styles.detailsText}>
-            Location: {props.current?.location ?? "kista"}
+          <Pressable 
+            onPress={() => {
+              const lat = props.current?.latitude
+              const long = props.current?.longitude
+
+              let url = ""
+              if (lat && long) {
+                url = `https://www.google.com/maps/search/?api=1&query=${lat},${long}`
+              }
+              else {
+                url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationName)}`
+              }
+
+              Linking.openURL(url)
+            }}
+            ><Text style={[styles.detailsText, { color: "#4285F4", textDecorationLine: "underline" }]}>
+            Location: {props.current?.location ?? "Unknown"} (View on Maps)
           </Text>
+          </Pressable>
           <Text style={styles.detailsText}>
             Blood Type: {props.current?.bloodTypes.join(", ") ?? ""}
           </Text>
@@ -193,7 +215,7 @@ export const RequestView = observer(function RequestRender(props) {
             Contact Hospital
           </Text>
           <Text style={styles.detailsText}>
-            {props.current?.email ?? "test@email.se.co.org"}
+            {props.current?.hospitalEmail ?? "test@email.se.co.org"}
           </Text>
           <Text style={styles.detailsText}>
             {props.current?.phoneNumber ?? "5441 243563"}
@@ -622,6 +644,18 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 65,
     left: 35,
+  },
+  showInMapsButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: "#9A4040",
+    borderRadius: 4,
+  },
+
+  showInMapsText: {
+    color: "white",
+    fontSize: 12,
+    fontFamily: "Roboto-Medium",
   },
   detailsText: {
     fontSize: 14,

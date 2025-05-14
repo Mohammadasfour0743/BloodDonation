@@ -83,7 +83,7 @@ export function signIn(username, password) {
       return userCredential
     })
     .catch((error) => {
-      console.error("Sign In Error:", error.message)
+      //console.error("Sign In Error:", error.message)
       throw error
     })
 }
@@ -272,25 +272,18 @@ export async function connectToPersistence() {
           if (data.username) reactiveModel.user.username = data.username
           if (data.bloodtype) reactiveModel.user.bloodtype = data.bloodtype
           if (data.name) reactiveModel.user.name = data.name
-          if (data.phonenumber)
-            reactiveModel.user.phonenumber = data.phonenumber
-
           //console.log("updater received", reactiveModel.user);
         })
       }
     })
-    .then(async () => {
-      await fetchRequests()
+    .then(() => {
+      fetchRequests()
     })
     .catch((error) => console.error("Error reading donor document:", error))
   reactiveModel.ready = true
 
-  unsub = reaction(
-    () => [
-      reactiveModel.user.bloodtype,
-      reactiveModel.user.phonenumber,
-      reactiveModel.user.name,
-    ],
+  reaction(
+    () => reactiveModel.user.bloodtype,
     async (newBloodtype, oldBloodtype) => {
       if (!reactiveModel.ready) {
         return

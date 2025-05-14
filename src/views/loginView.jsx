@@ -35,6 +35,10 @@ export function LoginView(props) {
         />
       </View>
 
+      {props.errorMsg ? (
+        <Text style={styles.errorMsg}>{props.errorMsg}</Text>
+      ) : null}
+
       <View style={styles.buttonView}>
         <TouchableOpacity onPress={props.login} style={styles.button}>
           <Text>Log In</Text>
@@ -101,7 +105,13 @@ const styles = StyleSheet.create({
   },
   redirect: {
     gap: 10,
-
     marginTop: 20,
+  },
+  errorMsg: {
+    color: "#FF4D4D",
+    fontSize: 16,
+    marginTop: -10,
+    marginBottom: 10,
+    fontWeight: "bold",
   },
 })

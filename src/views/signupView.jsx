@@ -78,6 +78,9 @@ export function SignupView(props) {
           save="key"
         />
       </View>
+      {props.errorMsg ? (
+        <Text style={styles.errorMsg}>{props.errorMsg}</Text>
+      ) : null}
 
       <View style={styles.buttonView}>
         <TouchableOpacity onPress={props.login} style={styles.button}>
@@ -145,7 +148,16 @@ const styles = StyleSheet.create({
   },
   redirect: {
     gap: 10,
-
     marginTop: 20,
+  },
+  errorMsg: {
+    color: "#FF4D4D",
+    fontSize: 16,
+    fontWeight: "bold",
+    width: "80%",
+    alignSelf: "center",
+    textAlign: "center",
+    marginTop: 10,
+    marginBottom: -5,
   },
 })
