@@ -21,23 +21,23 @@ import Entypo from "@expo/vector-icons/Entypo"
 export function WarningsView(props) {
   const pages = [
     {
-      text: "The safety of patients is our top priority, that is why we will ask you to review the following information carefully",
+      text: "The safety of patients is our top priority, that is why we will ask you to review the following information carefully.",
       title: "Welcome to BloodShare, a real-time blood donation application",
       img: "icon",
     },
     {
-      text: "Please note that you should be at least 16 years old and weigh at least 50kg. You also need to be in good general health and feel well on the day of donation. Also, recent travel to certain countries or taking certain medications may affect your eligibility",
+      text: "To be eligible to donate you should be at least 18 years old and weigh at least 50kg. You also need to be in good general health and feel well on the day of donation.",
       title: "Thank you for considering donating blood",
       img: "checklist",
     },
     {
-      text: "If you have traveled to certain countries with high risk of infectious diseases such as malaria, or consumed certain medications ",
+      text: "You cannot donate blood after traveling to certain countries with high risk of infectious diseases such as malaria. You will also have to wait after consuming certain medications. ",
       title: "Restrictions",
       link: "https://www.mskcc.org/about/get-involved/donating-blood/medications",
       img: "travel",
     },
     {
-      text: "If you’ve ever been diagnosed with HIV, hepatitis, or certain infections like syphilis, unfortunately, you won’t be eligible to donate. It is also very important to be upfront about your medical history!",
+      text: "If you’ve ever been diagnosed with HIV, hepatitis, or certain infections like syphilis, you won’t be eligible to donate. It is also very important to be upfront about your medical history!",
       title: "Medical history",
       img: "virus",
     },
@@ -47,12 +47,12 @@ export function WarningsView(props) {
       img: "water_bottle",
     },
     {
-      text: "By continuing, you confirm you’ve read and accepted these guidelines. More information is available in the Information page",
+      text: "By continuing, you confirm you’ve read and accepted these guidelines. More information is available in the Information page.",
       title: "",
     },
   ]
   const images = {
-    icon: require("../../assets/images/icon.png"),
+    icon: require("../../assets/images/warnings_logo.png"),
     travel: require("../../assets/images/travel.png"),
     virus: require("../../assets/images/virus.png"),
     water_bottle: require("../../assets/images/water_bottle.png"),
@@ -60,28 +60,26 @@ export function WarningsView(props) {
   }
   const ref = useRef(null)
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={{ flex: 1 }}>
       <PagerView
         ref={ref}
-        style={styles.pager}
+        style={{ flex: 1, h: "100%" }}
         initialPage={0}
         scrollEnabled={true}
         onPageSelected={(e) => props.setPage(e.nativeEvent.position)}
       >
         {pages.map((text, index) => (
-          <View style={styles.page} key={index.toString()}>
-            <View
-              style={[
-                styles.scrollContent,
-                { gap: 25, justifyContent: "space-evenly" },
-              ]}
-            >
+          <View
+            style={{ justifyContent: "space-around", flex: 1 }}
+            key={index.toString()}
+          >
+            <View style={{ flex: 1 }}>
               <View
                 style={{
-                  flex: 1,
-                  justifyContent: "center",
                   alignItems: "center",
-                  padding: 20,
+                  flex: 1,
+
+                  marginBottom: 50,
                 }}
               >
                 <Text
@@ -89,36 +87,37 @@ export function WarningsView(props) {
                     fontFamily: "Roboto-Bold",
                     fontSize: 26,
                     textAlign: "center",
+                    width: "80%",
+                    color: "#9a4040",
                   }}
                 >
                   {text.title}
                 </Text>
               </View>
+              {text.img && (
+                <View
+                  style={{
+                    alignItems: "center",
+                    width: "100%",
+                    height: 250,
+                  }}
+                >
+                  {text.img && (
+                    <Image
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        resizeMode: "contain",
+                      }}
+                      source={images[text.img]}
+                    />
+                  )}
+                </View>
+              )}
+
               <View
                 style={{
                   flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  padding: 20,
-                  width: "100%",
-                  height: 300,
-                }}
-              >
-                {text.img && (
-                  <Image
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      resizeMode: "contain",
-                    }}
-                    source={images[text.img]}
-                  />
-                )}
-              </View>
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
                   alignItems: "center",
                   padding: 20,
                   height: 200,
@@ -139,6 +138,7 @@ export function WarningsView(props) {
                         textDecorationLine: "underline",
                         fontFamily: "roboto-bold",
                         margin: 10,
+                        width: "100%",
                         paddingLeft: 10,
                       }}
                       onPress={() => Linking.openURL(text.link)}
@@ -148,7 +148,7 @@ export function WarningsView(props) {
                   )}
                 </Text>
               </View>
-              <View style={{ alignItems: "center", gap: 15 }}>
+              <View style={{ alignItems: "center", gap: 15, flex: 1 }}>
                 <TouchableOpacity
                   onPress={() => {
                     if (index == pages.length - 1) props.continue()
@@ -186,13 +186,8 @@ const styles = StyleSheet.create({
   pager: {
     flex: 1,
   },
-  page: {
-    justifyContent: "center",
-  },
-  scrollContent: {
-    flex: 1,
-    padding: 20,
-  },
+  page: { justifyContent: "space-evenly" },
+  scrollContent: {},
   text: {
     fontSize: 22,
     fontWeight: "600",
